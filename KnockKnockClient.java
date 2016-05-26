@@ -32,6 +32,9 @@
 import java.io.*;
 import java.net.*;
 
+/**
+ * Test vom Heinz
+ */
 public class KnockKnockClient {
     public static void main(String[] args) throws IOException {
         
@@ -48,7 +51,7 @@ public class KnockKnockClient {
             Socket kkSocket = new Socket(hostName, portNumber);
             PrintWriter out = new PrintWriter(kkSocket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(
-                new InputStreamReader(kkSocket.getInputStream()));
+                new InputStreamReader(kkSocket.getInputStream()))
         ) {
             BufferedReader stdIn =
                 new BufferedReader(new InputStreamReader(System.in));
