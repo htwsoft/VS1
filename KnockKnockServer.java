@@ -39,7 +39,7 @@ public class KnockKnockServer {
             System.err.println("Usage: java KnockKnockServer <port number>");
             System.exit(1);
         }
-
+//Nur ein Test
         int portNumber = Integer.parseInt(args[0]);
 
         try ( 
@@ -47,8 +47,7 @@ public class KnockKnockServer {
             Socket clientSocket = serverSocket.accept();
             PrintWriter out =
                 new PrintWriter(clientSocket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(
-                new InputStreamReader(clientSocket.getInputStream()));
+            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
         ) {
         
             String inputLine, outputLine;
