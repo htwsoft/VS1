@@ -40,6 +40,8 @@ public class KnockKnockServer {
             System.exit(1);
         }
 //Nur ein Test
+// test test
+
         int portNumber = Integer.parseInt(args[0]);
 
         try ( 
