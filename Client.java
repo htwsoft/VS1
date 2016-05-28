@@ -10,10 +10,67 @@ import java.util.*;
 
 public class Client
 {
+	//Port und IP des (Verwalter-)Servers
+	private static final int SERVER_PORT = 6666;
+	private static final String SERVER_IP = "localhost";
+	//Nachricht die an den Server gesendet werden soll
+	private String Nachricht = "";
+	//Dient zum einlesen der nachricht-eingabe des Benutzers ein
+	//private static InputStreamReader isr = new InputStreamreader(System.in);
+	//private static BufferedReader br = new BufferedReader(isr);
+	
 	/**
 	* Funktion zeigt ein Auswahlmenue und liefert 
 	* die Auswahl des Benutzers zurück
 	*/
+	private void verbindungsaufbau() throws IOException
+	{
+		//Verbindung zu Server aufbauen
+		Socket server = new Socket(SERVER_IP, SERVER_PORT);
+		nachrichtuebertragen(server);
+	}
+	
+	private void auswahlRealisieren(int eingabe) throws IOException;
+	{
+		switch(eingabe)
+		{
+			case 1:
+				verbindungsaufbau();
+				break;
+			case 2:
+				Socket server = new Socket(SERVER_IP, SERVER_PORT);
+				Scanner antwort  = new Scanner( server.getInputStream() );
+				//Schreibkanal zum Server aufbauen
+				PrintWriter anfrage = new PrintWriter(server.getOutputStream(), true);		
+				//server soll beendet werden
+				anfrage.println("exit");
+				erstelleAusgabe("Server wurde beendet!");
+				anfrage.close();
+				server.close();
+				break;
+			default:
+				System.out.println("Fehlerhafte Eingabe!");
+		}
+	}
+	
+	private void nachrichtUebertragen(Socket server) throws IOException
+	{
+		InputStreamReader isr = new InputStreamreader(System.in);
+		BufferedReader br = new BufferedReader(isr);
+		Scanner antwort  = new Scanner( server.getInputStream() );
+		//Schreibkanal zum Server aufbauen
+		PrintWriter anfrage = new PrintWriter(server.getOutputStream(), true);		
+		//nachricht soll an server gesendet werden
+		System.out.print("Nachricht eingeben: ");
+		nachricht = br.readLine();
+		anfrage.println(nachricht);
+		newclient.erstelleAusgabe(antwort.nextLine());
+		isr.close();
+		br.close();
+		server.close();
+		anfrage.close();
+	}
+	
 	private int zeigeMenue()
 	{
 		//Scanner liste eingabe des Benutzers ein
@@ -34,10 +91,16 @@ public class Client
 				System.out.println("---------------------");
 				System.out.print("Was moechten Sie tun?: ");
 				eingabe = Integer.parseInt(br.readLine());
+				auswahlRealisieren(eingabe);
 			}
-			catch(Exception e)
+			catch(IOException e)
 			{
-				System.out.println("Fehlerhafte Eingabe!");
+				ioe.printStackTrace();
+			}
+			finally
+			{
+				br.close();
+				isr.close();
 			}
 		}
 		return eingabe;
@@ -58,69 +121,15 @@ public class Client
 	/**
 	* Hauptmethode des Servers erwartet als übergabe Parameter den
 	* IP und Port des Servers
-	* @param args ein Parameter für ip und port des servers
+	* @param args ein Parameter für ip und port des server
 	*/
-	public static void main(String[] args) throws IOException, UnknownHostException
+	public static void main(String[] args) throws UnknownHostException
 	{
-		/*
-		* prüfen ob Port übergeben wurde
-		*/
-		if(args.length == 2)
+		Client newclient = new Client();
+		while(newclient.zeigeMenue == 1)
 		{
-			//Dient zum einlesen der nachricht-eingabe des Benutzers ein
-			InputStreamReader isr = new InputStreamReader(System.in);
-			BufferedReader br = new BufferedReader(isr);
-			//Benutzeringabe der Menuauswahl
-			int eingabe = 1;
-			//Nachricht die an den Server gesendet werden soll
-			String nachricht = "";
-			//
-			Client newclient = new Client();
-			//Port wurde mitgeliefert
-			String serverip = args[0];
-		    //IP wurde mitgeliefert
-			int portnr = Integer.parseInt(args[1]);
-      		//Client mit Server socket verbinden
-			//Dem Server eine Nachricht senden
-			while( eingabe == 1 )
-			{
-			
-				eingabe = newclient.zeigeMenue();
-				if(eingabe == 1)
-				{
-					Socket server = new Socket(serverip, portnr);
-					Scanner antwort  = new Scanner( server.getInputStream() );
-					//Schreibkanal zum Server aufbauen
-					PrintWriter anfrage = new PrintWriter(server.getOutputStream(), true);		
-					//nachricht soll an server gesendet werden
-					System.out.print("Nachricht eingeben: ");
-					nachricht = br.readLine();
-					anfrage.println(nachricht);
-					newclient.erstelleAusgabe(antwort.nextLine());
-					//Schreibkanal schliessen
-					anfrage.close();
-					//verbindung zu Server wieder trennen
-					server.close();
-				}
-				else
-				if(eingabe == 2)
-				{
-					Socket server = new Socket(serverip, portnr);
-					Scanner antwort  = new Scanner( server.getInputStream() );
-					//Schreibkanal zum Server aufbauen
-					PrintWriter anfrage = new PrintWriter(server.getOutputStream(), true);		
-					//server soll beendet werden
-					anfrage.println("exit");
-					newclient.erstelleAusgabe("Server wurde beendet!");
-				}
-			}
-			newclient.erstelleAusgabe("Client wurde beendet!");	
 		}
-		else
-		{
-			System.out.println("Zu viele oder zu wenige Parameter!");	
-		}
+		newclient.erstelleAusgabe("Client wurde beendet!");	
 		System.exit(0);
 	}
-	
 }
