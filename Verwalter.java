@@ -12,7 +12,12 @@ import java.util.*;
 
 public class Verwalter
 {
-	
+	/*
+	 *lokale Verbindung fürs erste zum testen. anpassung für mehrere machinen möglich
+	 */
+	private const int serverport = 12345;
+	private const String serverip = "localhost";
+	private const int verwalterport = 6666;
 	/**
 	* Funktion leitet die Nachricht des Clients an den Hauptserver weiter
 	*/
@@ -23,7 +28,6 @@ public class Verwalter
 		//antwort liest die Antwort des Servers
 		Scanner antwort  = new Scanner( server.getInputStream() );
 		//Schreibkanal zum Server aufbauen
-		PrintWriter anfrage = new PrintWriter(server.getOutputStream(), true);		
 		//nachricht soll an Hauptserver gesendet werden
 		anfrage.println(nachricht);
 		//antwort des Servers einlesen
@@ -88,33 +92,21 @@ public class Verwalter
 	*/
 	public static void main(String[] args) throws IOException
 	{
-		/*
-		* prüfen ob Port übergeben wurde
-		*/
-		if(args.length == 3)
+		
+		boolean ende = false;
+		Verwalter newverwalter = new Verwalter();
+		String nachricht = "";
+		ServerSocket ssocket = new ServerSocket(verwalterport);
+		newverwalter.erstelleAusgabe("Server wurde gestartet!");
+		while(!ende)
 		{
-			boolean ende = false;
-			Verwalter newverwalter = new Verwalter();
-			String nachricht = "";
-			//Port wurde mitgeliefert
-			int portnr = Integer.parseInt(args[0]);
-			int serverport = Integer.parseInt(args[2]);
-			String serverip = args[1];
-			ServerSocket ssocket = new ServerSocket(portnr);
-			newverwalter.erstelleAusgabe("Server wurde gestartet!");
-			while(!ende)
-			{
-				//Socket nimmt verbindungen an
-				Socket client = ssocket.accept();
-				ende = newverwalter.bearbeiteAnfrage(client, newverwalter, serverport, serverip);	
-			}
-			ssocket.close();
-			newverwalter.erstelleAusgabe("Server wurde beendet!");
+			//Socket nimmt verbindungen an
+			Socket client = ssocket.accept();
+			ende = newverwalter.bearbeiteAnfrage(client, newverwalter, serverport, serverip);	
 		}
-		else
-		{
-			System.out.println("Zu viele oder zu wenige Parameter!");	
-		}
+		ssocket.close();
+		newverwalter.erstelleAusgabe("Server wurde beendet!");
+	
 		System.exit(0);	
 	}
 
