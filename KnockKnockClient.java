@@ -33,7 +33,7 @@ import java.io.*;
 import java.net.*;
 
 /**
- * Test vom Heinz
+ * Test von Heinz Becker
  */
 public class KnockKnockClient {
     public static void main(String[] args) throws IOException {
