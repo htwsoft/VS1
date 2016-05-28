@@ -1,7 +1,8 @@
 /**
 * Ein kleines Server-Programm in Java
-* @author Marco Palumbo
-* @version 1.0
+* @author mpalumbo
+* @version 1.01
+ * @refact cpatzek / soezdemir
 */
 import java.net.*;
 import java.io.*;
@@ -10,32 +11,20 @@ import java.util.*;
 
 public class Server
 {
+	private static final int PORT_NR = 12345;
+	private String nachricht;
 	/**
 	* Funktion bearbeitet eine CLient-Anfrage
 	* @param client Socket der die Verbindung zum anfragenden Client repräsentiert
 	*/
-	private boolean bearbeiteAnfrage(Socket client, Server newserver) throws IOException
+	private void bearbeiteAnfrage(Socket client) throws IOException
 	{
-		String nachricht = "";
-		Scanner anfrage  = new Scanner( client.getInputStream() );
+		Scanner anfrage  = new Scanner(client.getInputStream());
 		PrintWriter antwort = new PrintWriter(client.getOutputStream(), true);
-		boolean ende = true; //gibt an ob der server beendet werden soll
 		//Client-Text ausgeben
-		nachricht = anfrage.nextLine();
-		if(nachricht.equals("exit"))
-		{
-			newserver.erstelleAusgabe(nachricht);
-			antwort.println("Ok");
-			ende = true;
-		}
-		else
-		{
-			newserver.erstelleAusgabe(nachricht);
-			antwort.println("Ok");
-			ende = false;
-		}
+		erstelleAusgabe(anfrage.nextLine());
+		antwort.println("Ok vom Server // Serverantwort");
 		client.close();
-		return ende;
 	}
 	
 	/**
@@ -56,34 +45,29 @@ public class Server
 	* Port des Servers
 	* @param args ein Parameter für port des servers
 	*/
-	public static void main(String[] args) throws IOException
+	public static void main(String[] args)
 	{
-		/*
-		* prüfen ob Port übergeben wurde
-		*/
-		if(args.length == 2)
+		boolean isrunning = false;
+		try
 		{
-			boolean ende = false;
 			Server newserver = new Server();
-			//Port wurde mitgeliefert
-			int portnr = Integer.parseInt(args[0]);
-			ServerSocket ssocket = new ServerSocket(portnr);
+			ServerSocket ssocket = new ServerSocket(PORT_NR);
 			newserver.erstelleAusgabe("Server wurde gestartet!");
-			while(!ende)
+			isrunning = true;
+			while(isrunning)
 			{
 				//Socket nimmt verbindungen an
 				Socket client = ssocket.accept();
-				ende = newserver.bearbeiteAnfrage(client, newserver);
-				
+				newserver.bearbeiteAnfrage(client);
 			}
 			ssocket.close();
 			newserver.erstelleAusgabe("Server wurde beendet!");
+			isrunning = false;
 		}
-		else
+		catch(IOException e)
 		{
-			System.out.println("Zu viele oder zu wenige Parameter!");	
+			e.printStackTrace();
 		}
 		System.exit(0);
 	}
-	
 }
