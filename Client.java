@@ -2,7 +2,7 @@
 * Ein kleines Client-Programm in Java
 * @author mpalumbo
 * @version 1.01
- * @refact cpatzek / soezdemir
+* @refact cpatzek / soezdemir //
 */
 import java.net.*;
 import java.io.*;

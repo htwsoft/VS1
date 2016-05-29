@@ -4,7 +4,7 @@
 * und die Antwort des Servers an den Client weiterleitet
 * @author mpalumbo
 * @version 1.01
- * @refact cpatzek / soezdemir
+* @refact cpatzek / soezdemir //
 */
 import java.net.*;
 import java.io.*;
