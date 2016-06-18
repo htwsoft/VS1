@@ -12,6 +12,10 @@ public class RMIVerwalter implements Nachricht
 {
     private static final int VERWALTER_PORT = 6666;
 
+    private RMIVerwalter()
+    {
+        super();
+    }
     public String nachricht(String auswahl)
     {
         switch(auswahl)
@@ -35,13 +39,17 @@ public class RMIVerwalter implements Nachricht
 
     public static void main(String[] args)
     {
+        if (System.getSecurityManager() == null)
+        {
+            System.setSecurityManager(new SecurityManager());
+        }
         try
         {
             RMIVerwalter verwalter = new RMIVerwalter();
 
             Nachricht stub = (Nachricht) UnicastRemoteObject.exportObject(verwalter, VERWALTER_PORT);
             Registry registry = LocateRegistry.getRegistry();
-            registry.bind("Hello", stub);
+            registry.rebind("Hello", stub);
         }
         catch(Exception e)
         {
