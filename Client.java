@@ -15,7 +15,7 @@ public class Client
 	private static final int SERVER_PORT = 6666;
 	private static final String SERVER_IP = "localhost";
 	//Nachricht die an den Server gesendet werden soll
-	private String nachricht;
+	//private String nachricht;
 	//Dient zum einlesen der nachricht-eingabe des Benutzers ein
 	//private static InputStreamReader isr = new InputStreamreader(System.in);
 	//private static BufferedReader br = new BufferedReader(isr);
@@ -56,6 +56,7 @@ public class Client
 	
 	private void nachrichtUebertragen(Socket server) throws IOException
 	{
+		String nachricht = "";
 		InputStreamReader isr = new InputStreamReader(System.in);
 		BufferedReader br = new BufferedReader(isr);
 		Scanner antwort  = new Scanner( server.getInputStream() );
@@ -78,7 +79,7 @@ public class Client
 	private int zeigeMenue()
 	{ 	//Scanner liste eingabe des Benutzers ein
 		BufferedReader input;
-		String nachricht;
+		//String nachricht;
 		int eingabe = -1;
 		while(eingabe != 2)
 		{
