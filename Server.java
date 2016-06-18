@@ -17,7 +17,7 @@ import java.util.*;
 public class Server
 {
 	private static final int PORT_NR = 12345;
-	private String nachricht;
+	//private String nachricht;
 	/**
 	* Funktion bearbeitet eine CLient-Anfrage
 	* @param client Socket der die Verbindung zum anfragenden Client repräsentiert
