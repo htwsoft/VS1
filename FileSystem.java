@@ -73,17 +73,18 @@ public class FileSystem
 	
 	public void search(String dir) throws IOException
 	{
-		DirWatcher dw = new DirWatcher(); //Eigene Klasse DirWatcher zum durchlaufen des Ordners
 		Path path = Paths.get(dir); //Ordner der durchsucht werden soll
 		//Iintialisieren des Durchlaufs
-		dw.initWalkFileTree();
-		//Pfad durchlaufen
-		Files.walkFileTree(path, dw);
 		
-		/*
-			Eventuell selber Ablauf wie bei browse()?
+		if( Files.exists(path, LinkOption.NOFOLLOW_LINKS))
+		{
+			System.out.println("Suche erfolgreich!");
 		
-		*/
+		}
+		else
+		{
+			System.out.println("Dateien/Ordner nicht gefunden!");
+		}
 		
 			
 		

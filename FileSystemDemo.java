@@ -70,7 +70,19 @@ public class FileSystemDemo
 	
 	private void search()
 	{
-		//this.fs.search();
+	
+		String pfad = "";
+		Scanner eingabe = new Scanner(System.in);
+		System.out.print("Was soll gesucht werden?: ");
+		pfad = eingabe.nextLine();
+		try
+		{
+			this.fs.search(pfad);
+		}
+		catch(IOException e)
+		{
+			System.out.println("Fehler: " + e.getMessage());	
+		}			
 	}
 
 	private void create()
