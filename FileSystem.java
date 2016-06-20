@@ -7,6 +7,7 @@
 import java.io.*;
 import java.nio.*;
 import java.nio.file.*;
+import static java.nio.file.StandardCopyOption.*;
 
 /**
 * Klasse Filesystem dient zur leichteren Kommunikation/ Darstellung
@@ -27,6 +28,7 @@ public class FileSystem
 		this.osname = System.getProperty("os.name");
 		this.dirListe = null;
 		this.fileListe = null;
+
 	}
 	
 	/**
@@ -69,24 +71,87 @@ public class FileSystem
 		}
 	}
 	
-	public void search()
+	public void search(String dir) throws IOException
 	{
-		System.out.println(" Noch nicht implementiert!");
+		DirWatcher dw = new DirWatcher(); //Eigene Klasse DirWatcher zum durchlaufen des Ordners
+		Path path = Paths.get(dir); //Ordner der durchsucht werden soll
+		//Iintialisieren des Durchlaufs
+		dw.initWalkFileTree();
+		//Pfad durchlaufen
+		Files.walkFileTree(path, dw);
+		
+		/*
+			Eventuell selber Ablauf wie bei browse()?
+		
+		*/
+		
+			
+		
+		
 	}
 	
-	public void create()
+	public void create(String dir, String typ) throws IOException
 	{
-		System.out.println(" Noch nicht implementiert!");
+	
+		Path path = Paths.get(dir); //Ordner der durchsucht werden soll
+		if( Files.exists(path, LinkOption.NOFOLLOW_LINKS))
+		{
+			System.out.println("Ist schon vorhanden!");
+		
+		}
+		else
+		{
+			if(typ.equalsIgnoreCase("dir"))
+			{
+				Files.createDirectory(path);
+			}
+			else
+			if(typ.equalsIgnoreCase("file"))
+			{
+				Files.createFile(path);
+			}
+			else
+			{
+			
+			}
+		}
+
 	}
 	
-	public void delete()
+	public void delete(String dir) throws IOException
 	{
-		System.out.println(" Noch nicht implementiert!");
+		
+		Path path = Paths.get(dir); //Ordner der durchsucht werden soll
+		if( !Files.exists(path, LinkOption.NOFOLLOW_LINKS))
+		{
+			System.out.println("Gibt es nicht!");
+		
+		}
+		else
+		{
+			Files.delete(path);
+		}
+		
 	}
 	
-	public void rename()
+	public void rename(String oldName, String newName) throws IOException
 	{
-		System.out.println(" Noch nicht implementiert!");
+		Path pathOld = Paths.get(oldName); //Ordner der durchsucht werden soll
+		
+		if( !Files.exists(pathOld, LinkOption.NOFOLLOW_LINKS))
+		{
+			System.out.println("Gibt es nicht!");
+		
+		}
+		else
+		{
+			Path pathNew = Paths.get(newName);
+			CopyOption[] options = new CopyOption[] { COPY_ATTRIBUTES, REPLACE_EXISTING };
+			Files.copy(pathOld, pathNew, options);
+			Files.delete(pathOld);
+		}
+
+	
 	}	
 	
 	/**
