@@ -1,6 +1,6 @@
 /**
 * Klasse zum Darstellen eines Dateisystems
-* @author Marco Palumbo
+* @author Marco Palumbo, Nadine Breitenstein
 * @version 1.0
 */
 
@@ -71,33 +71,29 @@ public class FileSystem
 		}
 	}
 	
-	public void search(String dir) throws IOException
+	public boolean search(String dir) throws IOException
 	{
 		Path path = Paths.get(dir); //Ordner der durchsucht werden soll
 		//Iintialisieren des Durchlaufs
 		
 		if( Files.exists(path, LinkOption.NOFOLLOW_LINKS))
 		{
-			System.out.println("Suche erfolgreich!");
+			return true;
 		
 		}
 		else
 		{
-			System.out.println("Dateien/Ordner nicht gefunden!");
+			return false;
 		}
-		
-			
-		
-		
 	}
 	
-	public void create(String dir, String typ) throws IOException
+	public boolean create(String dir, String typ) throws IOException
 	{
-	
+		boolean returnWert = false;
 		Path path = Paths.get(dir); //Ordner der durchsucht werden soll
 		if( Files.exists(path, LinkOption.NOFOLLOW_LINKS))
 		{
-			System.out.println("Ist schon vorhanden!");
+			returnWert = false;
 		
 		}
 		else
@@ -105,43 +101,41 @@ public class FileSystem
 			if(typ.equalsIgnoreCase("dir"))
 			{
 				Files.createDirectory(path);
+				returnWert = true;
 			}
 			else
 			if(typ.equalsIgnoreCase("file"))
 			{
 				Files.createFile(path);
+				returnWert = true;
 			}
 			else
 			{
-			
+				returnWert = false;
 			}
+			
 		}
-
+		return returnWert;
 	}
 	
 	public void delete(String dir) throws IOException
 	{
 		
 		Path path = Paths.get(dir); //Ordner der durchsucht werden soll
-		if( !Files.exists(path, LinkOption.NOFOLLOW_LINKS))
-		{
-			System.out.println("Gibt es nicht!");
-		
-		}
-		else
+		if( Files.exists(path, LinkOption.NOFOLLOW_LINKS) )
 		{
 			Files.delete(path);
 		}
 		
 	}
 	
-	public void rename(String oldName, String newName) throws IOException
+	public boolean rename(String oldName, String newName) throws IOException
 	{
 		Path pathOld = Paths.get(oldName); //Ordner der durchsucht werden soll
 		
 		if( !Files.exists(pathOld, LinkOption.NOFOLLOW_LINKS))
 		{
-			System.out.println("Gibt es nicht!");
+			return false;
 		
 		}
 		else
@@ -150,6 +144,7 @@ public class FileSystem
 			CopyOption[] options = new CopyOption[] { COPY_ATTRIBUTES, REPLACE_EXISTING };
 			Files.copy(pathOld, pathNew, options);
 			Files.delete(pathOld);
+			return true;
 		}
 
 	
