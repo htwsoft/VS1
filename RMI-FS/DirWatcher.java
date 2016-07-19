@@ -24,8 +24,8 @@ public class DirWatcher extends SimpleFileVisitor<Path>
 	private Path [] fileListe; //Liste mit gefundenen Dateien
 	private Path [] dirListe; //Liste mit gefundenen Ordnern
 	private boolean istStartOrdner; //gibt an ob das der erste Ordner beim durchlauf ist,
-									//da mit dem übergebenen Ordner angefangen wird.
-									//Benötigt da sonst alle Unterordner voll durchlaufen werden	
+					//da mit dem übergebenen Ordner angefangen wird.
+					//Benötigt da sonst alle Unterordner voll durchlaufen werden	
 	/**
 	* Konstruktor der DirWatch Klasse
 	* Initialisiert die internen Variablen
@@ -147,9 +147,9 @@ public class DirWatcher extends SimpleFileVisitor<Path>
 	*/
     @Override public FileVisitResult visitFileFailed(Path file, IOException exc) 
 	{
-        System.err.println(exc);
-        return CONTINUE;
-    }		
+		//System.err.println(exc);
+		return CONTINUE;
+	}		
 	
 	/**
 	* Prozedur liefert die Anzahl der gefundenen Dateien zurück

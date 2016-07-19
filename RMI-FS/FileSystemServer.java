@@ -32,6 +32,7 @@ public class FileSystemServer implements FSInterface
 	{
 		Path [] dirListe = null;
 		String ergListe = "";
+		System.out.println("Funktion: browseDirs - Param: " + dir);
 		try
 		{
 			this.fs.browse(dir);
@@ -47,12 +48,19 @@ public class FileSystemServer implements FSInterface
 					ergListe = ergListe + dirListe[i];
 				}	
 			}
-			return ergListe;
+			//prüfen ob ein Ordner gefunden wurde
+			//wenn nicht ist ergListe = dir
+			if( ergListe.equals(dir) )
+			{
+				ergListe = "";
+			}
 		}
 		catch(Exception e)
 		{
 			ergListe = "";
+			System.out.println("Funktion: " + e.toString());
 		}
+		System.out.println("Return: \"" + ergListe + "\"");
 		return ergListe;
 	}
 
@@ -61,13 +69,14 @@ public class FileSystemServer implements FSInterface
 	* @param file Ordner der durchsucht werden soll 
 	* @return einen String mit allen gefunden Dateien durch ";" getrennt
 	*/	
-	public String browseFiles(String dir) throws RemoteException
+	public String browseFiles(String file) throws RemoteException
 	{
 		Path [] fileListe = null;
 		String ergListe = "";
+		System.out.println("Funktion: browseFiles - Param: " + file);
 		try
 		{
-			this.fs.browse(dir);
+			this.fs.browse(file);
 			fileListe = this.fs.getFileListe();
 			for(int i=0; i<fileListe.length; i++)
 			{
@@ -80,30 +89,63 @@ public class FileSystemServer implements FSInterface
 					ergListe = ergListe + fileListe[i];
 				}		
 			}
+			//prüfen ob eine Datei gefunden wurde
+			//wenn nicht ist ergListe = file
+			if( ergListe.equals(file) )
+			{
+				ergListe = "";
+			}
 		}
 		catch(Exception e)
 		{
 			ergListe = "";
+			System.out.println("Fehler: " + e.toString());
 		}
+		System.out.println("Return: \"" + ergListe + "\"");
 		return ergListe;
 	}
 	
 	/**
-	* Funktion sucht eine uebergeben Datei oder einen Ordner
-	* @param file Ordner/Datei der/die gesucht werden soll
-	* @return True wenn die Datei gefunden wurde
+	* Funktion sucht nach der übergebenen Datei ab dem angegebenen Ordner
+	* @param file Datei nach der gesucht werden soll
+	* @param startDir Ordner ab dem die Datei gesucht werden soll
+	* @return Liste mit Dateien die auf den Such-String passen mit ";" getrennt
 	*/
-	public boolean search(String file) throws RemoteException
+	public String search(String file, String startDir) throws RemoteException
 	{
+		System.out.println("Funktion: search - Params: " + file + ", " + startDir);
+		
+		Path [] fileListe = null;
+		String ergListe = "";
 		try
-		{
-			return this.fs.search(file);
+		{	
+			//search liefert true zurueck wenn mindestens eine Datei 
+			//gefunden wurde
+			if( this.fs.search(file, startDir) )
+			{
+				//Gefundene Dateien speichern und als String
+				//zurück liefern
+				fileListe = this.fs.getFileListe();
+				for(int i=0; i<fileListe.length; i++)
+				{
+					if(i>0)
+					{
+						ergListe = ergListe + ";" + fileListe[i] ;
+					}
+					else
+					{
+						ergListe = ergListe + fileListe[i];
+					}
+				}
+			}
 		}
 		catch(Exception e)
 		{
-			return false;	
-		}	
-	
+			ergListe = "";
+			System.out.println("Fehler: " + e.toString());
+		}
+		System.out.println("Return: \"" + ergListe + "\"");
+		return ergListe;
 	}
 	
 	/**
@@ -113,14 +155,20 @@ public class FileSystemServer implements FSInterface
 	*/	
 	public boolean createFile(String file) throws RemoteException
 	{
+		boolean fileCreated;
+		System.out.println("Funktion: createFile - Param: " + file);
 		try
 		{
-			return this.fs.create(file, "file");
+			fileCreated = this.fs.create(file, "file");
 		}
 		catch(Exception e)
 		{
-			return false;	
-		}	
+			System.out.println("Fehler: " + e.toString());
+			fileCreated = false;
+			
+		}
+		System.out.println("Return: " + fileCreated);
+		return fileCreated;
 	}
 	
 	/**
@@ -130,14 +178,20 @@ public class FileSystemServer implements FSInterface
 	*/		
 	public boolean createDir(String dir) throws RemoteException
 	{
+		boolean dirCreated;
+		System.out.println("Funktion: createDir - Param: " + dir);
 		try
 		{
-			return this.fs.create(dir, "dir");
+			dirCreated = this.fs.create(dir, "dir");
 		}
 		catch(Exception e)
 		{
-			return false;
-		}		
+			System.out.println("Fehler: " + e.toString());
+			dirCreated = false;
+			
+		}
+		System.out.println("Return: \"" + dirCreated + "\"");
+		return dirCreated;
 	}
 	
 	/**
@@ -147,15 +201,19 @@ public class FileSystemServer implements FSInterface
 	*/		
 	public boolean delete(String file) throws RemoteException
 	{
+		boolean fileDeleted;
+		System.out.println("Funktion: delete - Param: " + file);
 		try
 		{
-			this.fs.delete(file);
-			return true;
+			fileDeleted = this.fs.delete(file);
 		}
 		catch(Exception e)
 		{
-			return false;	
-		}		
+			System.out.println("Fehler: " + e.toString());
+			fileDeleted = false;	
+		}
+		System.out.println("Return: \"" + fileDeleted + "\"");
+		return fileDeleted;
 	}
 	
 	/**
@@ -166,14 +224,20 @@ public class FileSystemServer implements FSInterface
 	*/	
 	public boolean rename(String oldName, String newName) throws RemoteException
 	{
+		boolean fileRenamed;
+		System.out.println("Funktion: rename - Params: " + oldName + ", " + newName);
 		try
 		{
-			return this.fs.rename(oldName, newName);
+			fileRenamed = this.fs.rename(oldName, newName);
 		}
 		catch(IOException e)
 		{
-			return false;	
-		}		
+			System.out.println("Fehler: " + e.toString());
+			fileRenamed = false;
+			
+		}
+		System.out.println("Return: \"" + fileRenamed + "\"");
+		return fileRenamed;
 	}
 	
 	/**
@@ -182,7 +246,11 @@ public class FileSystemServer implements FSInterface
 	*/		
 	public String getOSName()throws RemoteException
 	{
-		return this.fs.getOSName();
+		System.out.println("Funktion: getOSName");
+		String osName;
+		osName = this.fs.getOSName();
+		System.out.println("Return: \"" + osName + "\"");
+		return osName;		
 	}
 	
 	/**
@@ -191,6 +259,7 @@ public class FileSystemServer implements FSInterface
 	*/
 	public String getFileListe() throws RemoteException
 	{
+		System.out.println("Funktion: getFileListe");
 		Path [] fileListe = null;
 		String ergListe = "";
 		try
@@ -204,7 +273,9 @@ public class FileSystemServer implements FSInterface
 		catch(Exception e)
 		{
 			ergListe = "";
+			System.out.println("Fehler: " + e.toString());
 		}
+		System.out.println("Return: \"" + ergListe + "\"");
 		return ergListe;
 	}
 	
@@ -214,6 +285,7 @@ public class FileSystemServer implements FSInterface
 	*/	
 	public String getDirListe() throws RemoteException
 	{
+		System.out.println("Funktion: getDirListe");
 		Path [] dirListe = null;
 		String ergListe = "";
 		try
@@ -227,7 +299,9 @@ public class FileSystemServer implements FSInterface
 		catch(Exception e)
 		{
 			ergListe = "";
+			System.out.println("Fehler: " + e.toString());
 		}
+		System.out.println("Return: \"" + ergListe + "\"");
 		return ergListe;	
 	}
 	
