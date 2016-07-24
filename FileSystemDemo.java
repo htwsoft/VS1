@@ -70,22 +70,70 @@ public class FileSystemDemo
 	
 	private void search()
 	{
-		this.fs.search();
+	
+		String pfad = "";
+		Scanner eingabe = new Scanner(System.in);
+		System.out.print("Was soll gesucht werden?: ");
+		pfad = eingabe.nextLine();
+		try
+		{
+			this.fs.search(pfad);
+		}
+		catch(IOException e)
+		{
+			System.out.println("Fehler: " + e.getMessage());	
+		}			
 	}
 
 	private void create()
 	{
-		this.fs.create();
+		String pfad = "";
+		Scanner eingabe = new Scanner(System.in);
+		System.out.print("Welcher Ordner soll erstellt werden?: ");
+		pfad = eingabe.nextLine();
+		try
+		{
+			this.fs.create(pfad, "file");
+		}
+		catch(IOException e)
+		{
+			System.out.println("Fehler: " + e.getMessage());	
+		}			
 	}
 
 	private void delete()
 	{
-		this.fs.delete();
+		String pfad = "";
+		Scanner eingabe = new Scanner(System.in);
+		System.out.print("Welcher Ordner soll gelöscht werden?: ");
+		pfad = eingabe.nextLine();
+		try
+		{
+			this.fs.delete(pfad);
+		}
+		catch(IOException e)
+		{
+			System.out.println("Fehler: " + e.getMessage());	
+		}	
 	}
 
 	private void rename()
 	{
-		this.fs.rename();
+		String oldName = "";
+		String newName = "";
+		Scanner eingabe = new Scanner(System.in);
+		System.out.print("Welcher Ordner soll umbenannt werden?: ");
+		oldName = eingabe.nextLine();
+		System.out.print("Welcher Zielname?: ");
+		newName = eingabe.nextLine();
+		try
+		{
+			this.fs.rename(oldName, newName);
+		}
+		catch(IOException e)
+		{
+			System.out.println("Fehler: " + e.getMessage());	
+		}	
 	}	
 	
 	private void osname()

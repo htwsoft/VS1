@@ -35,7 +35,7 @@ public class FileSystem
 	* Prozedur durchsucht einen Ordner auf dessen Inhalt
 	* und speichert die Daten in einer Dir- und FileListe
 	* Wenn keine Datei oder Ordner gefunden wurden wird der übergebene Pfad gespeichert
-	* @param String mit dem Ordnernamen der Untersucht werden soll (vollständiger Pfad)
+	* @param dir mit dem Ordnernamen der Untersucht werden soll (vollständiger Pfad)
 	*/
 	public void browse(String dir) throws IOException
 	{
@@ -70,19 +70,32 @@ public class FileSystem
 			this.fileListe[0] = path;
 		}
 	}
-	
-	public boolean search(String dir) throws IOException
+	/**
+	* Funktion sucht nach der übergebenen Datei ab dem angegebenen Ordner
+	* @param file Datei nach der gesucht werden soll
+	* @param startDir Ordner ab dem die Datei gesucht werden soll
+	* @return true wenn mindestens eine Datei gefunden wurde sonst false
+	*/
+	public boolean search(String file, String startDir) throws IOException
 	{
-		Path path = Paths.get(dir); //Ordner der durchsucht werden soll
-		//Iintialisieren des Durchlaufs
+		Finder finder = new Finder(file); //Eigene Klasse DirWatcher zum durchlaufen des Ordners
+		Path startPath = Paths.get(startDir); //Ordner der durchsucht werden soll
 		
-		if( Files.exists(path, LinkOption.NOFOLLOW_LINKS))
+		//Pfad durchlaufen
+		Files.walkFileTree(startPath, finder);
+		//Prüfen ob Dateien gefunden wurde
+		if(finder.getNumMatches() > 0 )
 		{
+			//Alle Datein die gefunden wurde in die FileListe schreiben
+			this.fileListe = finder.getFoundFiles();
 			return true;
-		
 		}
 		else
 		{
+			//Keine Dateien gefunden. Indem Fall wird der übergebene
+			//Pfad zurückgeliefert
+			this.fileListe = new Path[1]; 
+			this.fileListe[0] = startPath;
 			return false;
 		}
 	}
@@ -118,15 +131,25 @@ public class FileSystem
 		return returnWert;
 	}
 	
-	public void delete(String dir) throws IOException
+	public boolean delete(String dir)
 	{
-		
-		Path path = Paths.get(dir); //Ordner der durchsucht werden soll
-		if( Files.exists(path, LinkOption.NOFOLLOW_LINKS) )
+		try
 		{
-			Files.delete(path);
+			Path path = Paths.get(dir); //Ordner der durchsucht werden soll
+			if( Files.exists(path, LinkOption.NOFOLLOW_LINKS) )
+			{
+				Files.delete(path);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
-		
+		catch(Exception e)
+		{
+			return false;
+		}
 	}
 	
 	public boolean rename(String oldName, String newName) throws IOException
