@@ -3,11 +3,12 @@
 * @author Marco Palumbo
 * @version 1.0
 */
+package RMIFS;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-public interface FSInterface extends java.rmi.Remote 
+interface FSInterface extends Remote
 {
 	public String browseDirs(String dir) throws RemoteException;
 	public String browseFiles(String dir) throws RemoteException;

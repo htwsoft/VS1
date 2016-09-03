@@ -1,7 +1,7 @@
+package RMIFS;
+
 import java.io.*;
 import java.util.*;
-import java.nio.*;
-import java.nio.file.*;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -11,8 +11,8 @@ import java.rmi.registry.Registry;
 
 public class FileSystemClient
 {
-	private FSInterface fsserver;
-	enum MENUE { CLOSE, FALSE, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE, RENAME, OS_NAME };
+	private VerwalterInterface vserver;
+	private enum MENUE { CLOSE, LIST, FALSE, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE, RENAME, OS_NAME };
 	/**
 	* Hauptmethode der Demo
 	* startet eine Menue
@@ -27,7 +27,7 @@ public class FileSystemClient
 		try 
 		{
 			serverPort = Integer.parseInt(args[0]);	
-			fsc = new FileSystemClient(serverPort);		
+			fsc = new FileSystemClient(serverPort, args[1]);
 			while(meue_eingabe != MENUE.CLOSE)
 			{
 				eingabe = fsc.zeigeMenue();
@@ -35,6 +35,7 @@ public class FileSystemClient
 				switch(meue_eingabe)
 				{
 					case CLOSE: System.out.println("Programm wurde beendet!"); break;
+					case LIST: fsc.list(); break;
 					case BROWSE: fsc.browse(); break;
 					case SEARCH: fsc.search(); break;
 					case CREATE_DIR: fsc.createDir(); break;
@@ -74,15 +75,16 @@ public class FileSystemClient
 	/**
 	* Konstruktor 
 	* erzeugt eine FileSystem-Klasse
+	 * host und portNr lösen den Verwalter-Server des lokalen Systems auf
 	*/
-	public FileSystemClient(int portNr) throws RemoteException, NotBoundException
+	public FileSystemClient(int portNr, String host) throws RemoteException, NotBoundException
 	{
 		if (System.getSecurityManager() == null) 
 		{
 			System.setSecurityManager(new SecurityManager());
 		}
-		Registry registry = LocateRegistry.getRegistry(portNr);
-		this.fsserver = (FSInterface) registry.lookup("FileSystemServer");		
+		Registry registry = LocateRegistry.getRegistry(host, portNr);
+		this.vserver = (VerwalterInterface) registry.lookup("VerwalterServer");
 	}
 	
 	/**
@@ -100,10 +102,10 @@ public class FileSystemClient
 		pfad = eingabe.nextLine();
 		try
 		{
-			erg = this.fsserver.browseDirs(pfad);
+			erg = this.vserver.browseDirs(pfad);
 			dirListe = erg.split("[;]");		
 			
-			erg = this.fsserver.browseFiles(pfad);
+			erg = this.vserver.browseFiles(pfad);
  			fileListe = erg.split("[;]");
  			
 			System.out.println("File-Liste");
@@ -139,15 +141,21 @@ public class FileSystemClient
 		startDir = eingabe.nextLine();
 		try
 		{
-			erg = this.fsserver.search(pfad, startDir);
-			fileListe = erg.split("[;]");
-			System.out.println("Found-Files");
-			System.out.println("---------------------------------------------------------------");
-			for(int i=0; i<fileListe.length; i++)
+			erg = this.vserver.search(pfad, startDir);
+			if(erg.contains("Nicht gefunden,"))
 			{
-				System.out.println(fileListe[i]);
+				System.out.println(erg);
 			}
-			
+			else
+			{
+				fileListe = erg.split("[;]");
+				System.out.println("Found-Files");
+				System.out.println("---------------------------------------------------------------");
+				for(int i=0; i<fileListe.length; i++)
+				{
+					System.out.println(fileListe[i]);
+				}
+			}
 		}
 		catch(IOException e)
 		{
@@ -163,7 +171,7 @@ public class FileSystemClient
 		pfad = eingabe.nextLine();
 		try
 		{
-			if( this.fsserver.createDir(pfad) )
+			if( this.vserver.createDir(pfad) )
 			{
 				System.out.println("Ordner wurde erstellt!");	
 			}
@@ -186,7 +194,7 @@ public class FileSystemClient
 		pfad = eingabe.nextLine();
 		try
 		{
-			if( this.fsserver.createFile(pfad) )
+			if( this.vserver.createFile(pfad) )
 			{
 				System.out.println("Datei wurde erstellt!");	
 			}
@@ -209,7 +217,7 @@ public class FileSystemClient
 		pfad = eingabe.nextLine();
 		try
 		{
-			if( this.fsserver.delete(pfad) )
+			if( this.vserver.delete(pfad) )
 			{
 				System.out.println("Ordner oder Datei wurde geloescht!");
 			}
@@ -235,7 +243,7 @@ public class FileSystemClient
 		newName = eingabe.nextLine();
 		try
 		{
-			if( this.fsserver.rename(oldName, newName) )
+			if( this.vserver.rename(oldName, newName) )
 			{
 				System.out.println("Ordner oder Datei wurde umbenannt!");
 			}
@@ -255,7 +263,7 @@ public class FileSystemClient
 		try
 		{
 			System.out.println("|-------------------------------------------------");
-			System.out.println("| Verwendetes OS: " + this.fsserver.getOSName());
+			System.out.println("| Verwendetes OS: " + this.vserver.getOSName());
 			System.out.println("|-------------------------------------------------");
 		}
 		catch(Exception e)
@@ -284,13 +292,14 @@ public class FileSystemClient
 				System.out.println("---------------------");
 				System.out.println("Menue:");
 				System.out.println("0: Beenden");
-				System.out.println("1: Browse");
-				System.out.println("2: Search");
-				System.out.println("3: Create Dir");
-				System.out.println("4: Create File");
-				System.out.println("5: Delete");
-				System.out.println("6: Rename");
-				System.out.println("7: OS-Name");
+				System.out.println("1: Server List");
+				System.out.println("2: Browse");
+				System.out.println("3: Search");
+				System.out.println("4: Create Dir");
+				System.out.println("5: Create File");
+				System.out.println("6: Delete");
+				System.out.println("7: Rename");
+				System.out.println("8: OS-Name");
 				System.out.println("---------------------");
 				System.out.print("Was moechten Sie tun?: ");
 				eingabe = Integer.parseInt(br.readLine());
@@ -302,5 +311,22 @@ public class FileSystemClient
 		}
 		System.out.println("");
 		return eingabe;
-	}	
+	}
+
+	/**
+	 * Fragt die verfuegbaren VerwalterServer ab, also deren Name und IP
+     */
+	private void list()
+	{
+		String serverListe;
+		try
+		{
+			serverListe = vserver.getServerList();
+			System.out.println(serverListe);
+		}
+		catch(Exception e)
+		{
+			System.out.println("Fehler: "+ e.getMessage());
+		}
+	}
 }

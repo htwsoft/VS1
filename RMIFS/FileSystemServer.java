@@ -4,6 +4,8 @@
 * @version 1.0
 */
 
+package RMIFS;
+
 import java.io.*;
 import java.nio.*;
 import java.nio.file.*;
@@ -21,13 +23,14 @@ import java.util.*;
 public class FileSystemServer implements FSInterface
 {
 	private FileSystem fs = new FileSystem();
-	public static FSInterface fsserver = new FileSystemServer();
+	//public static FSInterface fsserver = new FileSystemServer();
 	
 	/**
 	* Funktion sucht alle Ordner eines angegebenen Directory
 	* @param dir Ordner der durchsucht werden soll 
 	* @return einen String mita allen gefunden Ordner durch ";" getrennt
 	*/
+	public FileSystemServer(){super();}
 	public String browseDirs(String dir) throws RemoteException
 	{
 		Path [] dirListe = null;
@@ -323,8 +326,9 @@ public class FileSystemServer implements FSInterface
 				{
 					System.setSecurityManager ( new SecurityManager() );
 				}
+				FileSystemServer fsServer = new FileSystemServer();
 				//Stellt das Objekt dem System zur Verfügung
-				FSInterface stub = (FSInterface) UnicastRemoteObject.exportObject(fsserver, serverPort);
+				FSInterface stub = (FSInterface) UnicastRemoteObject.exportObject(fsServer, serverPort);
 				//Registry erstellen um Objekt ansprechen zu können
 				Registry registry =  LocateRegistry.createRegistry(serverPort);
 				//Objekt an registry binden
