@@ -24,7 +24,7 @@ public class VerwalterServer implements VerwalterInterface {
     /**
      * PORT_NR entspricht dem gebundenen Port des FileServers
      */
-    private final static int PORT_NR = 1090;
+    private final static int PORT_NR = 4711;
 
     /**
      * Konstruktor, baut Verbindung zum lokalen FileServer auf
@@ -81,6 +81,7 @@ public class VerwalterServer implements VerwalterInterface {
      * @param file Name der Datei
      * @param startDir Name des StartDirectories
      * @return Entweder die Angabe, dass keine Datei gefunden wurde, oder die Dateien die gefunden wurden
+     *         und weitere Rueckgabe von Server Liste
      * @throws RemoteException
      */
     public String search(String file, String startDir) throws RemoteException

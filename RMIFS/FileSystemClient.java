@@ -11,7 +11,7 @@ import java.rmi.registry.Registry;
 
 public class FileSystemClient
 {
-	private VerwalterInterface vserver;
+	private VerwalterInterface vserver;  //Attribute zum Zugriff auf Verwalter Server Funktion
 	private enum MENUE { CLOSE, LIST, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE, RENAME, OS_NAME, FALSE };
 	/**
 	* Hauptmethode der Demo
@@ -23,16 +23,16 @@ public class FileSystemClient
 		FileSystemClient fsc = null;
 		int serverPort = 0;
 		int eingabe = -1;
-		MENUE meue_eingabe = MENUE.FALSE;
+		MENUE menue_eingabe = MENUE.FALSE;
 		try 
 		{
 			serverPort = Integer.parseInt(args[0]);	
 			fsc = new FileSystemClient(serverPort, args[1]);
-			while(meue_eingabe != MENUE.CLOSE)
+			while(menue_eingabe != MENUE.CLOSE)
 			{
 				eingabe = fsc.zeigeMenue();
-				meue_eingabe = fsc.intToMenue(eingabe);
-				switch(meue_eingabe)
+				menue_eingabe = fsc.intToMenue(eingabe);
+				switch(menue_eingabe)
 				{
 					case CLOSE: System.out.println("Programm wurde beendet!"); break;
 					case LIST: fsc.list(); break;
@@ -56,21 +56,21 @@ public class FileSystemClient
 	
 	public MENUE intToMenue(int eingabe)
 	{
-		MENUE meue_eingabe = MENUE.FALSE;
+		MENUE menue_eingabe = MENUE.FALSE;
 		switch(eingabe)
 		{		
-			case 0: meue_eingabe = MENUE.CLOSE; break;
-			case 1: meue_eingabe = MENUE.LIST; break;
-			case 2: meue_eingabe = MENUE.BROWSE; break;
-			case 3: meue_eingabe = MENUE.SEARCH; break;
-			case 4: meue_eingabe = MENUE.CREATE_DIR; break;
-			case 5: meue_eingabe = MENUE.CREATE_FILE; break;
-			case 6: meue_eingabe = MENUE.DELETE; break;
-			case 7: meue_eingabe = MENUE.RENAME; break;
-			case 8: meue_eingabe = MENUE.OS_NAME; break;
-			default: meue_eingabe = MENUE.FALSE; break;
+			case 0: menue_eingabe = MENUE.CLOSE; break;
+			case 1: menue_eingabe = MENUE.LIST; break;
+			case 2: menue_eingabe = MENUE.BROWSE; break;
+			case 3: menue_eingabe = MENUE.SEARCH; break;
+			case 4: menue_eingabe = MENUE.CREATE_DIR; break;
+			case 5: menue_eingabe = MENUE.CREATE_FILE; break;
+			case 6: menue_eingabe = MENUE.DELETE; break;
+			case 7: menue_eingabe = MENUE.RENAME; break;
+			case 8: menue_eingabe = MENUE.OS_NAME; break;
+			default: menue_eingabe = MENUE.FALSE; break;
 		}
-		return meue_eingabe;
+		return menue_eingabe;
 	}
 	
 	/**
