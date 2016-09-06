@@ -5,7 +5,7 @@
 * @version 1.0
 */
 
-//package RMIFS;
+package RMIFS;
 
 import static java.nio.file.FileVisitResult.*;
 import java.io.*;

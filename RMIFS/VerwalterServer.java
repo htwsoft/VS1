@@ -1,4 +1,4 @@
-//package RMIFS;
+package RMIFS;
 
 import java.rmi.RemoteException;
 import java.rmi.NotBoundException;
@@ -21,10 +21,11 @@ public class VerwalterServer implements VerwalterInterface {
      * HOST entspricht der IP-Adresse des lokalen FileServers
      */
     private final static String HOST= null;
+
     /**
      * PORT_NR entspricht dem gebundenen Port des FileServers
      */
-    private final static int PORT_NR = 4711;
+    private final static int PORT_NR = 4710;
 
     /**
      * Konstruktor, baut Verbindung zum lokalen FileServer auf

@@ -1,4 +1,4 @@
-//package RMIFS;
+package RMIFS;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

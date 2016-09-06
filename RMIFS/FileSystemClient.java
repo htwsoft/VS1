@@ -1,4 +1,4 @@
-//package RMIFS;
+package RMIFS;
 
 import java.io.*;
 import java.util.*;
