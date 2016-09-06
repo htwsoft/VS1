@@ -1,4 +1,0 @@
-grant codeBase "file:"Path of Project Dir""{
-     permission java.net.SocketPermission "localhost:4711-", "accept, connect, resolve";
-};
-
