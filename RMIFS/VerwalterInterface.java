@@ -7,7 +7,7 @@ import java.rmi.RemoteException;
  * Created by Christian Patzek on 03.09.2016.
  * Interface für die Verwalter
  */
-public interface VerwalterInterface extends Remote
+interface VerwalterInterface extends Remote
 {
     public String getServerList() throws RemoteException;
     public String browseDirs(String dir) throws RemoteException;
