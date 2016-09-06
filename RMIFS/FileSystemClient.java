@@ -1,4 +1,4 @@
-package RMIFS;
+//package RMIFS;
 
 import java.io.*;
 import java.util.*;
@@ -12,7 +12,7 @@ import java.rmi.registry.Registry;
 public class FileSystemClient
 {
 	private VerwalterInterface vserver;
-	private enum MENUE { CLOSE, LIST, FALSE, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE, RENAME, OS_NAME };
+	private enum MENUE { CLOSE, LIST, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE, RENAME, OS_NAME, FALSE };
 	/**
 	* Hauptmethode der Demo
 	* startet eine Menue
@@ -60,13 +60,14 @@ public class FileSystemClient
 		switch(eingabe)
 		{		
 			case 0: meue_eingabe = MENUE.CLOSE; break;
-			case 1: meue_eingabe = MENUE.BROWSE; break;
-			case 2: meue_eingabe = MENUE.SEARCH; break;
-			case 3: meue_eingabe = MENUE.CREATE_DIR; break;
-			case 4: meue_eingabe = MENUE.CREATE_FILE; break;
-			case 5: meue_eingabe = MENUE.DELETE; break;
-			case 6: meue_eingabe = MENUE.RENAME; break;
-			case 7: meue_eingabe = MENUE.OS_NAME; break;
+			case 1: meue_eingabe = MENUE.LIST; break;
+			case 2: meue_eingabe = MENUE.BROWSE; break;
+			case 3: meue_eingabe = MENUE.SEARCH; break;
+			case 4: meue_eingabe = MENUE.CREATE_DIR; break;
+			case 5: meue_eingabe = MENUE.CREATE_FILE; break;
+			case 6: meue_eingabe = MENUE.DELETE; break;
+			case 7: meue_eingabe = MENUE.RENAME; break;
+			case 8: meue_eingabe = MENUE.OS_NAME; break;
 			default: meue_eingabe = MENUE.FALSE; break;
 		}
 		return meue_eingabe;

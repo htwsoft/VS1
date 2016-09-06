@@ -4,17 +4,21 @@ import java.nio.file.*;
 import java.nio.*;
 import java.util.*;
 
+
 public class FileSystemClient
 {
 	public static void main(String args[])
 	{
 		try
 		{
-			Socket socket = new Socket ("127.0.0.1", 6000);
+			Socket socket = new Socket ("localhost", 4711);//feste Server-IP und Port
 			Scanner input = new Scanner(socket.getInputStream());
 			PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
 			
-			System.out.println("Parameter: " + args[0]);
+			System.out.println("\n Parameter: " + args[0]); //Ausgabe der gesuchten Parameter
+			
+			System.out.println(" Server /IP:PORT --> " + socket.getRemoteSocketAddress() ); //Ausgabe der Server-IP und Port-Nummer
+			System.out.println(" Client /IP:PORT --> " + socket.getLocalSocketAddress() ); //Ausgabe der Client-IP und Port-Nummer 
 			output.println(args[0]);
 			
 			String files = "";
@@ -25,14 +29,14 @@ public class FileSystemClient
 			dirs = input.nextLine();
 			fileListe = files.split("[;]");
 			dirListe = dirs.split("[;]");
-			System.out.println("File-Liste");
+			System.out.println(" File-Liste");
 			System.out.println("---------------------------------------------------------------");
 			for(int i=0; i<fileListe.length; i++)
 			{
 				System.out.println(fileListe[i]);
 			}
 			System.out.println("");
-			System.out.println("Dir-Liste");
+			System.out.println(" Dir-Liste");
 			System.out.println("---------------------------------------------------------------");
 			for(int j=0; j<dirListe.length; j++)
 			{
@@ -42,7 +46,7 @@ public class FileSystemClient
 		}
 		catch(Exception e)
 		{
-			System.out.println("Fehler: " + e.getMessage());
+			System.out.println(" Fehler: " + e.getMessage());
 		}
 	}
 }

@@ -3,7 +3,7 @@
 * @author Marco Palumbo
 * @version 1.0
 */
-package RMIFS;
+//package RMIFS;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

@@ -1,4 +1,4 @@
-package RMIFS;
+//package RMIFS;
 
 import java.rmi.RemoteException;
 import java.rmi.NotBoundException;
@@ -115,7 +115,7 @@ public class VerwalterServer implements VerwalterInterface {
             VerwalterServer verwalterServer = new VerwalterServer();
             if(args.length >= 1)
             {
-                int serverPort = 0;
+                int serverPort = 0;//Clientaufruf mit 1091
                 serverPort = Integer.parseInt(args[0]);
                 //Stellt das Objekt dem System zur Verfügung
                 VerwalterInterface stub = (VerwalterInterface) UnicastRemoteObject.exportObject(verwalterServer, serverPort);
