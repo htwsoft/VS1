@@ -9,6 +9,7 @@ package rmifs;
 import java.io.*;
 import java.nio.*;
 import java.nio.file.*;
+import java.net.*;
 import static java.nio.file.StandardCopyOption.*;
 
 /**
@@ -18,6 +19,8 @@ import static java.nio.file.StandardCopyOption.*;
 public class FileSystem
 {	
 	private String osname; //Name des Betriebsystems
+	private String hostname;
+	private String hostAddress;
 	private Path [] dirListe; //Liste der gefundenen Ordner bei Browse
 	private Path [] fileListe; //Liste der gefundenen Dateien bei Browse
 	
@@ -28,6 +31,13 @@ public class FileSystem
 	public FileSystem()
 	{
 		this.osname = System.getProperty("os.name");
+
+		try {
+			this.hostname = InetAddress.getLocalHost().getHostName();
+			this.hostAddress = InetAddress.getLocalHost().getHostAddress();
+		} catch (UnknownHostException uhe) {
+			uhe.printStackTrace();
+		}
 		this.dirListe = null;
 		this.fileListe = null;
 
@@ -184,7 +194,11 @@ public class FileSystem
 	{
 		return this.osname;
 	}
-	
+
+	public String getHostName() {return this.hostname;}
+
+	public String getHostAdress() {return this.hostAddress;}
+
 	/**
 	* Prozedur liefert die gefundenen Dateien zurück
 	* @return liste der gefundenen Dateien

@@ -1,5 +1,5 @@
 /**
-* Klasse zum suchet eine Datei innerhalb eines Systems
+* Klasse zum suchen einer Datei innerhalb eines Systems
 * wurde abgeleitet von der Java-Klasse "SimpleFileVisitor"
 * @author Marco Palumbo
 * @version 1.0

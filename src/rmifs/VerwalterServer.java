@@ -60,13 +60,17 @@ public class VerwalterServer implements VerwalterInterface {
     }
 
     public String getOSName()throws RemoteException
-    {
+    {   System.out.println("osname");
        return this.fsserver.getOSName();
     }
     //ToDoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
     public String getHostName() throws RemoteException
     {
         return this.fsserver.getHostName();
+    }
+
+    public String getHostAdress() throws RemoteException{
+        return this.fsserver.getHostAdress();
     }
 
     public boolean delete(String file) throws RemoteException

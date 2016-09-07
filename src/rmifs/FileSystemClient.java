@@ -287,7 +287,7 @@ public class FileSystemClient
 		InputStreamReader isr = new InputStreamReader(System.in);
 		BufferedReader br = new BufferedReader(isr);
 		int eingabe = -1;
-		while(eingabe < 0 || eingabe > 7)
+		while(eingabe < 0 || eingabe > 8)
 		{
 			//Auswahlmenue zeigen bis eingabe richtig
 			try

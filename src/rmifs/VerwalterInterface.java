@@ -2,7 +2,7 @@ package rmifs;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.net.InetAddress;
-import jaca.net.UnknownHostException;
+import java.net.UnknownHostException;
 
 /**
  * Created by Christian Patzek on 03.09.2016.

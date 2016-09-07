@@ -7,7 +7,7 @@ package rmifs;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.net.InetAddress;
-import jaca.net.UnknownHostException;
+import java.net.UnknownHostException;
 
 public interface FSInterface extends Remote
 {

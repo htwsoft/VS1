@@ -250,8 +250,8 @@ public class FileSystemServer implements FSInterface
 	public String getOSName()throws RemoteException
 	{
 		System.out.println("Funktion: getOSName");
-		String osName;
-		osName = this.fs.getOSName();
+		String osName = "deimudda";
+		osName = fs.getOSName();
 		System.out.println("Return: \"" + osName + "\"");
 		return osName;		
 	}
@@ -266,9 +266,18 @@ public class FileSystemServer implements FSInterface
 	{
 		System.out.println("Funktion: getHostName");
 		String hostName;
-		hostName = this.fs.getHostName();
+		hostName = fs.getHostName();
 		System.out.println("Return: \"" + hostName + "\"");
 		return hostName;
+	}
+
+	public String getHostAdress()
+	{
+		System.out.println("Funktion: getHostAddress");
+		String hostAddress;
+		hostAddress = fs.getHostAdress();
+		System.out.println("Return: \"" + hostAddress + "\"");
+		return hostAddress;
 	}
 
 	/**
