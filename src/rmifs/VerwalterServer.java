@@ -58,8 +58,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
      */
     public Socket createSocket(String host, int port) throws IOException
     {
-        Socket clientSocket = new Socket(host, port);
-        return clientSocket;
+        return new Socket(host, port);
     }
 
     /**
