@@ -4,6 +4,8 @@ import java.util.*;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 
 
@@ -263,8 +265,10 @@ public class FileSystemClient
 		try
 		{
 			System.out.println("|-------------------------------------------------");
-			System.out.println("| Verwendetes OS: " + this.vserver.getOSName());
+			System.out.println("| Verwendetes OS:  " + this.vserver.getOSName());
+			System.out.println("| Name des Hosts:  " + this.vserver.getHostName());//ToDoooooooooooooooooooooooooooooooo
 			System.out.println("|-------------------------------------------------");
+
 		}
 		catch(Exception e)
 		{

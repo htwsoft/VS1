@@ -9,7 +9,8 @@ import java.io.*;
 import java.nio.*;
 import java.nio.file.*;
 import static java.nio.file.StandardCopyOption.*;
-
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.rmi.*;
 import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
@@ -254,7 +255,22 @@ public class FileSystemServer implements FSInterface
 		System.out.println("Return: \"" + osName + "\"");
 		return osName;		
 	}
-	
+
+	/**
+	 * Funktion liefert den Namen eines Hosts zurück
+	 * @return Host Name des FileSystems
+	 * @throws RemoteException
+     */
+	//ToDooooooooooooooooooooooooooooooooooooooooooooo
+	public String getHostName() throws RemoteException
+	{
+		System.out.println("Funktion: getHostName");
+		String hostName;
+		hostName = this.fs.getHostName();
+		System.out.println("Return: \"" + hostName + "\"");
+		return hostName;
+	}
+
 	/**
 	* Funktion liefert die Dateien der letzten suche (browse)
 	* @return Dateien des Letzten Browse befehls

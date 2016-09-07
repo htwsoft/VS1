@@ -4,6 +4,8 @@ import java.rmi.NotBoundException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * Created by Christian Patzek on 03.09.2016.
@@ -61,6 +63,11 @@ public class VerwalterServer implements VerwalterInterface {
     {
        return this.fsserver.getOSName();
     }
+    //ToDoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+    public String getHostName() throws RemoteException
+    {
+        return this.fsserver.getHostName();
+    }
 
     public boolean delete(String file) throws RemoteException
     {
@@ -117,7 +124,7 @@ public class VerwalterServer implements VerwalterInterface {
             VerwalterServer verwalterServer = new VerwalterServer();
             if(args.length >= 1)
             {
-                int serverPort = 0;//Clientaufruf mit 1091
+                int serverPort = 0;//Clientaufruf mit 4711
                 serverPort = Integer.parseInt(args[0]);
                 //Stellt das Objekt dem System zur Verfügung
                 VerwalterInterface stub = (VerwalterInterface) UnicastRemoteObject.exportObject(verwalterServer, serverPort);
