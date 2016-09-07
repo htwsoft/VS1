@@ -1,4 +1,4 @@
-package src.rmifs;
+package rmifs;
 import java.io.*;
 import java.util.*;
 import java.rmi.*;
