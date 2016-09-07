@@ -1,8 +1,12 @@
 package rmifs;
+
+import java.io.IOException;
+import java.net.Socket;
 import java.rmi.RemoteException;
 import java.rmi.NotBoundException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.RMIClientSocketFactory;
 import java.rmi.server.UnicastRemoteObject;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -11,7 +15,7 @@ import java.net.UnknownHostException;
  * Created by Christian Patzek on 03.09.2016.
  * VerwalterServer ist gleichzeitig Client und Server. Zwischenstelle zwischen Client und FileServer.
  */
-public class VerwalterServer implements VerwalterInterface {
+public class VerwalterServer implements VerwalterInterface, RMIClientSocketFactory {
     private FSInterface fsserver;
     /**
      * enthaelt die Liste aller verfuegbaren(remote) VerwalterServer und indirekt deren verbundenen FileServer
@@ -43,6 +47,19 @@ public class VerwalterServer implements VerwalterInterface {
         }
         Registry registry = LocateRegistry.getRegistry(HOST, PORT_NR);
         this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
+    }
+
+    /**
+     * Erstellt einen Socket für remote Verbindungen(Funktion des Interface RMIClientSocketFactory)
+     * @param host Adresse des Clients
+     * @param port Port der Verbindung
+     * @return Den Socket für den Client
+     * @throws IOException
+     */
+    public Socket createSocket(String host, int port) throws IOException
+    {
+        Socket clientSocket = new Socket(host, port);
+        return clientSocket;
     }
 
     /**
@@ -130,6 +147,7 @@ public class VerwalterServer implements VerwalterInterface {
             {
                 int serverPort = 0;//Clientaufruf mit 4711
                 serverPort = Integer.parseInt(args[0]);
+                System.setProperty("java.rmi.server.hostname","192.168.0.23"); //nötig für rmi client verbindung zum verwalter!!!!
                 //Stellt das Objekt dem System zur Verfügung
                 VerwalterInterface stub = (VerwalterInterface) UnicastRemoteObject.exportObject(verwalterServer, serverPort);
                 //Registry erstellen um Objekt ansprechen zu können
