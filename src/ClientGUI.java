@@ -45,6 +45,7 @@ public class ClientGUI extends JFrame implements ActionListener, TreeModel, Seri
     String searchPfad = "";
     boolean ersteEingabe = true;
 
+
     JFrame frame = new JFrame("ClientGUI");
     /**
      * Konstruktor
