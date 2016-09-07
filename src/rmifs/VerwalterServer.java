@@ -14,8 +14,9 @@ public class VerwalterServer implements VerwalterInterface {
     /**
      * enthaelt die Liste aller verfuegbaren(remote) VerwalterServer und indirekt deren verbundenen FileServer
      */
-    private static final String VERWALTER_LISTE = "Name: Server1 IP: xxx.xxx.xxx.xxx\nName: Server2 IP: yyy.yyy.yyy.yyy\n" +
-            "Name: Server3 IP: zzz.zzz.zzz.zzz";
+    private static final String VERWALTER_LISTE = "Name: Server1 IP: xxx.xxx.xxx.xxx\n" +
+                                                    "Name: Server2 IP: yyy.yyy.yyy.yyy\n" +
+                                                    "Name: Server3 IP: zzz.zzz.zzz.zzz";
     /**
      * HOST entspricht der IP-Adresse des lokalen FileServers
      */
