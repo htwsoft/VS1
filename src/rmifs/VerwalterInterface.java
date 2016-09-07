@@ -1,4 +1,4 @@
-package rmifs;
+package src.rmifs;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.net.InetAddress;
