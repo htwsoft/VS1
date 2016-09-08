@@ -3,7 +3,9 @@
 * @author Marco Palumbo
 * @version 1.0
 */
+//package src.rmifs;
 package rmifs;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.net.InetAddress;
@@ -19,6 +21,6 @@ public interface FSInterface extends Remote
 	public boolean delete(String file) throws RemoteException;
 	public boolean rename(String oldName, String newName) throws RemoteException;
 	public String getOSName()throws RemoteException;
-	public String getHostName() throws RemoteException; //ToDoooooooooooooooooooooooooooo
-	public String getHostAdress() throws RemoteException; //ToDoooooooooooooooooooooooooooo
+	public String getHostName() throws RemoteException;
+	public String getHostAdress() throws RemoteException; //ToDo
 }

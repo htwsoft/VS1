@@ -1,3 +1,4 @@
+//package src.rmifs;
 package rmifs;
 
 import java.io.IOException;
@@ -79,7 +80,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     {   System.out.println("osname");
        return this.fsserver.getOSName();
     }
-    //ToDoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+
     public String getHostName() throws RemoteException
     {
         return this.fsserver.getHostName();

@@ -3,8 +3,9 @@
 * @author Marco Palumbo
 * @version 1.0
 */
-
+//package src.rmifs;
 package rmifs;
+
 import java.io.*;
 import java.nio.*;
 import java.nio.file.*;
@@ -261,7 +262,7 @@ public class FileSystemServer implements FSInterface
 	 * @return Host Name des FileSystems
 	 * @throws RemoteException
      */
-	//ToDooooooooooooooooooooooooooooooooooooooooooooo
+
 	public String getHostName() throws RemoteException
 	{
 		System.out.println("Funktion: getHostName");
@@ -270,7 +271,7 @@ public class FileSystemServer implements FSInterface
 		System.out.println("Return: \"" + hostName + "\"");
 		return hostName;
 	}
-
+	//ToDo
 	public String getHostAdress()
 	{
 		System.out.println("Funktion: getHostAddress");
