@@ -35,7 +35,7 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
         starteServerButton.addActionListener(this);
 
         //Logo laden, muss im selben dir sein wie die java Files oder absoluten Pfad eingeben
-        ImageIcon img = new ImageIcon("htw.png");
+        ImageIcon img = new ImageIcon("htw.gif");
         frame.setIconImage(img.getImage());
     }
 
