@@ -1,4 +1,5 @@
-package src.rmifs;
+//package src.rmifs;
+package rmifs;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -58,8 +59,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
      */
     public Socket createSocket(String host, int port) throws IOException
     {
-        Socket clientSocket = new Socket(host, port);
-        return clientSocket;
+        return new Socket(host, port);
     }
 
     /**
@@ -80,7 +80,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     {   System.out.println("osname");
        return this.fsserver.getOSName();
     }
-    //ToDoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+
     public String getHostName() throws RemoteException
     {
         return this.fsserver.getHostName();
@@ -147,6 +147,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
             {
                 int serverPort = 0;//Clientaufruf mit 4711
                 serverPort = Integer.parseInt(args[0]);
+                System.setProperty("java.rmi.server.hostname","192.168.0.23"); //nötig für rmi client verbindung zum verwalter!!!!
                 //Stellt das Objekt dem System zur Verfügung
                 VerwalterInterface stub = (VerwalterInterface) UnicastRemoteObject.exportObject(verwalterServer, serverPort);
                 //Registry erstellen um Objekt ansprechen zu können

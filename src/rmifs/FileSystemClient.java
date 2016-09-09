@@ -1,4 +1,6 @@
-package src.rmifs;
+//package src.rmifs;
+package rmifs;
+
 import java.io.*;
 import java.util.*;
 import java.rmi.*;
@@ -266,7 +268,7 @@ public class FileSystemClient
 		{
 			System.out.println("|-------------------------------------------------");
 			System.out.println("| Verwendetes OS:  " + this.vserver.getOSName());
-			System.out.println("| Name des Hosts:  " + this.vserver.getHostName());//ToDoooooooooooooooooooooooooooooooo
+			System.out.println("| Name des Hosts:  " + this.vserver.getHostName());//ToDo
 			System.out.println("|-------------------------------------------------");
 
 		}
