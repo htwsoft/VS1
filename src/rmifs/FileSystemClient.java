@@ -21,6 +21,7 @@ public class FileSystemClient
 	*/	
 	public static void main(String args[]) 
 	{
+		System.setProperty("java.security.policy", "java.policy");
 		FileSystemClient fsc = null;
 		int serverPort = 0;
 		int eingabe = -1;

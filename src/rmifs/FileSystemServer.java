@@ -339,12 +339,13 @@ public class FileSystemServer implements FSInterface
 	*/
 	public static void main(String args[])
 	{
+		System.setProperty("java.security.policy", "java.policy");
 		try
 		{
-			if(args.length >= 1)
+			if(args.length >= 0)
 			{
-				int serverPort = 0;
-				serverPort = Integer.parseInt(args[0]);
+				int serverPort = 4567;
+				//serverPort = Integer.parseInt(args[0]);
 				//Security Manager ermöglicht/regelt zugriff auf Klasse
 				if (System.getSecurityManager() == null)
 				{

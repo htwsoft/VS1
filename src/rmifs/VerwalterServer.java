@@ -31,7 +31,12 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     /**
      * PORT_NR entspricht dem gebundenen Port des FileServers
      */
-    private final static int PORT_NR = 4710;
+    private final static int PORT_NR = 4567;
+
+    /**
+     * PORT_NR2, diese muss als Parameter beim Client angegeben werden
+     */
+    private final static int PORT_NR2 = 4568;
 
     /**
      * Konstruktor, baut Verbindung zum lokalen FileServer auf
@@ -139,18 +144,19 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
      */
     public static void main(String args[])
     {
+        System.setProperty("java.security.policy", "java.policy");
         try
         {
             VerwalterServer verwalterServer = new VerwalterServer();
-            if(args.length >= 1)
+            if(args.length >= 0)
             {
-                int serverPort = 0;//Clientaufruf mit 4711
-                serverPort = Integer.parseInt(args[0]);
-                System.setProperty("java.rmi.server.hostname","192.168.0.23"); //nötig für rmi client verbindung zum verwalter!!!!
+                //int serverPort = 0;//Clientaufruf mit 4711
+                //serverPort = Integer.parseInt(args[0]);
+                System.setProperty("java.rmi.server.hostname","192.168.0.101"); //nötig für rmi client verbindung zum verwalter!!!!
                 //Stellt das Objekt dem System zur Verfügung
-                VerwalterInterface stub = (VerwalterInterface) UnicastRemoteObject.exportObject(verwalterServer, serverPort);
+                VerwalterInterface stub = (VerwalterInterface) UnicastRemoteObject.exportObject(verwalterServer, PORT_NR2);
                 //Registry erstellen um Objekt ansprechen zu können
-                Registry registry =  LocateRegistry.createRegistry(serverPort);
+                Registry registry =  LocateRegistry.createRegistry(PORT_NR2);
                 //Objekt an registry binden
                 registry.rebind("VerwalterServer", stub);
                 System.out.println("Server bound ...");
