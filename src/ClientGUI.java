@@ -371,7 +371,6 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
             try
             {
                 File wurzel = this.fsserver.getFile(pfad);
-                System.out.println(wurzel);
                 // Create a TreeModel object to represent our tree of files
                 FileTreeModel model2 = new FileTreeModel(wurzel);
                 tree1.setModel(model2);

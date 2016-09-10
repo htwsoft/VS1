@@ -386,10 +386,14 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
  **/
 class FileTreeModel implements TreeModel
 {
+    private FileSystem fs = new FileSystem();
     private FSInterface fsserver;
 
+    File root = fs.gib();
+
     // We specify the root directory when we create the model.
-    protected File root;
+    //protected File root;
+
     public FileTreeModel(File root)
     {
         this.root = root;

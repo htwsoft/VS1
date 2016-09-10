@@ -212,4 +212,9 @@ public class FileSystem
 		wurzel = new File(pfad);
 		return this.wurzel;
 	}
+
+	public File gib()
+	{
+		return this.wurzel;
+	}
 }
