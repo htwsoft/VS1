@@ -79,7 +79,7 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
                 System.out.println( "Fehler: " + e2.toString() );
             }
 
-//            /** Verbindung mit mehreren Rechner Stuff */
+            /** Verbindung mit mehreren Rechner Stuff */
 //            try {
 //                Naming.rebind("//:2222/FileSystemServer", fsserver);
 //                //Naming.rebind("//:4545/FileSystemServer", fsserver);
@@ -143,7 +143,6 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
         System.out.println("Return: \"" + ergListe + "\"");
         serverTextArea.append("Return: \"" + ergListe + "\"");
         return ergListe;
-        //return dir;
     }
 
     /**
@@ -364,70 +363,6 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
         wurzel = this.fs.getDatei(pfad);
         return wurzel;
     }
-    /**
-    public String browseFiles(String file) throws RemoteException
-    {
-        Path [] fileListe;
-        String ergListe = "";
-        try
-        {
-            this.fs.browse(file);
-            fileListe = this.fs.getFileListe();
-            for(int i=0; i<fileListe.length; i++)
-            {
-                if(i>0)
-                {
-                    ergListe = ergListe + ";" + fileListe[i] ;
-                }
-                else
-                {
-                    ergListe = ergListe + fileListe[i];
-                }
-            }
-            //prüfen ob eine Datei gefunden wurde
-            //wenn nicht ist ergListe = file
-            if( ergListe.equals(file) )
-            {
-                ergListe = "";
-            }
-        }
-        catch(Exception e)
-        {
-            ergListe = "";
-            System.out.println("Fehler: " + e.toString());
-            serverTextArea.append("Fehler: " + e.toString() + "\n");
-        }
-        System.out.println("Return: \"" + ergListe + "\"");
-        serverTextArea.append("Return: \"" + ergListe  + "\"" + "\n");
-        return ergListe;
-    }
-    */
-
-
-
-
-    /**Meins*/
-    //public boolean createRoot(String pfad)throws RemoteException
-/*    public File getFile(String pfad)throws RemoteException
-    {
-        File root;
-        root = this.fs.getFile(pfad);
-        //System.out.println(root);
-        return null;
-////        boolean fileCreated;
-////        try
-////        {
-////            fileCreated = true;
-////            //fileCreated = this.fs.getFile(pfad);
-////        }
-////        catch(Exception e)
-////        {
-////            serverTextArea.append("Fehler_File: " + e.toString() + "\n");
-////            fileCreated = false;
-////        }
-////        return fileCreated;
-    }*/
-
 
     /**
      * Hauptmethode

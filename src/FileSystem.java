@@ -212,11 +212,4 @@ public class FileSystem
 		wurzel = new File(pfad);
 		return this.wurzel;
 	}
-
-
-//	public File getFile(String pfad)
-//	{
-//		wurzel = new File(pfad);
-//		return this.wurzel;
-//	}
 }
