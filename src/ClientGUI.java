@@ -255,8 +255,8 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
                 {
                     System.setSecurityManager(new SecurityManager());
                 }
-                //Registry registry = LocateRegistry.getRegistry(serverPort);
-                //this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
+                Registry registry = LocateRegistry.getRegistry(serverPort);
+                this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
                 client.append("Verbunden...\n");
 
                 // Start-Button deaktivieren nach Start
@@ -280,14 +280,14 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
             }
 
             /** Verbindung mit mehreren Rechner Stuff */
-            try
-            {
-                this.fsserver = (FSInterface) Naming.lookup("//192.168.0.105:2222/FileSystemServer");
-            }
-            catch (Exception ex)
-            {
-                System.out.println( "Fehler: " + ex.toString() );
-            }
+//            try
+//            {
+//                this.fsserver = (FSInterface) Naming.lookup("//192.168.0.105:2222/FileSystemServer");
+//            }
+//            catch (Exception ex)
+//            {
+//                System.out.println( "Fehler: " + ex.toString() );
+//            }
         }
 
         if(o == OSInfoButton)
@@ -351,27 +351,27 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
             JFrame eingabe = new JFrame();
             String pfad = JOptionPane.showInputDialog(eingabe, "Welcher Ordner soll untersucht werden?", "Browse", JOptionPane.PLAIN_MESSAGE);
 
-            String erg = null;
-            String [] dirListe = new String[0];
-            String [] fileListe = new String[0];
-
-            try
-            {
-                erg = this.fsserver.browseDirs(pfad);
-                dirListe = erg.split("[;]");
-
-                erg = this.fsserver.browseFiles(pfad);
-                fileListe = erg.split("[;]");
-            }
-            catch(IOException e11)
-            {
-                System.out.println("Fehler: " + e11.getMessage());
-            }
-
+//            String erg = null;
+//            String [] dirListe = new String[0];
+//            String [] fileListe = new String[0];
+//
+//            try
+//            {
+//                erg = this.fsserver.browseDirs(pfad);
+//                dirListe = erg.split("[;]");
+//
+//                erg = this.fsserver.browseFiles(pfad);
+//                fileListe = erg.split("[;]");
+//            }
+//            catch(IOException e11)
+//            {
+//                System.out.println("Fehler: " + e11.getMessage());
+//            }
 
             try
             {
                 File wurzel = this.fsserver.getFile(pfad);
+                System.out.println(wurzel);
                 // Create a TreeModel object to represent our tree of files
                 FileTreeModel model2 = new FileTreeModel(wurzel);
                 tree1.setModel(model2);
@@ -383,18 +383,6 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
             // Create a TreeModel object to represent our tree of files
 //            FileTreeModel model2 = new FileTreeModel(wurzel);
 //            tree1.setModel(model2);
-
-//            // The JTree can get big, so allow it to scroll.
-//            JScrollPane scrollpane = new JScrollPane(tree);
-//
-//            // Display it all in a window and make the window appear
-//            JFrame frame = new JFrame("FileTreeDemo");
-//            frame.getContentPane().add(scrollpane, "Center");
-//            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//            frame.setSize(400,600);
-//            frame.setVisible(true);
-
-
 
 /**MEINS*/
 //            DefaultTreeModel model = (DefaultTreeModel)tree1.getModel();
@@ -546,72 +534,72 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
     }
 }
 
-/**
- * The methods in this class allow the JTree component to traverse
- * the file system tree, and display the files and directories.
- **/
-class FileTreeModel implements TreeModel
-{
-    private FSInterface fsserver;
-
-    // We specify the root directory when we create the model.
-    protected File root;
-    public FileTreeModel(File root)
-    {
-        this.root = root;
-    }
-
-    // The model knows how to return the root object of the tree
-    public Object getRoot()
-    {
-        return root;
-    }
-
-    // Tell JTree whether an object in the tree is a leaf or not
-    public boolean isLeaf(Object node)
-    {
-        return ((File)node).isFile();
-    }
-
-    // Tell JTree how many children a node has
-    public int getChildCount(Object parent)
-    {
-        String[] children = ((File)parent).list();
-        if (children == null) return 0;
-        return children.length;
-    }
-
-
-    // Fetch any numbered child of a node for the JTree.
-    // Our model returns File objects for all nodes in the tree.  The
-    // JTree displays these by calling the File.toString() method.
-    public Object getChild(Object parent, int index)
-    {
-        String[] children = ((File)parent).list();
-        if ((children == null) || (index >= children.length)) return null;
-        return new File((File) parent, children[index]);
-    }
-
-    // Figure out a child's position in its parent node.
-    public int getIndexOfChild(Object parent, Object child)
-    {
-        String[] children = ((File)parent).list();
-        if (children == null) return -1;
-        String childname = ((File)child).getName();
-        for(int i = 0; i < children.length; i++)
-        {
-            if (childname.equals(children[i])) return i;
-        }
-        return -1;
-    }
-
-    // This method is only invoked by the JTree for editable trees.
-    // This TreeModel does not allow editing, so we do not implement
-    // this method.  The JTree editable property is false by default.
-    public void valueForPathChanged(TreePath path, Object newvalue) {}
-
-    // Since this is not an editable tree model, we never fire any events,
-    // so we don't actually have to keep track of interested listeners.
-    public void addTreeModelListener(TreeModelListener l) {}
-    public void removeTreeModelListener(TreeModelListener l) {}
-}
+///**
+// * The methods in this class allow the JTree component to traverse
+// * the file system tree, and display the files and directories.
+// **/
+//class FileTreeModel implements TreeModel
+//{
+//    private FSInterface fsserver;
+//
+//    // We specify the root directory when we create the model.
+//    protected File root;
+//    public FileTreeModel(File root)
+//    {
+//        this.root = root;
+//    }
+//
+//    // The model knows how to return the root object of the tree
+//    public Object getRoot()
+//    {
+//        return root;
+//    }
+//
+//    // Tell JTree whether an object in the tree is a leaf or not
+//    public boolean isLeaf(Object node)
+//    {
+//        return ((File)node).isFile();
+//    }
+//
+//    // Tell JTree how many children a node has
+//    public int getChildCount(Object parent)
+//    {
+//        String[] children = ((File)parent).list();
+//        if (children == null) return 0;
+//        return children.length;
+//    }
+//
+//
+//    // Fetch any numbered child of a node for the JTree.
+//    // Our model returns File objects for all nodes in the tree.  The
+//    // JTree displays these by calling the File.toString() method.
+//    public Object getChild(Object parent, int index)
+//    {
+//        String[] children = ((File)parent).list();
+//        if ((children == null) || (index >= children.length)) return null;
+//        return new File((File) parent, children[index]);
+//    }
+//
+//    // Figure out a child's position in its parent node.
+//    public int getIndexOfChild(Object parent, Object child)
+//    {
+//        String[] children = ((File)parent).list();
+//        if (children == null) return -1;
+//        String childname = ((File)child).getName();
+//        for(int i = 0; i < children.length; i++)
+//        {
+//            if (childname.equals(children[i])) return i;
+//        }
+//        return -1;
+//    }
+//
+//    // This method is only invoked by the JTree for editable trees.
+//    // This TreeModel does not allow editing, so we do not implement
+//    // this method.  The JTree editable property is false by default.
+//    public void valueForPathChanged(TreePath path, Object newvalue) {}
+//
+//    // Since this is not an editable tree model, we never fire any events,
+//    // so we don't actually have to keep track of interested listeners.
+//    public void addTreeModelListener(TreeModelListener l) {}
+//    public void removeTreeModelListener(TreeModelListener l) {}
+//}
