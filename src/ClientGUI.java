@@ -6,6 +6,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -254,8 +255,8 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
                 {
                     System.setSecurityManager(new SecurityManager());
                 }
-                Registry registry = LocateRegistry.getRegistry(serverPort);
-                this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
+                //Registry registry = LocateRegistry.getRegistry(serverPort);
+                //this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
                 client.append("Verbunden...\n");
 
                 // Start-Button deaktivieren nach Start
@@ -278,15 +279,15 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
                 client.append( "Fehler: " + e2.toString() );
             }
 
-//            /** Verbindung mit mehreren Rechner Stuff */
-//            try
-//            {
-//                this.fsserver = (FSInterface) Naming.lookup("//10.9.41.43:5656/FileSystemServer");
-//            }
-//            catch (Exception ex)
-//            {
-//                System.out.println( "Fehler: " + ex.toString() );
-//            }
+            /** Verbindung mit mehreren Rechner Stuff */
+            try
+            {
+                this.fsserver = (FSInterface) Naming.lookup("//192.168.0.105:2222/FileSystemServer");
+            }
+            catch (Exception ex)
+            {
+                System.out.println( "Fehler: " + ex.toString() );
+            }
         }
 
         if(o == OSInfoButton)
