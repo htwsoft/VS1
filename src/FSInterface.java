@@ -4,6 +4,7 @@
 * @version 1.0
 */
 
+import java.io.File;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -17,4 +18,5 @@ public interface FSInterface extends java.rmi.Remote
 	public boolean delete(String file) throws RemoteException;
 	public boolean rename(String oldName, String newName) throws RemoteException;
 	public String getOSName()throws RemoteException;
+	public File getFile(String pfad)throws RemoteException;  //meins
 }

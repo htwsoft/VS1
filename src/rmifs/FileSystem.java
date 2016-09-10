@@ -23,6 +23,8 @@ public class FileSystem
 	private String hostAddress;
 	private Path [] dirListe; //Liste der gefundenen Ordner bei Browse
 	private Path [] fileListe; //Liste der gefundenen Dateien bei Browse
+
+	private File root;
 	
 	/**
 	* Konstruktor der FileSystem Klasse

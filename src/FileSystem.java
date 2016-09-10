@@ -18,8 +18,10 @@ public class FileSystem
 	private String osname; //Name des Betriebsystems
 	private Path [] dirListe; //Liste der gefundenen Ordner bei Browse
 	private Path [] fileListe; //Liste der gefundenen Dateien bei Browse
+
 	//meins
 	private String pfad;
+	private File wurzel;
 	
 	/**
 	* Konstruktor der FileSystem Klasse
@@ -30,9 +32,10 @@ public class FileSystem
 		this.osname = System.getProperty("os.name");
 		this.dirListe = null;
 		this.fileListe = null;
+
 		//meins
 		this.pfad = null;
-
+		this.wurzel = null;
 	}
 	
 	/**
@@ -43,9 +46,6 @@ public class FileSystem
 	*/
 	public void browse(String dir) throws IOException
 	{
-		//meins
-		this.pfad = dir;
-
 		DirWatcher dw = new DirWatcher(); //Eigene Klasse DirWatcher zum durchlaufen des Ordners
 		Path path = Paths.get(dir); //Ordner der durchsucht werden soll
 		//Iintialisieren des Durchlaufs
@@ -116,7 +116,6 @@ public class FileSystem
 		if( Files.exists(path, LinkOption.NOFOLLOW_LINKS))
 		{
 			returnWert = false;
-		
 		}
 		else
 		{
@@ -178,8 +177,6 @@ public class FileSystem
 			Files.delete(pathOld);
 			return true;
 		}
-
-	
 	}	
 	
 	/**
@@ -208,5 +205,18 @@ public class FileSystem
 	public Path[] getDirListe()
 	{
 		return this.dirListe;
-	}	
+	}
+
+	public File getDatei(String pfad)
+	{
+		wurzel = new File(pfad);
+		return this.wurzel;
+	}
+
+
+//	public File getFile(String pfad)
+//	{
+//		wurzel = new File(pfad);
+//		return this.wurzel;
+//	}
 }

@@ -1,20 +1,23 @@
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.TreeModelListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.rmi.*;
 
 /**
  * Created by Eugen Eberle on 20.08.2016.
  */
-public class ClientGUI extends JFrame implements ActionListener, TreeModel, Serializable, Cloneable
+
+public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cloneable, Serializable,
 {
     static ClientGUI client;
     private JPanel clientPanel;
@@ -96,99 +99,125 @@ public class ClientGUI extends JFrame implements ActionListener, TreeModel, Seri
         renameButton.setEnabled(false);
         OSInfoButton.setEnabled(false);
         searchFeld.setEnabled(false);
+
+        // Add a listener
+//        tree1.addTreeSelectionListener(new TreeSelectionListener()
+//        {
+//            public void valueChanged(TreeSelectionEvent e)
+//            {
+//                DefaultMutableTreeNode node = (DefaultMutableTreeNode) e
+//                        .getPath().getLastPathComponent();
+//                System.out.println("You selected " + node);
+//            }
+//        });
+
+//        tree1.addTreeSelectionListener(new TreeSelectionListener()
+//        {
+//            @Override
+//            public void valueChanged(TreeSelectionEvent e)
+//            {
+//                DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.getPath().getLastPathComponent();
+//                System.out.println("You selected " + node);
+////                File node = (File) e.getPath().getLastPathComponent();
+////                if(node.isDirectory())
+////                {
+////                    System.out.println("You selected " + node);
+////                }
+//            }
+//        });
     }
 
     /** Alles fuer den Tree_ANFANG, wird in der aktuellen Version nicht benutzt*/
-    private static final Object LEAF = new Serializable()
-    {};
-
-    public ClientGUI(File root2)
-    {
-        this.root = root2.getParentFile();
-        if (!root.isDirectory())
-        {
-            map.put(root, LEAF);
-        }
-        this.listeners = new EventListenerList();
-        this.map = new HashMap();
-    }
-
-    public Object getRoot()
-    {
-        return root;
-    }
-    public boolean isLeaf(Object node)
-    {
-        return map.get(node) == LEAF;
-    }
-    public int getChildCount(Object node)
-    {
-        java.util.List children = children(node);
-
-        if (children == null)
-        {
-            return 0;
-        }
-        return children.size();
-    }
-    public Object getChild(Object parent, int index)
-    {
-        return children(parent).get(index);
-    }
-    public int getIndexOfChild(Object parent, Object child)
-    {
-        return children(parent).indexOf(child);
-    }
-    protected java.util.List children(Object node)
-    {
-        File f = (File)node;
-        Object value = map.get(f);
-        if (value == LEAF)
-        {
-            return null;
-        }
-        java.util.List children = (java.util.List)value;
-        if (children == null)
-        {
-            File[] c = f.listFiles();
-            if (c != null)
-            {
-                children = new ArrayList(c.length);
-                for (int len = c.length, i = 0; i < len; i++)
-                {
-                    children.add(c[i]);
-                    if (!c[i].isDirectory())
-                        map.put(c[i], LEAF);
-                }
-            }
-            else
-                children = new ArrayList(0);
-
-            map.put(f, children);
-        }
-        return children;
-    }
-    public void valueForPathChanged(TreePath path, Object value)
-    {
-    }
-    public void addTreeModelListener(TreeModelListener l)
-    {
-        listeners.add(TreeModelListener.class, l);
-    }
-    public void removeTreeModelListener(TreeModelListener l)
-    {
-        listeners.remove(TreeModelListener.class, l);
-    }
-    public Object clone() {
-        try {
-            ClientGUI clone = (ClientGUI) super.clone();
-            clone.listeners = new EventListenerList();
-            clone.map = new HashMap(map);
-            return clone;
-        } catch (CloneNotSupportedException e) {
-            throw new InternalError();
-        }
-    }
+//    private static final Object LEAF = new Serializable()
+//    {};
+//
+//    public ClientGUI(File root2)
+//    {
+//        this.root = root2.getParentFile();
+//        if (!root.isDirectory())
+//        {
+//            map.put(root, LEAF);
+//        }
+//        this.listeners = new EventListenerList();
+//        this.map = new HashMap();
+//    }
+//
+//    public Object getRoot()
+//    {
+//        return root;
+//    }
+//    public boolean isLeaf(Object node)
+//    {
+//        return map.get(node) == LEAF;
+//    }
+//    public int getChildCount(Object node)
+//    {
+//        java.util.List children = children(node);
+//
+//        if (children == null)
+//        {
+//            return 0;
+//        }
+//        return children.size();
+//    }
+//    public Object getChild(Object parent, int index)
+//    {
+//        return children(parent).get(index);
+//    }
+//    public int getIndexOfChild(Object parent, Object child)
+//    {
+//        return children(parent).indexOf(child);
+//    }
+//    protected java.util.List children(Object node)
+//    {
+//        File f = (File)node;
+//        Object value = map.get(f);
+//        if (value == LEAF)
+//        {
+//            return null;
+//        }
+//        java.util.List children = (java.util.List)value;
+//        if (children == null)
+//        {
+//            File[] c = f.listFiles();
+//            if (c != null)
+//            {
+//                children = new ArrayList(c.length);
+//                for (int len = c.length, i = 0; i < len; i++)
+//                {
+//                    children.add(c[i]);
+//                    if (!c[i].isDirectory())
+//                        map.put(c[i], LEAF);
+//                }
+//            }
+//            else
+//                children = new ArrayList(0);
+//
+//            map.put(f, children);
+//        }
+//        return children;
+//    }
+//    public void valueForPathChanged(TreePath path, Object value)
+//    {
+//    }
+//    public void addTreeModelListener(TreeModelListener l)
+//    {
+//        listeners.add(TreeModelListener.class, l);
+//    }
+//    public void removeTreeModelListener(TreeModelListener l)
+//    {
+//        listeners.remove(TreeModelListener.class, l);
+//    }
+//    public Object clone() {
+//        try {
+//            ClientGUI clone = (ClientGUI) super.clone();
+//            clone.listeners = new EventListenerList();
+//            clone.map = new HashMap(map);
+//            return clone;
+//        } catch (CloneNotSupportedException e) {
+//            throw new InternalError();
+//        }
+//    }
     /** Alles fuer den Tree_ENDE*/
 
     void append(String text)
@@ -339,49 +368,88 @@ public class ClientGUI extends JFrame implements ActionListener, TreeModel, Seri
             }
 
 
-            DefaultTreeModel model = (DefaultTreeModel)tree1.getModel();
-            DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
-            root.removeAllChildren();
-            root.setUserObject(pfad + " " + new SimpleDateFormat("HH:mm:ss").format(new Date()));
-
-            for (int i = 0; i < dirListe.length; i++)
+            try
             {
-                String erg2 = null;
-                String erg3 = null;
-                try
-                {
-                    erg2 = this.fsserver.browseDirs(dirListe[i]);
-                    erg3 = this.fsserver.browseFiles(dirListe[i]);
-                } catch (RemoteException e1) {
-                    e1.printStackTrace();
-                }
-                String [] dirListe2 = erg2.split("[;]");
-                String [] fileListe2 = erg3.split("[;]");
-
-                DefaultMutableTreeNode folder = new DefaultMutableTreeNode(dirListe[i]);
-                for (int j = 0; j < dirListe2.length; j++)
-                {
-                    folder.add(new DefaultMutableTreeNode(dirListe2[j]));
-                }
-
-                for (int n = 0; n < fileListe2.length; n++)
-                {
-                    if(!fileListe2[n].equals(""))
-                    {
-                        folder.add(new DefaultMutableTreeNode(fileListe2[n]));
-                    }
-                }
-                root.add(folder);
+                File wurzel = this.fsserver.getFile(pfad);
+                // Create a TreeModel object to represent our tree of files
+                FileTreeModel model2 = new FileTreeModel(wurzel);
+                tree1.setModel(model2);
+            } catch (RemoteException e1)
+            {
+                e1.printStackTrace();
             }
 
-            for (int i = 0; i < fileListe.length; i++)
-            {
-                if(!fileListe[i].equals(""))
-                {
-                    root.add(new DefaultMutableTreeNode(fileListe[i]));
-                }
-            }
-            model.reload(root);
+            // Create a TreeModel object to represent our tree of files
+//            FileTreeModel model2 = new FileTreeModel(wurzel);
+//            tree1.setModel(model2);
+
+//            // The JTree can get big, so allow it to scroll.
+//            JScrollPane scrollpane = new JScrollPane(tree);
+//
+//            // Display it all in a window and make the window appear
+//            JFrame frame = new JFrame("FileTreeDemo");
+//            frame.getContentPane().add(scrollpane, "Center");
+//            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//            frame.setSize(400,600);
+//            frame.setVisible(true);
+
+
+
+/**MEINS*/
+//            DefaultTreeModel model = (DefaultTreeModel)tree1.getModel();
+//            DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
+//            root.removeAllChildren();
+//            root.setUserObject(pfad + " " + new SimpleDateFormat("HH:mm:ss").format(new Date()));
+//
+//            tree1.addTreeSelectionListener(new TreeSelectionListener()
+//            {
+//                @Override
+//                public void valueChanged(TreeSelectionEvent e)
+//                {
+//                    DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.getPath().getLastPathComponent();
+//                    System.out.println("You selected " + node);
+//                }
+//            });
+//
+//            for (int i = 0; i < dirListe.length; i++)
+//            {
+//                String erg2 = null;
+//                String erg3 = null;
+//                try
+//                {
+//                    erg2 = this.fsserver.browseDirs(dirListe[i]);
+//                    erg3 = this.fsserver.browseFiles(dirListe[i]);
+//                } catch (RemoteException e1) {
+//                    e1.printStackTrace();
+//                }
+//                String [] dirListe2 = erg2.split("[;]");
+//                String [] fileListe2 = erg3.split("[;]");
+//
+//                DefaultMutableTreeNode folder = new DefaultMutableTreeNode(dirListe[i]);
+//                for (int j = 0; j < dirListe2.length; j++)
+//                {
+//                    folder.add(new DefaultMutableTreeNode(dirListe2[j]));
+//                }
+//
+//                for (int n = 0; n < fileListe2.length; n++)
+//                {
+//                    if(!fileListe2[n].equals(""))
+//                    {
+//                        folder.add(new DefaultMutableTreeNode(fileListe2[n]));
+//                    }
+//                }
+//                root.add(folder);
+//            }
+//
+//            for (int i = 0; i < fileListe.length; i++)
+//            {
+//                if(!fileListe[i].equals(""))
+//                {
+//                    root.add(new DefaultMutableTreeNode(fileListe[i]));
+//                }
+//            }
+//            model.reload(root);
+            /**meins ende*/
         }
 
         if(o == seachButton)
@@ -469,9 +537,80 @@ public class ClientGUI extends JFrame implements ActionListener, TreeModel, Seri
 
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException
+    {
         //Propertys aus Datei laden
         System.setProperty("java.security.policy", "java.policy");
         client = new ClientGUI();
     }
+}
+
+/**
+ * The methods in this class allow the JTree component to traverse
+ * the file system tree, and display the files and directories.
+ **/
+class FileTreeModel implements TreeModel
+{
+    private FSInterface fsserver;
+
+    // We specify the root directory when we create the model.
+    protected File root;
+    public FileTreeModel(File root)
+    {
+        this.root = root;
+    }
+
+    // The model knows how to return the root object of the tree
+    public Object getRoot()
+    {
+        return root;
+    }
+
+    // Tell JTree whether an object in the tree is a leaf or not
+    public boolean isLeaf(Object node)
+    {
+        return ((File)node).isFile();
+    }
+
+    // Tell JTree how many children a node has
+    public int getChildCount(Object parent)
+    {
+        String[] children = ((File)parent).list();
+        if (children == null) return 0;
+        return children.length;
+    }
+
+
+    // Fetch any numbered child of a node for the JTree.
+    // Our model returns File objects for all nodes in the tree.  The
+    // JTree displays these by calling the File.toString() method.
+    public Object getChild(Object parent, int index)
+    {
+        String[] children = ((File)parent).list();
+        if ((children == null) || (index >= children.length)) return null;
+        return new File((File) parent, children[index]);
+    }
+
+    // Figure out a child's position in its parent node.
+    public int getIndexOfChild(Object parent, Object child)
+    {
+        String[] children = ((File)parent).list();
+        if (children == null) return -1;
+        String childname = ((File)child).getName();
+        for(int i = 0; i < children.length; i++)
+        {
+            if (childname.equals(children[i])) return i;
+        }
+        return -1;
+    }
+
+    // This method is only invoked by the JTree for editable trees.
+    // This TreeModel does not allow editing, so we do not implement
+    // this method.  The JTree editable property is false by default.
+    public void valueForPathChanged(TreePath path, Object newvalue) {}
+
+    // Since this is not an editable tree model, we never fire any events,
+    // so we don't actually have to keep track of interested listeners.
+    public void addTreeModelListener(TreeModelListener l) {}
+    public void removeTreeModelListener(TreeModelListener l) {}
 }
