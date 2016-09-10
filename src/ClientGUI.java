@@ -41,14 +41,13 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
     private FSInterface fsserver;
 
     /**Fuer die Tree-Ansicht */
-    protected EventListenerList listeners;
-    private Map map;
-    private File root;
+//    protected EventListenerList listeners;
+//    private Map map;
+//    private File root;
 
     /**Fuer search*/
     String searchPfad = "";
     boolean ersteEingabe = true;
-
 
     JFrame frame = new JFrame("ClientGUI");
     /**
@@ -74,9 +73,8 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
         //frame.setResizable(false);
         frame.setLocation(10, 10);
 
-
         /**Logo laden, muss im selben dir sein wie die java Files oder absoluten Pfad eingeben */
-        ImageIcon img = new ImageIcon("htw.gif");
+        ImageIcon img = new ImageIcon("htw.png");
         frame.setIconImage(img.getImage());
 
         clientTextArea.append("Hallo \n\n");
@@ -101,31 +99,42 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
         OSInfoButton.setEnabled(false);
         searchFeld.setEnabled(false);
 
-        // Add a listener
-//        tree1.addTreeSelectionListener(new TreeSelectionListener()
-//        {
-//            public void valueChanged(TreeSelectionEvent e)
-//            {
-//                DefaultMutableTreeNode node = (DefaultMutableTreeNode) e
-//                        .getPath().getLastPathComponent();
-//                System.out.println("You selected " + node);
-//            }
-//        });
+        /** listener fuer den tree*/
+        tree1.addTreeSelectionListener(new TreeSelectionListener()
+        {
+            @Override
+            public void valueChanged(TreeSelectionEvent e)
+            {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.getPath().getLastPathComponent();
+                String pfad2 = node.toString();
+                System.out.println("You selected " + pfad2); //nur zum test
+                try
+                {
+                    String a = fsserver.browseDirs(pfad2);
+                    String[] b = a.split("[;]");
+                    String d = fsserver.browseFiles(pfad2);
+                    String[] f = d.split("[;]");
+                    for (int o = 0; o < b.length; o++)
+                    {
+                        if (!b[o].equals(""))
+                        {
+                            node.add(new DefaultMutableTreeNode(b[o]));
+                        }
+                    }
+                    for (int i = 0; i < f.length; i++)
+                    {
+                        if (!f[i].equals(""))
+                        {
+                            node.add(new DefaultMutableTreeNode(f[i]));
+                        }
+                    }
+                } catch (RemoteException e1)
+                {
+                    e1.printStackTrace();
+                }
+            }
+        });
 
-//        tree1.addTreeSelectionListener(new TreeSelectionListener()
-//        {
-//            @Override
-//            public void valueChanged(TreeSelectionEvent e)
-//            {
-//                DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.getPath().getLastPathComponent();
-//                System.out.println("You selected " + node);
-////                File node = (File) e.getPath().getLastPathComponent();
-////                if(node.isDirectory())
-////                {
-////                    System.out.println("You selected " + node);
-////                }
-//            }
-//        });
     }
 
     /** Alles fuer den Tree_ANFANG, wird in der aktuellen Version nicht benutzt*/
@@ -288,6 +297,7 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
 //            {
 //                System.out.println( "Fehler: " + ex.toString() );
 //            }
+
         }
 
         if(o == OSInfoButton)
@@ -351,93 +361,58 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
             JFrame eingabe = new JFrame();
             String pfad = JOptionPane.showInputDialog(eingabe, "Welcher Ordner soll untersucht werden?", "Browse", JOptionPane.PLAIN_MESSAGE);
 
-//            String erg = null;
-//            String [] dirListe = new String[0];
-//            String [] fileListe = new String[0];
-//
-//            try
-//            {
-//                erg = this.fsserver.browseDirs(pfad);
-//                dirListe = erg.split("[;]");
-//
-//                erg = this.fsserver.browseFiles(pfad);
-//                fileListe = erg.split("[;]");
-//            }
-//            catch(IOException e11)
-//            {
-//                System.out.println("Fehler: " + e11.getMessage());
-//            }
+            String erg = null;
+            String [] dirListe = new String[0];
+            String [] fileListe = new String[0];
 
             try
             {
-                File wurzel = this.fsserver.getFile(pfad);
-                // Create a TreeModel object to represent our tree of files
-                FileTreeModel model2 = new FileTreeModel(wurzel);
-                tree1.setModel(model2);
-            } catch (RemoteException e1)
+                erg = this.fsserver.browseDirs(pfad);
+                dirListe = erg.split("[;]");
+
+                erg = this.fsserver.browseFiles(pfad);
+                fileListe = erg.split("[;]");
+            }
+            catch(IOException e11)
             {
-                e1.printStackTrace();
+                System.out.println("Fehler: " + e11.getMessage());
             }
 
-            // Create a TreeModel object to represent our tree of files
-//            FileTreeModel model2 = new FileTreeModel(wurzel);
-//            tree1.setModel(model2);
+            /**Nur lokal?*/
+//            try
+//            {
+//                File wurzel = this.fsserver.getFile(pfad);
+//                // Create a TreeModel object to represent our tree of files
+//                FileTreeModel model2 = new FileTreeModel(wurzel);
+//                //FileTreeModel model2 = new FileTreeModel();
+//                tree1.setModel(model2);
+//            } catch (RemoteException e1)
+//            {
+//                e1.printStackTrace();
+//            }
 
-/**MEINS*/
-//            DefaultTreeModel model = (DefaultTreeModel)tree1.getModel();
-//            DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
-//            root.removeAllChildren();
-//            root.setUserObject(pfad + " " + new SimpleDateFormat("HH:mm:ss").format(new Date()));
-//
-//            tree1.addTreeSelectionListener(new TreeSelectionListener()
-//            {
-//                @Override
-//                public void valueChanged(TreeSelectionEvent e)
-//                {
-//                    DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.getPath().getLastPathComponent();
-//                    System.out.println("You selected " + node);
-//                }
-//            });
-//
-//            for (int i = 0; i < dirListe.length; i++)
-//            {
-//                String erg2 = null;
-//                String erg3 = null;
-//                try
-//                {
-//                    erg2 = this.fsserver.browseDirs(dirListe[i]);
-//                    erg3 = this.fsserver.browseFiles(dirListe[i]);
-//                } catch (RemoteException e1) {
-//                    e1.printStackTrace();
-//                }
-//                String [] dirListe2 = erg2.split("[;]");
-//                String [] fileListe2 = erg3.split("[;]");
-//
-//                DefaultMutableTreeNode folder = new DefaultMutableTreeNode(dirListe[i]);
-//                for (int j = 0; j < dirListe2.length; j++)
-//                {
-//                    folder.add(new DefaultMutableTreeNode(dirListe2[j]));
-//                }
-//
-//                for (int n = 0; n < fileListe2.length; n++)
-//                {
-//                    if(!fileListe2[n].equals(""))
-//                    {
-//                        folder.add(new DefaultMutableTreeNode(fileListe2[n]));
-//                    }
-//                }
-//                root.add(folder);
-//            }
-//
-//            for (int i = 0; i < fileListe.length; i++)
-//            {
-//                if(!fileListe[i].equals(""))
-//                {
-//                    root.add(new DefaultMutableTreeNode(fileListe[i]));
-//                }
-//            }
-//            model.reload(root);
-            /**meins ende*/
+            /**Baum wird auf den Inhalten dirListe und fileListe zusammengebaut*/
+            DefaultTreeModel model = (DefaultTreeModel)tree1.getModel();
+            DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
+            root.removeAllChildren();
+            root.setUserObject(pfad + " " + new SimpleDateFormat("HH:mm:ss").format(new Date()));
+
+            for (int i = 0; i < dirListe.length; i++)
+            {
+                if(!dirListe[i].equals(""))
+                {
+                    root.add(new DefaultMutableTreeNode(dirListe[i]));
+                }
+            }
+
+            for (int i = 0; i < fileListe.length; i++)
+            {
+                if(!fileListe[i].equals(""))
+                {
+                    root.add(new DefaultMutableTreeNode(fileListe[i]));
+                }
+            }
+            model.reload(root);
         }
 
         if(o == seachButton)
@@ -532,73 +507,3 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
         client = new ClientGUI();
     }
 }
-
-///**
-// * The methods in this class allow the JTree component to traverse
-// * the file system tree, and display the files and directories.
-// **/
-//class FileTreeModel implements TreeModel
-//{
-//    private FSInterface fsserver;
-//
-//    // We specify the root directory when we create the model.
-//    protected File root;
-//    public FileTreeModel(File root)
-//    {
-//        this.root = root;
-//    }
-//
-//    // The model knows how to return the root object of the tree
-//    public Object getRoot()
-//    {
-//        return root;
-//    }
-//
-//    // Tell JTree whether an object in the tree is a leaf or not
-//    public boolean isLeaf(Object node)
-//    {
-//        return ((File)node).isFile();
-//    }
-//
-//    // Tell JTree how many children a node has
-//    public int getChildCount(Object parent)
-//    {
-//        String[] children = ((File)parent).list();
-//        if (children == null) return 0;
-//        return children.length;
-//    }
-//
-//
-//    // Fetch any numbered child of a node for the JTree.
-//    // Our model returns File objects for all nodes in the tree.  The
-//    // JTree displays these by calling the File.toString() method.
-//    public Object getChild(Object parent, int index)
-//    {
-//        String[] children = ((File)parent).list();
-//        if ((children == null) || (index >= children.length)) return null;
-//        return new File((File) parent, children[index]);
-//    }
-//
-//    // Figure out a child's position in its parent node.
-//    public int getIndexOfChild(Object parent, Object child)
-//    {
-//        String[] children = ((File)parent).list();
-//        if (children == null) return -1;
-//        String childname = ((File)child).getName();
-//        for(int i = 0; i < children.length; i++)
-//        {
-//            if (childname.equals(children[i])) return i;
-//        }
-//        return -1;
-//    }
-//
-//    // This method is only invoked by the JTree for editable trees.
-//    // This TreeModel does not allow editing, so we do not implement
-//    // this method.  The JTree editable property is false by default.
-//    public void valueForPathChanged(TreePath path, Object newvalue) {}
-//
-//    // Since this is not an editable tree model, we never fire any events,
-//    // so we don't actually have to keep track of interested listeners.
-//    public void addTreeModelListener(TreeModelListener l) {}
-//    public void removeTreeModelListener(TreeModelListener l) {}
-//}

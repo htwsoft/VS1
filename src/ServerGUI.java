@@ -51,7 +51,6 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
 
         if(o == starteServerButton)
         {
-            serverTextArea.append("Starte Server wurde gedückt\n");
             int serverPort;
 
             try
@@ -115,6 +114,7 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
         String ergListe = "";
         System.out.println("Funktion: browseDirs - Param: " + dir);
         serverTextArea.append("\nFunktion: browseDirs - Param: " + dir + "\n");
+        serverTextArea.setCaretPosition(serverTextArea.getText().length() - 1);
         try
         {
             this.fs.browse(dir);
@@ -145,6 +145,7 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
         }
         System.out.println("Return: \"" + ergListe + "\"");
         serverTextArea.append("Return: \"" + ergListe + "\"");
+        serverTextArea.setCaretPosition(serverTextArea.getText().length() - 1);
         return ergListe;
     }
 
@@ -159,6 +160,7 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
         String ergListe = "";
         System.out.println("Funktion: browseFiles - Param: " + file);
         serverTextArea.append("\nFunktion: browseFiles - Param: " + file + "\n");
+        serverTextArea.setCaretPosition(serverTextArea.getText().length() - 1);
         try
         {
             this.fs.browse(file);
@@ -189,6 +191,7 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
         }
         System.out.println("Return: \"" + ergListe + "\"");
         serverTextArea.append("Return: \"" + ergListe  + "\"" + "\n");
+        serverTextArea.setCaretPosition(serverTextArea.getText().length() - 1);
         return ergListe;
     }
 
@@ -202,6 +205,7 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
     {
         System.out.println("Funktion: search - Params: " + file + ", " + startDir);
         serverTextArea.append("Funktion: search - Params: " + file + ", " + startDir + "\n");
+        serverTextArea.setCaretPosition(serverTextArea.getText().length() - 1);
 
         Path [] fileListe = null;
         String ergListe = "";
@@ -235,6 +239,7 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
         }
         System.out.println("Return: \"" + ergListe + "\"");
         serverTextArea.append("Return: \"" + ergListe + "\n");
+        serverTextArea.setCaretPosition(serverTextArea.getText().length() - 1);
         return ergListe;
     }
 
@@ -248,6 +253,7 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
         boolean fileCreated;
         System.out.println("Funktion: createFile - Param: " + file);
         serverTextArea.append("Funktion: createFile - Param: " + file + "\n");
+        serverTextArea.setCaretPosition(serverTextArea.getText().length() - 1);
         try
         {
             fileCreated = this.fs.create(file, "file");
@@ -261,6 +267,7 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
         }
         System.out.println("Return: " + fileCreated);
         serverTextArea.append("Return: " + fileCreated + "\n");
+        serverTextArea.setCaretPosition(serverTextArea.getText().length() - 1);
         return fileCreated;
     }
 
@@ -274,6 +281,7 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
         boolean dirCreated;
         System.out.println("Funktion: createDir - Param: " + dir);
         serverTextArea.append("Funktion: createDir - Param: " + dir + "\n");
+        serverTextArea.setCaretPosition(serverTextArea.getText().length() - 1);
         try
         {
             dirCreated = this.fs.create(dir, "dir");
@@ -287,6 +295,7 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
         }
         System.out.println("Return: \"" + dirCreated + "\"");
         serverTextArea.append("Return: \"" + dirCreated + "\n");
+        serverTextArea.setCaretPosition(serverTextArea.getText().length() - 1);
         return dirCreated;
     }
 
@@ -300,6 +309,7 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
         boolean fileDeleted;
         System.out.println("Funktion: delete - Param: " + file);
         serverTextArea.append("Funktion: delete - Param: " + file + "\n");
+        serverTextArea.setCaretPosition(serverTextArea.getText().length() - 1);
         try
         {
             fileDeleted = this.fs.delete(file);
@@ -312,6 +322,7 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
         }
         System.out.println("Return: \"" + fileDeleted + "\"");
         serverTextArea.append("Return: \"" + fileDeleted + "\"" + "\n");
+        serverTextArea.setCaretPosition(serverTextArea.getText().length() - 1);
         return fileDeleted;
     }
 
@@ -326,6 +337,7 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
         boolean fileRenamed;
         System.out.println("Funktion: rename - Params: " + oldName + ", " + newName);
         serverTextArea.append("Funktion: rename - Params: " + oldName + ", " + newName + "\n");
+        serverTextArea.setCaretPosition(serverTextArea.getText().length() - 1);
         try
         {
             fileRenamed = this.fs.rename(oldName, newName);
@@ -339,6 +351,7 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
         }
         System.out.println("Return: \"" + fileRenamed + "\"");
         serverTextArea.append("Return: \"" + fileRenamed + "\"" + "\n");
+        serverTextArea.setCaretPosition(serverTextArea.getText().length() - 1);
         return fileRenamed;
     }
 
@@ -383,19 +396,26 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
 /**
  * The methods in this class allow the JTree component to traverse
  * the file system tree, and display the files and directories.
+ * WIRD NICHT BENUTZT WEIL ICH ES NICHT ÜBER NETZWERK GEHT
  **/
 class FileTreeModel implements TreeModel
 {
     private FileSystem fs = new FileSystem();
     private FSInterface fsserver;
 
-    File root = fs.gib();
-
+    //private File root = fs.gib();
+    File root;
     // We specify the root directory when we create the model.
     //protected File root;
 
+    public FileTreeModel()
+    {
+        this.root = fs.gib();
+    }
+
     public FileTreeModel(File root)
     {
+        root = fs.getDatei(String.valueOf(root));
         this.root = root;
     }
 
