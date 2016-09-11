@@ -33,11 +33,11 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
-        frame.setSize(600, 400);
+        frame.setSize(1000, 400);
         serverTextArea.append("Hallo \n\n");
         starteServerButton.addActionListener(this);
 
-        //Logo laden, muss im selben dir sein wie die java Files oder absoluten Pfad eingeben
+        //Logo laden, muss im selben dir sein wie die java Files oder absoluten Pfad angeben
         ImageIcon img = new ImageIcon("htw.png");
         frame.setIconImage(img.getImage());
     }
@@ -48,17 +48,15 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
     public void actionPerformed(ActionEvent e)
     {
         Object o = e.getSource();
-
         if(o == starteServerButton)
         {
             int serverPort;
-
             try
             {
                 serverPort = Integer.parseInt(portTextFeld.getText().trim());
             } catch(Exception er)
             {
-                serverTextArea.append("Fehler bei der Port-Eingabe\n");
+                append("Fehler bei der Port-Eingabe.\n");
                 return;
             }
             try
@@ -74,11 +72,11 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
                 Registry registry =  LocateRegistry.createRegistry(serverPort);
                 //Objekt an registry binden
                 registry.rebind("FileSystemServer", stub);
-                serverTextArea.append("Server bound ...\n");
+                append("Server bound ...\n");
             }
             catch(Exception e2)
             {
-                System.out.println( "Fehler: " + e2.toString() );
+                append("Fehler: " + e2.toString());
             }
 
             /** Verbindung mit mehreren Rechner Stuff */
@@ -97,6 +95,7 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
         }
     }
 
+    /**Zum zum anhaengen von Text in die TextArea*/
     void append(String text)
     {
         serverTextArea.append(text);
@@ -112,9 +111,7 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
     {
         Path [] dirListe;
         String ergListe = "";
-        System.out.println("Funktion: browseDirs - Param: " + dir);
-        serverTextArea.append("\nFunktion: browseDirs - Param: " + dir + "\n");
-        serverTextArea.setCaretPosition(serverTextArea.getText().length() - 1);
+        append("\nFunktion: browseDirs - Param: " + dir + "\n");
         try
         {
             this.fs.browse(dir);
@@ -140,12 +137,9 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
         catch(Exception e)
         {
             ergListe = "";
-            System.out.println("Funktion: " + e.toString());
-            serverTextArea.append("Funktion: " + e.toString() +"\n");
+            append("Funktion: " + e.toString() +"\n");
         }
-        System.out.println("Return: \"" + ergListe + "\"");
-        serverTextArea.append("Return: \"" + ergListe + "\"");
-        serverTextArea.setCaretPosition(serverTextArea.getText().length() - 1);
+        append("Return: \"" + ergListe + "\"");
         return ergListe;
     }
 
@@ -159,8 +153,7 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
         Path [] fileListe;
         String ergListe = "";
         System.out.println("Funktion: browseFiles - Param: " + file);
-        serverTextArea.append("\nFunktion: browseFiles - Param: " + file + "\n");
-        serverTextArea.setCaretPosition(serverTextArea.getText().length() - 1);
+        append("\nFunktion: browseFiles - Param: " + file + "\n");
         try
         {
             this.fs.browse(file);
@@ -186,12 +179,9 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
         catch(Exception e)
         {
             ergListe = "";
-            System.out.println("Fehler: " + e.toString());
-            serverTextArea.append("Fehler: " + e.toString() + "\n");
+            append("Fehler: " + e.toString() + "\n");
         }
-        System.out.println("Return: \"" + ergListe + "\"");
-        serverTextArea.append("Return: \"" + ergListe  + "\"" + "\n");
-        serverTextArea.setCaretPosition(serverTextArea.getText().length() - 1);
+        append("Return: \"" + ergListe  + "\"" + "\n");
         return ergListe;
     }
 
@@ -203,10 +193,7 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
      */
     public String search(String file, String startDir) throws RemoteException
     {
-        System.out.println("Funktion: search - Params: " + file + ", " + startDir);
-        serverTextArea.append("Funktion: search - Params: " + file + ", " + startDir + "\n");
-        serverTextArea.setCaretPosition(serverTextArea.getText().length() - 1);
-
+        append("Funktion: search - Params: " + file + ", " + startDir + "\n");
         Path [] fileListe = null;
         String ergListe = "";
         try
@@ -234,12 +221,9 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
         catch(Exception e)
         {
             ergListe = "";
-            System.out.println("Fehler: " + e.toString());
-            serverTextArea.append("Fehler: " + e.toString() + "\n");
+            append("Fehler: " + e.toString() + "\n");
         }
-        System.out.println("Return: \"" + ergListe + "\"");
-        serverTextArea.append("Return: \"" + ergListe + "\n");
-        serverTextArea.setCaretPosition(serverTextArea.getText().length() - 1);
+        append("Return: \"" + ergListe + "\n");
         return ergListe;
     }
 
@@ -251,23 +235,18 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
     public boolean createFile(String file) throws RemoteException
     {
         boolean fileCreated;
-        System.out.println("Funktion: createFile - Param: " + file);
-        serverTextArea.append("Funktion: createFile - Param: " + file + "\n");
-        serverTextArea.setCaretPosition(serverTextArea.getText().length() - 1);
+        append("Funktion: createFile - Param: " + file + "\n");
         try
         {
             fileCreated = this.fs.create(file, "file");
         }
         catch(Exception e)
         {
-            System.out.println("Fehler: " + e.toString());
-            serverTextArea.append("Fehler: " + e.toString() + "\n");
+            append("Fehler: " + e.toString() + "\n");
             fileCreated = false;
 
         }
-        System.out.println("Return: " + fileCreated);
-        serverTextArea.append("Return: " + fileCreated + "\n");
-        serverTextArea.setCaretPosition(serverTextArea.getText().length() - 1);
+        append("Return: " + fileCreated + "\n");
         return fileCreated;
     }
 
@@ -279,23 +258,18 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
     public boolean createDir(String dir) throws RemoteException
     {
         boolean dirCreated;
-        System.out.println("Funktion: createDir - Param: " + dir);
-        serverTextArea.append("Funktion: createDir - Param: " + dir + "\n");
-        serverTextArea.setCaretPosition(serverTextArea.getText().length() - 1);
+        append("Funktion: createDir - Param: " + dir + "\n");
         try
         {
             dirCreated = this.fs.create(dir, "dir");
         }
         catch(Exception e)
         {
-            System.out.println("Fehler: " + e.toString());
-            serverTextArea.append("Fehler: " + e.toString() + "\n");
+            append("Fehler_createDir: " + e.toString() + "\n");
             dirCreated = false;
 
         }
-        System.out.println("Return: \"" + dirCreated + "\"");
-        serverTextArea.append("Return: \"" + dirCreated + "\n");
-        serverTextArea.setCaretPosition(serverTextArea.getText().length() - 1);
+        append("Return: \"" + dirCreated + "\n");
         return dirCreated;
     }
 
@@ -307,22 +281,17 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
     public boolean delete(String file) throws RemoteException
     {
         boolean fileDeleted;
-        System.out.println("Funktion: delete - Param: " + file);
-        serverTextArea.append("Funktion: delete - Param: " + file + "\n");
-        serverTextArea.setCaretPosition(serverTextArea.getText().length() - 1);
+        append("Funktion: delete - Param: " + file + "\n");
         try
         {
             fileDeleted = this.fs.delete(file);
         }
         catch(Exception e)
         {
-            System.out.println("Fehler: " + e.toString());
-            serverTextArea.append("Fehler: " + e.toString() + "\n");
+            append("Fehler_delete: " + e.toString() + "\n");
             fileDeleted = false;
         }
-        System.out.println("Return: \"" + fileDeleted + "\"");
-        serverTextArea.append("Return: \"" + fileDeleted + "\"" + "\n");
-        serverTextArea.setCaretPosition(serverTextArea.getText().length() - 1);
+        append("Return: \"" + fileDeleted + "\"" + "\n");
         return fileDeleted;
     }
 
@@ -335,23 +304,18 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
     public boolean rename(String oldName, String newName) throws RemoteException
     {
         boolean fileRenamed;
-        System.out.println("Funktion: rename - Params: " + oldName + ", " + newName);
-        serverTextArea.append("Funktion: rename - Params: " + oldName + ", " + newName + "\n");
-        serverTextArea.setCaretPosition(serverTextArea.getText().length() - 1);
+        append("Funktion: rename - Params: " + oldName + ", " + newName + "\n");
         try
         {
             fileRenamed = this.fs.rename(oldName, newName);
         }
         catch(IOException e)
         {
-            System.out.println("Fehler: " + e.toString());
-            serverTextArea.append("Fehler: " + e.toString() + "\n");
+            append("Fehler_rename: " + e.toString() + "\n");
             fileRenamed = false;
 
         }
-        System.out.println("Return: \"" + fileRenamed + "\"");
-        serverTextArea.append("Return: \"" + fileRenamed + "\"" + "\n");
-        serverTextArea.setCaretPosition(serverTextArea.getText().length() - 1);
+        append("Return: \"" + fileRenamed + "\"" + "\n");
         return fileRenamed;
     }
 
@@ -361,15 +325,35 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
      */
     public String getOSName()throws RemoteException
     {
-        System.out.println("Funktion: getOSName");
-        serverTextArea.append("Funktion: getOSName!\n");
-        serverTextArea.setCaretPosition(serverTextArea.getText().length() - 1);
+        append("Funktion: getOSName!\n");
         String osName;
         osName = this.fs.getOSName();
-        System.out.println("Return: \"" + osName + "\"");
-        serverTextArea.append("Return: \"" + osName + "\"" + "\n");
-        serverTextArea.setCaretPosition(serverTextArea.getText().length() - 1);
+        append("Return: \"" + osName + "\"" + "\n");
         return osName;
+    }
+
+    /**
+     * Funktion liefert den Namen eines Hosts zurück
+     * @return Host Name des FileSystems
+     * @throws RemoteException
+     */
+    //ToDooooooooooooooooooooooooooooooooooooooooooooo
+    public String getHostName() throws RemoteException
+    {
+        append("Funktion: getHostName");
+        String hostName;
+        hostName = fs.getHostName();
+        append("Return: \"" + hostName + "\"");
+        return hostName;
+    }
+
+    public String getHostAdress()
+    {
+        append("Funktion: getHostAddress");
+        String hostAddress;
+        hostAddress = fs.getHostAdress();
+        append("Return: \"" + hostAddress + "\"");
+        return hostAddress;
     }
 
     @Override
@@ -384,7 +368,6 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
     /**
      * Hauptmethode
      * Startet den Server
-     * @param args[] Parameter beim Programm start. Erster Eintrag ist PortNr für Server
      */
     public static void main(String args[])
     {
@@ -392,6 +375,7 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
         System.setProperty("java.security.policy", "java.policy");
     }
 }
+
 
 /**
  * The methods in this class allow the JTree component to traverse

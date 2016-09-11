@@ -5,6 +5,8 @@
 */
 
 import java.io.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.*;
 import java.nio.file.*;
 import static java.nio.file.StandardCopyOption.*;
@@ -14,8 +16,10 @@ import static java.nio.file.StandardCopyOption.*;
 * mit einem beliebigen FileSystem
 */
 public class FileSystem
-{	
+{
 	private String osname; //Name des Betriebsystems
+	private String hostname;
+	private String hostAddress;
 	private Path [] dirListe; //Liste der gefundenen Ordner bei Browse
 	private Path [] fileListe; //Liste der gefundenen Dateien bei Browse
 
@@ -32,6 +36,14 @@ public class FileSystem
 		this.osname = System.getProperty("os.name");
 		this.dirListe = null;
 		this.fileListe = null;
+
+		try
+		{
+			this.hostname = InetAddress.getLocalHost().getHostName();
+			this.hostAddress = InetAddress.getLocalHost().getHostAddress();
+		} catch (UnknownHostException uhe) {
+			uhe.printStackTrace();
+		}
 
 		//meins
 		this.pfad = null;
@@ -159,26 +171,43 @@ public class FileSystem
 			return false;
 		}
 	}
-	
+
+	/**
+	 * Funktion benennt eine Datei oder einen Ordner um
+	 * @param oldName aktueller Name
+	 * @param newName neuer Name
+	 * @return true wenn das Umbennnen erfolgreich war
+	 */
 	public boolean rename(String oldName, String newName) throws IOException
 	{
-		Path pathOld = Paths.get(oldName); //Ordner der durchsucht werden soll
-		
+		Path pathOld = Paths.get(oldName); //Ordner indem der zu ändernde Ordnder oder Datei liegt
+
 		if( !Files.exists(pathOld, LinkOption.NOFOLLOW_LINKS))
 		{
 			return false;
-		
+
 		}
 		else
 		{
 			Path pathNew = Paths.get(newName);
-			CopyOption[] options = new CopyOption[] { COPY_ATTRIBUTES, REPLACE_EXISTING };
-			Files.copy(pathOld, pathNew, options);
-			Files.delete(pathOld);
-			return true;
+			//Aktueller Name
+			File fileOld = new File(oldName);
+			//Neuer name
+			File fileNew = new File(newName);
+			//Prüfen ob neuer Name schon vergeben ist
+			if (fileNew.exists())
+			{
+				//neuer Dateiname existiert bereits
+				return false;
+			}
+			else
+			{
+				//Datei umbenennen
+				return fileOld.renameTo(fileNew);
+			}
 		}
-	}	
-	
+	}
+
 	/**
 	* Funktion liefert den Betriebsystemname des 
 	* FileSystems zurück
@@ -188,7 +217,11 @@ public class FileSystem
 	{
 		return this.osname;
 	}
-	
+
+	public String getHostName() {return this.hostname;}
+
+	public String getHostAdress() {return this.hostAddress;}
+
 	/**
 	* Prozedur liefert die gefundenen Dateien zurück
 	* @return liste der gefundenen Dateien
@@ -206,6 +239,7 @@ public class FileSystem
 	{
 		return this.dirListe;
 	}
+
 
 	public File getDatei(String pfad)
 	{

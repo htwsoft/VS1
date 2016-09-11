@@ -39,6 +39,7 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
     private JScrollPane baumScroll;
 
     private FSInterface fsserver;
+    private VerwalterInterface vserver;
 
     /**Fuer die Tree-Ansicht */
 //    protected EventListenerList listeners;
@@ -107,7 +108,7 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
             {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.getPath().getLastPathComponent();
                 String pfad2 = node.toString();
-                System.out.println("You selected " + pfad2); //nur zum test
+                client.append("You selected " + pfad2+ "\n");
                 try
                 {
                     String a = fsserver.browseDirs(pfad2);
@@ -250,6 +251,7 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
         if(o == startClientButton)
         {
             int serverPort;
+            String host = "192.168.0.103";
             try
             {
                 serverPort = Integer.parseInt(portTextFeld.getText().trim());
@@ -264,7 +266,9 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
                 {
                     System.setSecurityManager(new SecurityManager());
                 }
-                Registry registry = LocateRegistry.getRegistry(serverPort);
+                Registry registry = LocateRegistry.getRegistry(host, serverPort);
+                //Registry registry = LocateRegistry.getRegistry(serverPort);
+                this.vserver = (VerwalterInterface) registry.lookup("VerwalterServer");
                 this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
                 client.append("Verbunden...\n");
 
@@ -287,17 +291,6 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
                 System.out.println( "Fehler: " + e2.toString() );
                 client.append( "Fehler: " + e2.toString() );
             }
-
-            /** Verbindung mit mehreren Rechner Stuff */
-//            try
-//            {
-//                this.fsserver = (FSInterface) Naming.lookup("//192.168.0.105:2222/FileSystemServer");
-//            }
-//            catch (Exception ex)
-//            {
-//                System.out.println( "Fehler: " + ex.toString() );
-//            }
-
         }
 
         if(o == OSInfoButton)

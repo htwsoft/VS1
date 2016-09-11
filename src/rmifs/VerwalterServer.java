@@ -15,7 +15,8 @@ import java.net.UnknownHostException;
  * Created by Christian Patzek on 03.09.2016.
  * VerwalterServer ist gleichzeitig Client und Server. Zwischenstelle zwischen Client und FileServer.
  */
-public class VerwalterServer implements VerwalterInterface, RMIClientSocketFactory {
+public class VerwalterServer implements VerwalterInterface, RMIClientSocketFactory
+{
     private FSInterface fsserver;
     /**
      * enthaelt die Liste aller verfuegbaren(remote) VerwalterServer und indirekt deren verbundenen FileServer
