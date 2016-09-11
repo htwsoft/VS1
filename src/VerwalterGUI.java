@@ -90,23 +90,10 @@ public class VerwalterGUI extends JFrame implements VerwalterInterface, RMIClien
                 System.setProperty("java.rmi.server.hostname","192.168.0.103");
                 VerwalterInterface stub = (VerwalterInterface) UnicastRemoteObject.exportObject(vServer, serverPort+1);
 
-                registry.rebind("VerwalterServer", stub);
+                Registry registry2 =  LocateRegistry.createRegistry(serverPort+1);
+
+                registry2.rebind("VerwalterServer", stub);
                 append("Server bound ...");
-
-//                //Stellt das Objekt dem System zur Verfügung
-//                FSInterface stub = (FSInterface) UnicastRemoteObject.exportObject(vServer, serverPort);
-//                //Registry erstellen um Objekt ansprechen zu können
-//                Registry registry =  LocateRegistry.createRegistry(serverPort);
-//                //Objekt an registry binden
-//                registry.rebind("FileSystemServer", stub);
-//                append("Server bound ...\n");
-
-
-                //Stellt das Objekt dem System zur Verfügung
-                //VerwalterInterface stub = (VerwalterInterface) UnicastRemoteObject.exportObject(vServer, PORT_NR2);
-                //Registry erstellen um Objekt ansprechen zu können
-                //Registry registry =  LocateRegistry.createRegistry(PORT_NR2);
-                //Objekt an registry binden
 
             }
             catch(Exception e2)
@@ -129,8 +116,6 @@ public class VerwalterGUI extends JFrame implements VerwalterInterface, RMIClien
     }
 
 
-
-
     public static void main(String args[])
     {
         //Propertys aus Datei laden
@@ -151,4 +136,61 @@ public class VerwalterGUI extends JFrame implements VerwalterInterface, RMIClien
         //return VERWALTER_LISTE;
         return null;
     }
+
+
+    public boolean rename(String oldName, String newName) throws RemoteException
+    {
+        return this.fsserver.rename(oldName, newName);
+    }
+
+    public String getOSName()throws RemoteException
+    {   System.out.println("osname");
+        return this.fsserver.getOSName();
+    }
+    //ToDoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+    public String getHostName() throws RemoteException
+    {
+        return this.fsserver.getHostName();
+    }
+
+    public String getHostAdress() throws RemoteException{
+        return this.fsserver.getHostAdress();
+    }
+
+    public boolean delete(String file) throws RemoteException
+    {
+        return this.fsserver.delete(file);
+    }
+
+    public boolean createFile(String file) throws RemoteException
+    {
+        return this.fsserver.createFile(file);
+    }
+
+    public boolean createDir(String dir) throws RemoteException
+    {
+        return fsserver.createDir(dir);
+    }
+
+    public String search(String file, String startDir) throws RemoteException
+    {
+        String erg = this.fsserver.search(file, startDir);
+        if(erg.equals(""))
+        {
+            return ("Nicht gefunden, pruefen Sie andere Server!" + getServerList());
+        }
+        else
+            return erg;
+    }
+
+    public String browseFiles(String dir) throws RemoteException
+    {
+        return this.fsserver.browseFiles(dir);
+    }
+
+    public String browseDirs(String dir) throws RemoteException
+    {
+        return this.fsserver.browseDirs(dir);
+    }
+
 }

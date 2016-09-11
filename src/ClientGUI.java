@@ -38,8 +38,9 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
     private JLabel searchLabel;
     private JScrollPane baumScroll;
 
-    private FSInterface fsserver;
-    private VerwalterInterface vserver;
+//    private FSInterface fsserver;
+//    private VerwalterInterface vserver;
+    private VerwalterInterface fsserver;
 
     /**Fuer die Tree-Ansicht */
 //    protected EventListenerList listeners;
@@ -267,9 +268,9 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
                     System.setSecurityManager(new SecurityManager());
                 }
                 Registry registry = LocateRegistry.getRegistry(host, serverPort);
-                //Registry registry = LocateRegistry.getRegistry(serverPort);
-                this.vserver = (VerwalterInterface) registry.lookup("VerwalterServer");
-                this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
+//                this.vserver = (VerwalterInterface) registry.lookup("VerwalterServer");
+//                this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
+                this.fsserver = (VerwalterInterface) registry.lookup("VerwalterServer");
                 client.append("Verbunden...\n");
 
                 // Start-Button deaktivieren nach Start
