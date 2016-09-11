@@ -112,6 +112,12 @@ public class FileSystem
 		}
 	}
 	
+	/**
+	* Funktion erstellt einen Ordner oder eine Datei in dem übergebenen Ordner
+	* @param dir Datei- oder Ordnername
+	* @param typ Angabe ob Ordner oder Datei erstellt werden soll "dir" oder "file"
+	* @return true wenn das erstellen erfolgreich war
+	*/
 	public boolean create(String dir, String typ) throws IOException
 	{
 		boolean returnWert = false;
@@ -142,7 +148,11 @@ public class FileSystem
 		}
 		return returnWert;
 	}
-	
+	/**
+	* Funktion löscht die übergebene Datei oder den übergebenen Ordner
+	* @param dir Datei oder Ordner der geloescht werden soll
+	* @return true wenn das Loeschen erfolgreich war	
+	*/
 	public boolean delete(String dir)
 	{
 		try
@@ -164,9 +174,15 @@ public class FileSystem
 		}
 	}
 	
+	/**
+	* Funktion benennt eine Datei oder einen Ordner um
+	* @param oldName aktueller Name
+	* @param newName neuer Name 
+	* @return true wenn das Umbennnen erfolgreich war	
+	*/
 	public boolean rename(String oldName, String newName) throws IOException
 	{
-		Path pathOld = Paths.get(oldName); //Ordner der durchsucht werden soll
+		Path pathOld = Paths.get(oldName); //Ordner indem der zu ändernde Ordnder oder Datei liegt
 		
 		if( !Files.exists(pathOld, LinkOption.NOFOLLOW_LINKS))
 		{
@@ -176,10 +192,21 @@ public class FileSystem
 		else
 		{
 			Path pathNew = Paths.get(newName);
-			CopyOption[] options = new CopyOption[] { COPY_ATTRIBUTES, REPLACE_EXISTING };
-			Files.copy(pathOld, pathNew, options);
-			Files.delete(pathOld);
-			return true;
+			//Aktueller Name
+			File fileOld = new File(oldName);
+			//Neuer name
+			File fileNew = new File(newName);
+			//Prüfen ob neuer Name schon vergeben ist
+			if (fileNew.exists())
+			{
+				//neuer Dateiname existiert bereits
+				return false;				
+			}
+			else
+			{
+				//Datei umbenennen
+				return fileOld.renameTo(fileNew);
+			}
 		}
 
 	
