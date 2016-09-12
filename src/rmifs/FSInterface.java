@@ -1,10 +1,11 @@
+//package src.rmifs;
+package rmifs;
+
 /**
 * RMI-Klasse zum Darstellen eines Dateisystems
 * @author Marco Palumbo
-* @version 1.0
+* @version 1.01
 */
-//package src.rmifs;
-package rmifs;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -22,5 +23,8 @@ public interface FSInterface extends Remote
 	public boolean rename(String oldName, String newName) throws RemoteException;
 	public String getOSName()throws RemoteException;
 	public String getHostName() throws RemoteException;
-	public String getHostAdress() throws RemoteException; //ToDo
+	public String getHostAddress() throws RemoteException; //ToDo
+	//public String getClientAddress() throws RemoteException //ToDo
+	//public String getClientName() throws RemoteException //ToDo
+	//public String getClientOS() throws RemoteException //ToDo
 }

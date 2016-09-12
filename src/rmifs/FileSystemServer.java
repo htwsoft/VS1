@@ -1,10 +1,11 @@
+//package src.rmifs;
+package rmifs;
+
 /**
 * RMI-Server für ein FileSystem
 * @author Marco Palumbo
-* @version 1.0
+* @version 1.01
 */
-//package src.rmifs;
-package rmifs;
 
 import java.io.*;
 import java.nio.*;
@@ -17,6 +18,8 @@ import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.*;
 import java.util.*;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 /**
 * RMI-Server für das FileSystem
@@ -251,35 +254,35 @@ public class FileSystemServer implements FSInterface
 	public String getOSName()throws RemoteException
 	{
 		System.out.println("Funktion: getOSName");
-		String osName = "deimudda";
+		String osName;
 		osName = fs.getOSName();
-		System.out.println("Return: \"" + osName + "\"");
-		return osName;		
+		//System.out.println("System runs on \"" + osName + "\"");
+		return osName;
 	}
 
 	/**
-	 * Funktion liefert den Namen eines Hosts zurück
+	 * Funktion liefert den Namen, IP & OS eines Hosts zurück
 	 * @return Host Name des FileSystems
 	 * @throws RemoteException
+	 * @author soezdemir
      */
-
 	public String getHostName() throws RemoteException
 	{
 		System.out.println("Funktion: getHostName");
 		String hostName;
 		hostName = fs.getHostName();
-		System.out.println("Return: \"" + hostName + "\"");
+		//System.out.println("Hostname is \"" + hostName + "\"");
 		return hostName;
 	}
-	//ToDo
-	public String getHostAdress()
+	public String getHostAddress() throws RemoteException
 	{
 		System.out.println("Funktion: getHostAddress");
 		String hostAddress;
-		hostAddress = fs.getHostAdress();
-		System.out.println("Return: \"" + hostAddress + "\"");
+		hostAddress = fs.getHostAddress();
+		//System.out.println("Server IP is \"" + hostAddress + "\"");
 		return hostAddress;
 	}
+
 
 	/**
 	* Funktion liefert die Dateien der letzten suche (browse)
@@ -336,7 +339,7 @@ public class FileSystemServer implements FSInterface
 	/**
 	* Hauptmethode
 	* Startet den Server
-	* @param args[] Parameter beim Programm start. Erster Eintrag ist PortNr für Server
+	* @param PortNr des FileSystemServers
 	*/
 	public static void main(String args[])
 	{
@@ -352,13 +355,17 @@ public class FileSystemServer implements FSInterface
 					System.setSecurityManager ( new SecurityManager() );
 				}
 				FileSystemServer fsServer = new FileSystemServer();
-				//Stellt das Objekt dem System zur Verfügung
-				FSInterface stub = (FSInterface) UnicastRemoteObject.exportObject(fsServer, serverPort);
 				//Registry erstellen um Objekt ansprechen zu können
 				Registry registry =  LocateRegistry.createRegistry(serverPort);
+				//Stellt das Objekt dem System zur Verfügung
+				FSInterface stub = (FSInterface) UnicastRemoteObject.exportObject(fsServer, serverPort);
+
 				//Objekt an registry binden
 				registry.rebind("FileSystemServer", stub);
-				System.out.println("Server bound ...");
+				System.out.println("Server bound ...\nPort now open at 4710");
+				System.out.print("\n Server Name: " + fsServer.getHostName()
+									+ "\n Server IP: " + fsServer.getHostAddress()
+									+ "\n Server runs on " + fsServer.getOSName() );
 			}
 			else
 			{

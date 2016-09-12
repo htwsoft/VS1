@@ -13,26 +13,32 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 /**
- * Created by Christian Patzek on 03.09.2016.
- * VerwalterServer ist gleichzeitig Client und Server. Zwischenstelle zwischen Client und FileServer.
+ * VerwalterServer ist gleichzeitig Client und Server.
+ * Zwischenstelle zwischen Client und FileServer.
+ * @author cpatzek
+ * @version 1.01
+ * @date 2016-09-03
  */
+
 public class VerwalterServer implements VerwalterInterface, RMIClientSocketFactory {
     private FSInterface fsserver;
+    //private FileSystemClient fsclient;//ToDo
     /**
-     * enthaelt die Liste aller verfuegbaren(remote) VerwalterServer und indirekt deren verbundenen FileServer
+     * enthaelt die Liste aller verfuegbaren(remote) VerwalterServer
+     * und indirekt deren verbundenen FileServer (Beispiel IP-Adressen)
      */
-    private static final String VERWALTER_LISTE = "Name: Server1 IP: xxx.xxx.xxx.xxx\n" +
-                                                    "Name: Server2 IP: yyy.yyy.yyy.yyy\n" +
-                                                    "Name: Server3 IP: zzz.zzz.zzz.zzz";
+    private static final String VERWALTER_LISTE =   "Name: Server[1] IP: 192.168.0.101\n" +
+                                                    "Name: Server[2] IP: 192.168.0.102\n" +
+                                                    "Name: Server[3] IP: 192.168.0.103";
     /**
      * HOST entspricht der IP-Adresse des lokalen FileServers
      */
-    private final static String HOST= null;
+    private final static String HOST= null; //192.168.0.101
 
     /**
      * PORT_NR entspricht dem gebundenen Port des FileServers
      */
-    private final static int PORT_NR = 4710;
+    private final static int PORT_NR = 4711;
 
     /**
      * Konstruktor, baut Verbindung zum lokalen FileServer auf
@@ -82,14 +88,34 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     }
 
     public String getHostName() throws RemoteException
-    {
+    {   System.out.println("hostname");
         return this.fsserver.getHostName();
     }
 
-    public String getHostAdress() throws RemoteException{
-        return this.fsserver.getHostAdress();
+    public String getHostAddress() throws RemoteException
+    {   System.out.println("hostaddress");
+        return this.fsserver.getHostAddress();
+    }
+    /** wird erledigt durch soezdemir
+     * Methoden sollen Informationen über
+     * den verbundenen Client zurückgeben
+    //ToDo
+    public String getClientOS() throws RemoteException{
+        System.out.println("client osname");
+        return this.fsclient.getClientOS();
     }
 
+    //ToDo
+    public String getClientAddress() throws RemoteException{
+        System.out.println("clientaddress");
+        return this.fsclient.getClientAddress();
+    }
+    //ToDo
+    public String getClientName() throws RemoteException{
+        System.out.println("clientname");
+        return this.fsclient.getClientName();
+    }
+**/
     public boolean delete(String file) throws RemoteException
     {
         return this.fsserver.delete(file);
@@ -147,14 +173,15 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
             {
                 int serverPort = 0;//Clientaufruf mit 4711
                 serverPort = Integer.parseInt(args[0]);
-                System.setProperty("java.rmi.server.hostname","192.168.0.23"); //nötig für rmi client verbindung zum verwalter!!!!
+                //Noetig für RMI Client Anbindung zum VerwalterServer z.B. 192.168.0.101 Port 4711
+                System.setProperty("java.rmi.server.hostname", "localhost");
                 //Stellt das Objekt dem System zur Verfügung
                 VerwalterInterface stub = (VerwalterInterface) UnicastRemoteObject.exportObject(verwalterServer, serverPort);
                 //Registry erstellen um Objekt ansprechen zu können
                 Registry registry =  LocateRegistry.createRegistry(serverPort);
                 //Objekt an registry binden
                 registry.rebind("VerwalterServer", stub);
-                System.out.println("Server bound ...");
+                System.out.println("Server bound ...\n Port open at 4711");
             }
             else
             {

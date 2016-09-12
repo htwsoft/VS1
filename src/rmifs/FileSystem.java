@@ -1,7 +1,7 @@
 /**
 * Klasse zum Darstellen eines Dateisystems
 * @author Marco Palumbo, Nadine Breitenstein
-* @version 1.0
+* @version 1.01
 */
 //package src.rmifs;
 package rmifs;
@@ -19,8 +19,8 @@ import static java.nio.file.StandardCopyOption.*;
 public class FileSystem
 {	
 	private String osname; //Name des Betriebsystems
-	private String hostname;
-	private String hostAddress;
+	private String hostname; // Name der Machine
+	private String hostAddress; // IP der Machine
 	private Path [] dirListe; //Liste der gefundenen Ordner bei Browse
 	private Path [] fileListe; //Liste der gefundenen Dateien bei Browse
 	
@@ -178,7 +178,7 @@ public class FileSystem
 	* Funktion benennt eine Datei oder einen Ordner um
 	* @param oldName aktueller Name
 	* @param newName neuer Name 
-	* @return true wenn das Umbennnen erfolgreich war	
+	* @return true wenn das Umbennen erfolgreich war
 	*/
 	public boolean rename(String oldName, String newName) throws IOException
 	{
@@ -213,9 +213,10 @@ public class FileSystem
 	}	
 	
 	/**
-	* Funktion liefert den Betriebsystemname des 
+	* Funktion liefert den Betriebsystemnamen,
+	* sowie Maschinenname und IP-Adresse des
 	* FileSystems zurück
-	* @return OS-Name
+	* @return osname, hostname, hostAddress
 	*/
 	public String getOSName()
 	{
@@ -224,7 +225,7 @@ public class FileSystem
 
 	public String getHostName() {return this.hostname;}
 
-	public String getHostAdress() {return this.hostAddress;}
+	public String getHostAddress() {return this.hostAddress;}
 
 	/**
 	* Prozedur liefert die gefundenen Dateien zurück

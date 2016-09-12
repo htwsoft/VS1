@@ -7,8 +7,10 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 /**
- * Created by Christian Patzek on 03.09.2016.
- * Interface für die Verwalter
+ * Interface für die VerwalterServer
+ * @author cpatzek
+ * @version 1.01
+ * @date 2016-09-03
  */
 interface VerwalterInterface extends Remote
 {
@@ -22,5 +24,8 @@ interface VerwalterInterface extends Remote
     public boolean rename(String oldName, String newName) throws RemoteException;
     public String getOSName()throws RemoteException;
     public String getHostName() throws RemoteException;
-    public String getHostAdress() throws RemoteException; //ToDo
+    public String getHostAddress() throws RemoteException; //ToDo
+    //public String getClientAddress() throws RemoteException //ToDo
+    //public String getClientName() throws RemoteException //ToDo
+    //public String getClientOS() throws RemoteException //ToDo
 }

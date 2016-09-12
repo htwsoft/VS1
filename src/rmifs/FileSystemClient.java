@@ -1,20 +1,27 @@
 //package src.rmifs;
 package rmifs;
 
+/**
+ * @author mpalumbo, cpatzek, soezdemir
+ * @version 1.01
+ * @date Sankt.Nimmerleinstag
+ *
+ */
+
 import java.io.*;
 import java.util.*;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
-
+import java.lang.*;
+import java.net.UnknownHostException.*;
+import java.rmi.RemoteException;
 
 
 public class FileSystemClient
 {
 	private VerwalterInterface vserver;  //Attribute zum Zugriff auf Verwalter Server Funktion
+	private FileSystemClient fsclient;
 	private enum MENUE { CLOSE, LIST, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE, RENAME, OS_NAME, FALSE };
 	/**
 	* Hauptmethode der Demo
@@ -29,7 +36,8 @@ public class FileSystemClient
 		MENUE menue_eingabe = MENUE.FALSE;
 		try 
 		{
-			serverPort = Integer.parseInt(args[0]);	
+			serverPort = Integer.parseInt(args[0]);
+			System.setProperty("java.rmi.server.hostname", "192.168.0.101");
 			fsc = new FileSystemClient(serverPort, args[1]);
 			while(menue_eingabe != MENUE.CLOSE)
 			{
@@ -92,7 +100,7 @@ public class FileSystemClient
 	}
 	
 	/**
-	* Führt die Brwows-Methode der FileSystemServer-Klasse aus
+	* Führt die Browse-Methode der FileSystemServer-Klasse aus
 	*/
 	private void browse()
 	{
@@ -269,6 +277,7 @@ public class FileSystemClient
 			System.out.println("|-------------------------------------------------");
 			System.out.println("| Verwendetes OS:  " + this.vserver.getOSName());
 			System.out.println("| Name des Hosts:  " + this.vserver.getHostName());//ToDo
+			System.out.println("| IP des Hosts	:  " + this.vserver.getHostAddress());//ToDo
 			System.out.println("|-------------------------------------------------");
 
 		}
@@ -294,6 +303,9 @@ public class FileSystemClient
 			//Auswahlmenue zeigen bis eingabe richtig
 			try
 			{
+				System.out.println("Client Name: " + getClientName() +
+									" | IP Adresse : " + getClientAddress() +
+									" | OS Name	: " + getClientOS());
 				System.out.println("");
 				System.out.println("---------------------");
 				System.out.println("Menue:");
@@ -335,4 +347,37 @@ public class FileSystemClient
 			System.out.println("Fehler: "+ e.getMessage());
 		}
 	}
+
+	//ToDo --> noch in Bearbeitung durch soezdemir
+	/**
+	 * Folgende Methoden liefern den Namen, IP-Adresse
+	 * und den OS-Nammen eines Clients zurück
+	 * @return Host Name, IP-Adresse und OS des Clients
+	 * @throws RemoteException
+	 * @author soezdemir
+	 */
+	public String getClientName() {
+		System.out.println("Funktion: getClientName");
+		String clientName;
+		clientName = fsclient.getClientName();
+		System.out.println("Return: \"" + clientName + "\"");
+		return clientName;
+	}
+
+	public String getClientAddress(){
+		System.out.println("Funktion: getClientAddress");
+		String clientAddress;
+		clientAddress = fsclient.getClientAddress();
+		System.out.println("Return: \"" + clientAddress + "\"");
+		return clientAddress;
+	}
+
+	public String getClientOS(){
+		System.out.println("Funktion: getClientOS");
+		String clientOSName;
+		clientOSName = fsclient.getClientOS();
+		System.out.println("Return: \"" + clientOSName + "\"");
+		return clientOSName;
+	}
 }
+
