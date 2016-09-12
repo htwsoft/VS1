@@ -80,6 +80,7 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
         ImageIcon img = new ImageIcon("htw.png");
         frame.setIconImage(img.getImage());
 
+
         clientTextArea.append("Hallo \n\n");
         startClientButton.addActionListener(this);
         browseButton.addActionListener(this);
@@ -114,7 +115,7 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
             {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.getPath().getLastPathComponent();
                 String pfad2 = node.toString();
-                client.append("You selected " + pfad2+ "\n");
+                client.append("You selected: " + pfad2+ "\n");
                 try
                 {
                     String a = vServer.browseDirs(pfad2);

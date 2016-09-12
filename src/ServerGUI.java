@@ -143,7 +143,6 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
     {
         Path [] fileListe;
         String ergListe = "";
-        System.out.println("Funktion: browseFiles - Param: " + file);
         append("\nFunktion: browseFiles - Param: " + file + "\n");
         try
         {

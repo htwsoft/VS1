@@ -66,6 +66,7 @@
             <properties>
               <autoscrolls value="true"/>
               <dragEnabled value="false"/>
+              <dropMode value="USE_SELECTION"/>
               <expandsSelectedPaths value="true"/>
               <focusCycleRoot value="false"/>
               <focusTraversalPolicyProvider value="false"/>
@@ -255,7 +256,7 @@
       </component>
       <component id="624f3" class="javax.swing.JButton" binding="sWechselButton">
         <constraints>
-          <grid row="2" column="7" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+          <grid row="2" column="7" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false">
             <minimum-size width="30" height="30"/>
             <preferred-size width="30" height="30"/>
           </grid>
