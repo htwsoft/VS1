@@ -381,17 +381,17 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
             }
 
             /**Nur lokal?*/
-//            try
-//            {
-//                File wurzel = this.fsserver.getFile(pfad);
-//                // Create a TreeModel object to represent our tree of files
-//                FileTreeModel model2 = new FileTreeModel(wurzel);
-//                //FileTreeModel model2 = new FileTreeModel();
-//                tree1.setModel(model2);
-//            } catch (RemoteException e1)
-//            {
-//                e1.printStackTrace();
-//            }
+            try
+            {
+                File wurzel = this.vServer.getFile(pfad);
+                // Create a TreeModel object to represent our tree of files
+                FileTreeModel model2 = new FileTreeModel(wurzel);
+                //FileTreeModel model2 = new FileTreeModel();
+                tree1.setModel(model2);
+            } catch (RemoteException e1)
+            {
+                e1.printStackTrace();
+            }
 
             /**Baum wird auf den Inhalten dirListe und fileListe zusammengebaut*/
             DefaultTreeModel model = (DefaultTreeModel)tree1.getModel();

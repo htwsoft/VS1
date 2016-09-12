@@ -3,6 +3,7 @@ import rmifs.*;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 import java.rmi.Remote;
@@ -143,6 +144,12 @@ public class VerwalterGUI extends JFrame implements VerwalterInterface, RMIClien
 
     public String getHostAdress() throws RemoteException{
         return this.fsserver.getHostAdress();
+    }
+
+    @Override
+    public File getFile(String pfad) throws RemoteException
+    {
+        return this.fsserver.getFile(pfad);
     }
 
     public boolean delete(String file) throws RemoteException

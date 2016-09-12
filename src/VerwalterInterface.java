@@ -1,3 +1,4 @@
+import java.io.File;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.net.InetAddress;
@@ -20,4 +21,5 @@ interface VerwalterInterface extends Remote
     public String getOSName()throws RemoteException;
     public String getHostName() throws RemoteException; //ToDoooooooooooooooooooooooooooo
     public String getHostAdress() throws RemoteException; //ToDoooooooooooooooooooooooooooo
+    public File getFile(String pfad)throws RemoteException;  //meins
 }
