@@ -153,7 +153,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
             {
                 //int serverPort = 0;//Clientaufruf mit 4711
                 //serverPort = Integer.parseInt(args[0]);
-                System.setProperty("java.rmi.server.hostname","192.168.0.101"); //nötig für rmi client verbindung zum verwalter!!!!
+                System.setProperty("java.rmi.server.hostname","192.168.0.102"); //nötig für rmi client verbindung zum verwalter!!!!
                 //Stellt das Objekt dem System zur Verfügung
                 VerwalterInterface stub = (VerwalterInterface) UnicastRemoteObject.exportObject(verwalterServer, PORT_NR2);
                 //Registry erstellen um Objekt ansprechen zu können

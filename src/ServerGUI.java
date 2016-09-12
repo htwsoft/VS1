@@ -24,7 +24,7 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
     private JPanel serverPanel;
 
     private FileSystem fs = new FileSystem();
-    public static FSInterface fsserver = new ServerGUI();
+    public static FSInterface fsServer = new ServerGUI();
 
     public ServerGUI()
     {
@@ -67,7 +67,7 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
                     System.setSecurityManager ( new SecurityManager() );
                 }
                 //Stellt das Objekt dem System zur Verfügung
-                FSInterface stub = (FSInterface) UnicastRemoteObject.exportObject(fsserver, serverPort);
+                FSInterface stub = (FSInterface) UnicastRemoteObject.exportObject(fsServer, serverPort);
                 //Registry erstellen um Objekt ansprechen zu können
                 Registry registry =  LocateRegistry.createRegistry(serverPort);
                 //Objekt an registry binden
@@ -316,7 +316,7 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
      */
     public String getOSName()throws RemoteException
     {
-        append("Funktion: getOSName!\n");
+        append("Funktion: getOSName:\n");
         String osName;
         osName = this.fs.getOSName();
         append("Return: \"" + osName + "\"" + "\n");
@@ -331,10 +331,10 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
     //ToDooooooooooooooooooooooooooooooooooooooooooooo
     public String getHostName() throws RemoteException
     {
-        append("Funktion: getHostName");
+        append("Funktion: getHostName:\n");
         String hostName;
         hostName = fs.getHostName();
-        append("Return: \"" + hostName + "\"");
+        append("Return: \"" + hostName + "\"" + "\n");
         return hostName;
     }
 
@@ -371,7 +371,7 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
 /**
  * The methods in this class allow the JTree component to traverse
  * the file system tree, and display the files and directories.
- * WIRD NICHT BENUTZT WEIL ICH ES NICHT ÜBER NETZWERK GEHT
+ * WIRD NICHT BENUTZT WEIL  ES NICHT ÜBER NETZWERK GEHT
  **/
 class FileTreeModel implements TreeModel
 {

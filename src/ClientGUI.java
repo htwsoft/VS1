@@ -37,10 +37,11 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
     private JTextField searchFeld;
     private JLabel searchLabel;
     private JScrollPane baumScroll;
+    private JLabel ip;
+    private JLabel ipLabel;
+    private JButton sWechselButton;
 
-//    private FSInterface fsserver;
-//    private VerwalterInterface vserver;
-    private VerwalterInterface fsserver;
+    private VerwalterInterface vServer;
 
     /**Fuer die Tree-Ansicht */
 //    protected EventListenerList listeners;
@@ -64,7 +65,7 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
         DefaultTreeModel model = (DefaultTreeModel)tree1.getModel();
         DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
         root.removeAllChildren();
-        root.setUserObject("Browse");
+        root.setUserObject(new SimpleDateFormat("HH:mm:ss").format(new Date()));
         model.nodeChanged(root);
 
         model.reload(root);
@@ -88,6 +89,7 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
         deleteButton.addActionListener(this);
         renameButton.addActionListener(this);
         OSInfoButton.addActionListener(this);
+        sWechselButton.addActionListener(this);
 
         /**
          * Buttons deaktivieren, werden erst nach Verbindung aktiviert
@@ -100,6 +102,9 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
         renameButton.setEnabled(false);
         OSInfoButton.setEnabled(false);
         searchFeld.setEnabled(false);
+        sWechselButton.setEnabled(false);
+        tree1.setEnabled(false);
+
 
         /** listener fuer den tree*/
         tree1.addTreeSelectionListener(new TreeSelectionListener()
@@ -112,9 +117,9 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
                 client.append("You selected " + pfad2+ "\n");
                 try
                 {
-                    String a = fsserver.browseDirs(pfad2);
+                    String a = vServer.browseDirs(pfad2);
                     String[] b = a.split("[;]");
-                    String d = fsserver.browseFiles(pfad2);
+                    String d = vServer.browseFiles(pfad2);
                     String[] f = d.split("[;]");
                     for (int o = 0; o < b.length; o++)
                     {
@@ -252,7 +257,7 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
         if(o == startClientButton)
         {
             int serverPort;
-            String host = "192.168.0.103";
+            String host = "192.168.0.102";
             try
             {
                 serverPort = Integer.parseInt(portTextFeld.getText().trim());
@@ -267,12 +272,11 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
                 {
                     System.setSecurityManager(new SecurityManager());
                 }
-                Registry registry = LocateRegistry.getRegistry(host, serverPort);
-//                this.vserver = (VerwalterInterface) registry.lookup("VerwalterServer");
-//                this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
-                this.fsserver = (VerwalterInterface) registry.lookup("VerwalterServer");
+                Registry registry = LocateRegistry.getRegistry(host, serverPort+1);
+                this.vServer = (VerwalterInterface) registry.lookup("VerwalterServer");
                 client.append("Verbunden...\n");
 
+                ipLabel.setText(host);
                 // Start-Button deaktivieren nach Start
                 startClientButton.setEnabled(false);
                 // Portfeld deaktivieren nach Start
@@ -286,10 +290,12 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
                 renameButton.setEnabled(true);
                 OSInfoButton.setEnabled(true);
                 searchFeld.setEnabled(true);
+                sWechselButton.setEnabled(true);
+                tree1.setEnabled(true);
             }
             catch(Exception e2)
             {
-                System.out.println( "Fehler: " + e2.toString() );
+                System.out.println( "Fehler_startButton: " + e2.toString() );
                 client.append( "Fehler: " + e2.toString() );
             }
         }
@@ -298,7 +304,8 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
         {
             try
             {
-                client.append(" Verwendetes OS: " + this.fsserver.getOSName() + "\n\n");
+                client.append(" Verwendetes OS: " + this.vServer.getOSName() + "\n");
+                client.append(" Name des Hosts:  " + this.vServer.getHostName() + "\n\n");
             }
             catch(Exception eOS)
             {
@@ -312,7 +319,7 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
             String pfad = JOptionPane.showInputDialog(eingabe, "Welcher Ordner soll erstellt werden?", "Create Directory", JOptionPane.PLAIN_MESSAGE);
             try
             {
-                if( this.fsserver.createDir(pfad) )
+                if( this.vServer.createDir(pfad) )
                 {
                     client.append("Ordner wurde erstellt!\n");
                 }
@@ -334,7 +341,7 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
             String pfad = JOptionPane.showInputDialog(eingabe, "Welche Datei soll erstellt werden?", "Create File", JOptionPane.PLAIN_MESSAGE);
             try
             {
-                if( this.fsserver.createFile(pfad) )
+                if( this.vServer.createFile(pfad) )
                 {
                     client.append("Datei wurde erstellt!\n");
                 }
@@ -361,10 +368,10 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
 
             try
             {
-                erg = this.fsserver.browseDirs(pfad);
+                erg = this.vServer.browseDirs(pfad);
                 dirListe = erg.split("[;]");
 
-                erg = this.fsserver.browseFiles(pfad);
+                erg = this.vServer.browseFiles(pfad);
                 fileListe = erg.split("[;]");
             }
             catch(IOException e11)
@@ -427,7 +434,7 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
                 String startDir = searchFeld.getText();
                 try
                 {
-                    erg = this.fsserver.search(searchPfad, startDir);
+                    erg = this.vServer.search(searchPfad, startDir);
                     fileListe2 = erg.split("[;]");
                     client.append("Found-Files: \n");
                     client.append("---------------------------------------------------------------\n");
@@ -450,7 +457,7 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
             String pfad = JOptionPane.showInputDialog(eingabe, "Was soll gelöscht werden?", "Delete", JOptionPane.PLAIN_MESSAGE);
             try
             {
-                if( this.fsserver.delete(pfad) )
+                if( this.vServer.delete(pfad) )
                 {
                     client.append("Ordner oder Datei wurde geloescht!\n");
                     JOptionPane.showMessageDialog(null, "Ordner oder Datei wurde geloescht!", "Delete", JOptionPane.INFORMATION_MESSAGE);
@@ -474,7 +481,7 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
             String newName = JOptionPane.showInputDialog(eingabe, "Wie lautet die neue Bezeichnung?", "Rename", JOptionPane.PLAIN_MESSAGE);
             try
             {
-                if( this.fsserver.rename(oldName, newName) )
+                if( this.vServer.rename(oldName, newName) )
                 {
                     System.out.println("Ordner oder Datei wurde umbenannt!");
                     client.append("Ordner oder Datei wurde umbenannt!\n");
@@ -489,6 +496,35 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
             catch(IOException eRename)
             {
                 System.out.println("Fehler: " + eRename.getMessage());
+            }
+        }
+
+        if(o == sWechselButton)
+        {
+            int serverPort;
+            Object[] selectionValues = { "xxx.xxx.xxx.xxx", "yyy.yyy.yyy.yyy", "192.168.0.102" };
+            String initialSelection = "xxx.xxx.xxx.xxx";
+            Object selection = JOptionPane.showInputDialog(null, "Zu welchen Server wechseln?",
+                    "Server Wechsel", JOptionPane.QUESTION_MESSAGE, null, selectionValues, initialSelection);
+
+            try
+            {
+                serverPort = Integer.parseInt(portTextFeld.getText().trim());
+            } catch(Exception er)
+            {
+                JOptionPane.showMessageDialog(null, "Fehler bei der Port-Eingabe", "Port-Nr", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            try
+            {
+                Registry registry = LocateRegistry.getRegistry(String.valueOf(selection), serverPort+1);
+                this.vServer = (VerwalterInterface) registry.lookup("VerwalterServer");
+                client.append("Server gewechselt...\n");
+                client.append((String) selection);
+            }
+            catch(Exception eOS)
+            {
+                System.out.println("Fehler_serverWechsel: " + eOS.getMessage());
             }
         }
 

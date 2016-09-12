@@ -27,7 +27,9 @@
             <preferred-size width="150" height="-1"/>
           </grid>
         </constraints>
-        <properties/>
+        <properties>
+          <text value="1500"/>
+        </properties>
       </component>
       <component id="92206" class="javax.swing.JButton" binding="starteVerwalterButton">
         <constraints>

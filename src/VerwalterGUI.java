@@ -30,18 +30,9 @@ public class VerwalterGUI extends JFrame implements VerwalterInterface, RMIClien
             "Name: Server3 IP: zzz.zzz.zzz.zzz";
 
     /** HOST entspricht der IP-Adresse des lokalen FileServer */
-    private final static String HOST= null;
+    private final static String HOST = null;
 
-    /** PORT_NR entspricht dem gebundenen Port des FileServers */
-    private final static int PORT_NR = 4567;
-
-    /** PORT_NR2, diese muss als Parameter beim Client angegeben werden */
-    private final static int PORT_NR2 = 4568;
-
-
-    private FileSystem fs = new FileSystem();
     public static VerwalterInterface vServer = new VerwalterGUI();
-    //public  VerwalterGUI vServer = new VerwalterGUI();
 
     public VerwalterGUI()
     {
@@ -54,11 +45,10 @@ public class VerwalterGUI extends JFrame implements VerwalterInterface, RMIClien
         verwalterTextArea.append("Hallo \n\n");
         starteVerwalterButton.addActionListener(this);
 
-        //Logo laden, muss im selben dir sein wie die java Files oder absoluten Pfad angeben
+        /** Logo laden, muss im selben dir sein wie die java Files oder absoluten Pfad angeben */
         ImageIcon img = new ImageIcon("htw.png");
         frame.setIconImage(img.getImage());
     }
-
 
     /**
      * Button gedrückt
@@ -84,13 +74,13 @@ public class VerwalterGUI extends JFrame implements VerwalterInterface, RMIClien
                 {
                     System.setSecurityManager ( new SecurityManager() );
                 }
-                Registry registry = LocateRegistry.getRegistry(HOST, serverPort);
-                this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
+                Registry registry = LocateRegistry.getRegistry(HOST, serverPort); //HOST ist immer null?
+                this.fsserver = (FSInterface) registry.lookup("FileSystemServer"); //schaue nach dem Server?
 
-                System.setProperty("java.rmi.server.hostname","192.168.0.103");
+                System.setProperty("java.rmi.server.hostname","192.168.0.102"); //hier die eigene IP
                 VerwalterInterface stub = (VerwalterInterface) UnicastRemoteObject.exportObject(vServer, serverPort+1);
 
-                Registry registry2 =  LocateRegistry.createRegistry(serverPort+1);
+                Registry registry2 =  LocateRegistry.createRegistry(serverPort+1); //neue registry2 fuer Verwalter
 
                 registry2.rebind("VerwalterServer", stub);
                 append("Server bound ...");
@@ -115,7 +105,7 @@ public class VerwalterGUI extends JFrame implements VerwalterInterface, RMIClien
         verwalterTextArea.setCaretPosition(verwalterTextArea.getText().length() - 1);
     }
 
-
+    /** MAIN */
     public static void main(String args[])
     {
         //Propertys aus Datei laden
@@ -125,18 +115,15 @@ public class VerwalterGUI extends JFrame implements VerwalterInterface, RMIClien
     @Override
     public Socket createSocket(String host, int port) throws IOException
     {
-        //return new Socket(host, port);
-        return null;
+        return new Socket(host, port);
     }
 
     /** @return Name und IP-Adressen aller VerwalterServer */
     @Override
     public String getServerList() throws RemoteException
     {
-        //return VERWALTER_LISTE;
-        return null;
+        return VERWALTER_LISTE;
     }
-
 
     public boolean rename(String oldName, String newName) throws RemoteException
     {
@@ -144,9 +131,10 @@ public class VerwalterGUI extends JFrame implements VerwalterInterface, RMIClien
     }
 
     public String getOSName()throws RemoteException
-    {   System.out.println("osname");
+    {
         return this.fsserver.getOSName();
     }
+
     //ToDoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
     public String getHostName() throws RemoteException
     {
@@ -177,7 +165,7 @@ public class VerwalterGUI extends JFrame implements VerwalterInterface, RMIClien
         String erg = this.fsserver.search(file, startDir);
         if(erg.equals(""))
         {
-            return ("Nicht gefunden, pruefen Sie andere Server!" + getServerList());
+            return ("Nichts gefunden");
         }
         else
             return erg;
@@ -192,5 +180,4 @@ public class VerwalterGUI extends JFrame implements VerwalterInterface, RMIClien
     {
         return this.fsserver.browseDirs(dir);
     }
-
 }
