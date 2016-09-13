@@ -1,6 +1,9 @@
 import rmifs.*;
 
 import javax.swing.*;
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -78,7 +81,7 @@ public class VerwalterGUI extends JFrame implements VerwalterInterface, RMIClien
                 Registry registry = LocateRegistry.getRegistry(HOST, serverPort); //HOST ist immer null?
                 this.fsserver = (FSInterface) registry.lookup("FileSystemServer"); //schaue nach dem Server?
 
-                System.setProperty("java.rmi.server.hostname","192.168.0.102"); //hier die eigene IP
+                System.setProperty("java.rmi.server.hostname","10.9.41.43"); //hier die eigene IP
                 VerwalterInterface stub = (VerwalterInterface) UnicastRemoteObject.exportObject(vServer, serverPort+1);
 
                 Registry registry2 =  LocateRegistry.createRegistry(serverPort+1); //neue registry2 fuer Verwalter
@@ -146,11 +149,7 @@ public class VerwalterGUI extends JFrame implements VerwalterInterface, RMIClien
         return this.fsserver.getHostAdress();
     }
 
-    @Override
-    public File getFile(String pfad) throws RemoteException
-    {
-        return this.fsserver.getFile(pfad);
-    }
+
 
     public boolean delete(String file) throws RemoteException
     {
@@ -187,4 +186,13 @@ public class VerwalterGUI extends JFrame implements VerwalterInterface, RMIClien
     {
         return this.fsserver.browseDirs(dir);
     }
+
+
+    @Override
+    public File getFile(String pfad) throws RemoteException
+    {
+        return this.fsserver.getFile(pfad);
+    }
+
+
 }

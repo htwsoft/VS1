@@ -4,6 +4,9 @@
 * @version 1.0
 */
 
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -185,7 +188,6 @@ public class FileSystem
 		if( !Files.exists(pathOld, LinkOption.NOFOLLOW_LINKS))
 		{
 			return false;
-
 		}
 		else
 		{
@@ -251,4 +253,12 @@ public class FileSystem
 	{
 		return this.wurzel;
 	}
+
+
+//	public boolean getDatei (String pfad)
+//	{
+//
+//	}
+
+
 }

@@ -258,7 +258,7 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
         if(o == startClientButton)
         {
             int serverPort;
-            String host = "192.168.0.102";
+            String host = "10.9.41.43";
             try
             {
                 serverPort = Integer.parseInt(portTextFeld.getText().trim());
