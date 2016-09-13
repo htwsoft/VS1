@@ -346,25 +346,25 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
         return hostAddress;
     }
 
-    @Override
-    public File getFile(String pfad) throws RemoteException
-    {
-        append("\n Funktion: getFile: \n");
-        append("\n pfad: " + pfad + "\n");
-        File wurzel = null;
-
-        try
-        {
-            this.fs.baum(wurzel);
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-
-        wurzel = this.fs.getDatei(pfad);
-        serverTextArea.append(String.valueOf(wurzel));
-        return wurzel;
-    }
+//    @Override
+//    public File getFile(String pfad) throws RemoteException
+//    {
+//        append("\n Funktion: getFile: \n");
+//        append("\n pfad: " + pfad + "\n");
+//        File wurzel = null;
+//
+//        try
+//        {
+//            this.fs.baum(wurzel);
+//        } catch (IOException e)
+//        {
+//            e.printStackTrace();
+//        }
+//
+//        wurzel = this.fs.getDatei(pfad);
+//        serverTextArea.append(String.valueOf(wurzel));
+//        return wurzel;
+//    }
 
     @Override
     public FileTreeModel getFileTreeModel(File wurzel) throws RemoteException
@@ -379,6 +379,21 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
             e.printStackTrace();
         }
         serverTextArea.append(String.valueOf(wurzel));
+        return a;
+    }
+
+    @Override
+    public FileTreeModel getFileTreeModel() throws RemoteException
+    {
+        append("\n Funktion: getFileTreeModel: \n");
+        FileTreeModel a = null;
+        try
+        {
+            a = this.fs.baum();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
         return a;
     }
 

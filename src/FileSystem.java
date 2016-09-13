@@ -100,6 +100,14 @@ public class FileSystem implements Serializable
 		//return this.model = new FileTreeModel("\\");
 		return this.model = new FileTreeModel();
 	}
+	public FileTreeModel baum() throws IOException
+	{
+//		FileTreeModel b = new FileTreeModel(wurzel);
+//		return b;
+		//return this.model = new FileTreeModel(wurzel);
+		//return this.model = new FileTreeModel("\\");
+		return this.model = new FileTreeModel();
+	}
 
 	/**
 	* Funktion sucht nach der übergebenen Datei ab dem angegebenen Ordner
@@ -260,12 +268,6 @@ public class FileSystem implements Serializable
 	{
 		return this.wurzel;
 	}
-
-
-//	public boolean getDatei (String pfad)
-//	{
-//
-//	}
 
 
 }
