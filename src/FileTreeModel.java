@@ -16,15 +16,30 @@ import java.io.Serializable;
 
 public class FileTreeModel implements TreeModel, Serializable
 {
+    private static final long serialVersionUID = -3566579378634529000L;
+
     // We specify the root directory when we create the model.
     public File root;
     public FileTreeModel(File root)
     {
         this.root = root;
     }
+    public FileTreeModel(String pfad)
+    {
+        this.root = new File(pfad);
+    }
+
+    public FileTreeModel()
+    {
+        this.root = new File("\\");
+    }
 
     // The model knows how to return the root object of the tree
-    public Object getRoot() { return root; }
+    public Object getRoot()
+    {
+        //return root;
+        return this.root;
+    }
 
     // Tell JTree whether an object in the tree is a leaf or not
     public boolean isLeaf(Object node) {  return ((File)node).isFile(); }

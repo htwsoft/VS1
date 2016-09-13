@@ -25,6 +25,7 @@ public class FileSystem implements Serializable
 	//meins
 	private String pfad;
 	private File wurzel;
+	private FileTreeModel model;
 	
 	/**
 	* Konstruktor der FileSystem Klasse
@@ -90,12 +91,14 @@ public class FileSystem implements Serializable
 			this.fileListe[0] = path;
 		}
 	}
-
 	/***/
 	public FileTreeModel baum(File wurzel) throws IOException
 	{
-		FileTreeModel b = new FileTreeModel(wurzel);
-		return b;
+//		FileTreeModel b = new FileTreeModel(wurzel);
+//		return b;
+		//return this.model = new FileTreeModel(wurzel);
+		//return this.model = new FileTreeModel("\\");
+		return this.model = new FileTreeModel();
 	}
 
 	/**

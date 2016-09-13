@@ -384,6 +384,7 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
             try
             {
                 File wurzel = this.vServer.getFile(pfad);
+                client.append(String.valueOf(wurzel));
                 // Create a TreeModel object to represent our tree of files
                 //FileTreeModel model2 = this.vServer.getFile(pfad);
                 //FileTreeModel model2 = new FileTreeModel(wurzel);

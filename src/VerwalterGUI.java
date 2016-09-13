@@ -140,10 +140,10 @@ public class VerwalterGUI extends JFrame implements VerwalterInterface, RMIClien
         return this.fsserver.getHostName();
     }
 
-    public String getHostAdress() throws RemoteException{
+    public String getHostAdress() throws RemoteException
+    {
         return this.fsserver.getHostAdress();
     }
-
 
 
     public boolean delete(String file) throws RemoteException
