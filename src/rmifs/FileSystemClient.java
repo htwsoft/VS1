@@ -305,11 +305,11 @@ public class FileSystemClient
 			//Auswahlmenue zeigen bis eingabe richtig
 			try
 			{
-				System.out.println("Client Name: "  +
-									" | IP Adresse : " + getClientAddress() +
-									" | OS Name	: " );
-
-				vserver.setClientAddress(getClientAddress());
+				/**System.out.println("Client Name: "  +
+						" | IP Adresse : " + getClientAddress() +
+						" | OS Name	: " );
+				 */
+				vserver.setClientAddress(getClientAddress());//Rückgabeparameter für den FileSystemServer
 
 				System.out.println("");
 				System.out.println("---------------------");
@@ -333,7 +333,9 @@ public class FileSystemClient
 			}
 		}
 		System.out.println("");
+
 		return eingabe;
+
 	}
 
 	/**

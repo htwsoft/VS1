@@ -35,7 +35,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     /**
      * HOST entspricht der IP-Adresse des lokalen FileServers
      */
-    private final static String HOST = "192.168.0.11"; //192.168.0.101
+    private final static String HOST = null; //192.168.0.101
 
     /**
      * PORT_NR entspricht dem gebundenen Port des FileServers
