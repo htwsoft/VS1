@@ -15,14 +15,15 @@ import java.rmi.registry.Registry;
 import java.lang.*;
 import java.net.UnknownHostException.*;
 import java.rmi.RemoteException;
+import java.net.*;
 
 
 public class FileSystemClient
 {
 	private VerwalterInterface vserver;  //Attribute zum Zugriff auf Verwalter Server Funktionen
-	public FileSystemClient fsclient;
 
 	private enum MENUE { CLOSE, LIST, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE, RENAME, OS_NAME, FALSE };
+	private String clientAddress;
 
 	/**
 	* Hauptmethode der Demo
@@ -38,7 +39,7 @@ public class FileSystemClient
 		try 
 		{
 			serverPort = Integer.parseInt(args[0]);
-			System.setProperty("java.rmi.server.hostname", "localhost");//192.168.0.101
+			System.setProperty("java.rmi.server.hostname", "192.168.0.11");//192.168.0.101
 			fsc = new FileSystemClient(serverPort, args[1]);
 			while(menue_eingabe != MENUE.CLOSE)
 			{
@@ -304,9 +305,12 @@ public class FileSystemClient
 			//Auswahlmenue zeigen bis eingabe richtig
 			try
 			{
-				System.out.println("Client Name: " + getClientName() +
+				System.out.println("Client Name: "  +
 									" | IP Adresse : " + getClientAddress() +
-									" | OS Name	: " + getClientOS());
+									" | OS Name	: " );
+
+				vserver.setClientAddress(getClientAddress());
+
 				System.out.println("");
 				System.out.println("---------------------");
 				System.out.println("Menue:");
@@ -349,6 +353,8 @@ public class FileSystemClient
 		}
 	}
 
+
+
 	//ToDo --> noch in Bearbeitung durch soezdemir
 	/**
 	 * Folgende Methoden liefern den Namen, IP-Adresse
@@ -357,31 +363,47 @@ public class FileSystemClient
 	 * @throws RemoteException
 	 * @author soezdemir
 	 */
+
+
+
+	public String getClientAddress()
+	{
+		String clientAddress = "";
+		try {
+			InetAddress clientIP = InetAddress.getLocalHost();
+			clientAddress = clientIP.getHostAddress();
+			System.out.println("Client IP: " + clientAddress);
+		}catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return clientAddress;
+	}
+
+	public void setClientAddress(String clientAddress) {
+		System.out.println("Client: -> IP: " + clientAddress);
+	}
+
 	public String getClientName()
 	{
 		System.out.println("Funktion: getClientName");
 		String clientName;
-		clientName = fsclient.getClientName();
+		clientName = getClientName();
 		System.out.println("Return: \"" + clientName + "\"");
 		return clientName;
 	}
 
-	public String getClientAddress()
-	{
-		System.out.println("Funktion: getClientAddress");
-		String clientAddress;
-		clientAddress = fsclient.getClientAddress();
-		System.out.println("Return: \"" + clientAddress + "\"");
-		return clientAddress;
-	}
+
 
 	public String getClientOS()
 	{
 		System.out.println("Funktion: getClientOS");
 		String clientOSName;
-		clientOSName = fsclient.getClientOS();
+		clientOSName = getClientOS();
 		System.out.println("Return: \"" + clientOSName + "\"");
 		return clientOSName;
 	}
-}
+
+
+ }
 

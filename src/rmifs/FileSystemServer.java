@@ -29,6 +29,7 @@ public class FileSystemServer implements FSInterface
 	private FileSystem fs = new FileSystem();
 	//public static FSInterface fsserver = new FileSystemServer();
 	public FileSystemClient fsclient;
+	public VerwalterInterface verwalterInterface;
 
 	/**
 	 * Hauptmethode
@@ -56,7 +57,7 @@ public class FileSystemServer implements FSInterface
 
 				//Objekt an registry binden
 				registry.rebind("FileSystemServer", stub);
-				System.out.println("Server bound ...\nPort now open at 4710");
+				System.out.println("Server bound ...\nPort now open at " + serverPort);
 				System.out.print("\nServer Name: " + fsServer.getHostName()
 									+ "\nServer IP: " + fsServer.getHostAddress()
 									+ "\nServer runs on " + fsServer.getOSName());
@@ -322,13 +323,13 @@ public class FileSystemServer implements FSInterface
 		System.out.println("Funktion: getHostAddress");
 		String hostAddress;
 		hostAddress = fs.getHostAddress();
-		//System.out.println("Server IP is \"" + hostAddress + "\"");
+		System.out.println("Server IP is \"" + hostAddress + "\"");
 		return hostAddress;
 	}
 
-	public String getClientAddress() throws RemoteException
-	{   System.out.println("clientaddress");
-		return this.fsclient.getClientAddress();
+	public void setClientAddress(String clientAddress) throws RemoteException
+	{
+		System.out.println("\nServer: clientaddress " + clientAddress);
 	}
 
 	/**

@@ -35,7 +35,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     /**
      * HOST entspricht der IP-Adresse des lokalen FileServers
      */
-    private final static String HOST = null; //192.168.0.101
+    private final static String HOST = "192.168.0.11"; //192.168.0.101
 
     /**
      * PORT_NR entspricht dem gebundenen Port des FileServers
@@ -47,7 +47,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
      * @throws RemoteException
      * @throws NotBoundException
      */
-    private VerwalterServer() throws RemoteException, NotBoundException
+    public VerwalterServer() throws RemoteException, NotBoundException
     {
         super();
         if (System.getSecurityManager() == null)
@@ -57,19 +57,6 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         Registry registry = LocateRegistry.getRegistry(HOST, PORT_NR);
         this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
     }
-
-    /** //ToDo
-    private FileSystemClient() throws RemoteException, NotBoundException
-    {
-        super();
-        if (System.getSecurityManager() == null)
-        {
-            System.setSecurityManager(new SecurityManager());
-        }
-        Registry registry = LocateRegistry.getRegistry(HOST, PORT_NR);
-        this.fsclient = (FileSystemClient) registry.lookup("FileSystemClient");
-
-    }**/
 
     /**
      * Erstellt einen Socket für remote Verbindungen(Funktion des Interface RMIClientSocketFactory)
@@ -120,6 +107,11 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         System.out.println("client osname");
         return this.fsclient.getClientOS();
     }*/
+
+    public void setClientAddress(String clientAddress) throws RemoteException
+    {
+        fsserver.setClientAddress(clientAddress);
+    }
 
     /** //ToDo
     public String getClientAddress() throws RemoteException
