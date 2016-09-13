@@ -28,7 +28,50 @@ public class FileSystemServer implements FSInterface
 {
 	private FileSystem fs = new FileSystem();
 	//public static FSInterface fsserver = new FileSystemServer();
-	
+	public FileSystemClient fsclient;
+
+	/**
+	 * Hauptmethode
+	 * Startet den FileSystem-Server
+	 * @param Port-Nummer des FileSystemServers
+	 */
+	public static void main(String args[])
+	{
+		try
+		{
+			if(args.length >= 1)
+			{
+				int serverPort = 0;
+				serverPort = Integer.parseInt(args[0]);
+				//Security Manager ermöglicht/regelt zugriff auf Klasse
+				if (System.getSecurityManager() == null)
+				{
+					System.setSecurityManager ( new SecurityManager() );
+				}
+				FileSystemServer fsServer = new FileSystemServer();
+				//Registry erstellen um Objekt ansprechen zu können
+				Registry registry =  LocateRegistry.createRegistry(serverPort);
+				//Stellt das Objekt dem System zur Verfügung
+				FSInterface stub = (FSInterface) UnicastRemoteObject.exportObject(fsServer, serverPort);
+
+				//Objekt an registry binden
+				registry.rebind("FileSystemServer", stub);
+				System.out.println("Server bound ...\nPort now open at 4710");
+				System.out.print("\nServer Name: " + fsServer.getHostName()
+									+ "\nServer IP: " + fsServer.getHostAddress()
+									+ "\nServer runs on " + fsServer.getOSName());
+			}
+			else
+			{
+				System.out.println("Bitte Server-Port zum binden angeben!");
+			}
+		}
+		catch(Exception e)
+		{
+			System.out.println( "Fehler: " + e.toString() );
+		}
+	}
+
 	/**
 	* Funktion sucht alle Ordner eines angegebenen Directory
 	* @param dir Ordner der durchsucht werden soll 
@@ -283,6 +326,10 @@ public class FileSystemServer implements FSInterface
 		return hostAddress;
 	}
 
+	public String getClientAddress() throws RemoteException
+	{   System.out.println("clientaddress");
+		return this.fsclient.getClientAddress();
+	}
 
 	/**
 	* Funktion liefert die Dateien der letzten suche (browse)
@@ -336,46 +383,4 @@ public class FileSystemServer implements FSInterface
 		return ergListe;	
 	}
 	
-	/**
-	* Hauptmethode
-	* Startet den Server
-	* @param PortNr des FileSystemServers
-	*/
-	public static void main(String args[])
-	{
-		try
-		{
-			if(args.length >= 1)
-			{
-				int serverPort = 0;
-				serverPort = Integer.parseInt(args[0]);
-				//Security Manager ermöglicht/regelt zugriff auf Klasse
-				if (System.getSecurityManager() == null)
-				{
-					System.setSecurityManager ( new SecurityManager() );
-				}
-				FileSystemServer fsServer = new FileSystemServer();
-				//Registry erstellen um Objekt ansprechen zu können
-				Registry registry =  LocateRegistry.createRegistry(serverPort);
-				//Stellt das Objekt dem System zur Verfügung
-				FSInterface stub = (FSInterface) UnicastRemoteObject.exportObject(fsServer, serverPort);
-
-				//Objekt an registry binden
-				registry.rebind("FileSystemServer", stub);
-				System.out.println("Server bound ...\nPort now open at 4710");
-				System.out.print("\n Server Name: " + fsServer.getHostName()
-									+ "\n Server IP: " + fsServer.getHostAddress()
-									+ "\n Server runs on " + fsServer.getOSName() );
-			}
-			else
-			{
-				System.out.println("Bitte Server-Port zum binden angeben!");
-			}
-		}
-		catch(Exception e)
-		{
-			System.out.println( "Fehler: " + e.toString() );
-		}	
-	}
-
 }

@@ -2,15 +2,16 @@
 package rmifs;
 
 /**
-* RMI-Klasse zum Darstellen eines Dateisystems
-* @author Marco Palumbo
-* @version 1.01
-*/
+ * RMI-Klasse zum Darstellen eines Dateisystems
+ * @author Marco Palumbo
+ * @version 1.01
+ */
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+
 
 public interface FSInterface extends Remote
 {
@@ -24,7 +25,7 @@ public interface FSInterface extends Remote
 	public String getOSName()throws RemoteException;
 	public String getHostName() throws RemoteException;
 	public String getHostAddress() throws RemoteException; //ToDo
-	//public String getClientAddress() throws RemoteException //ToDo
-	//public String getClientName() throws RemoteException //ToDo
-	//public String getClientOS() throws RemoteException //ToDo
+	public String getClientAddress() throws RemoteException; //ToDo
+	//public String getClientName() throws RemoteException; //ToDo
+	//public String getClientOS() throws RemoteException; //ToDo
 }

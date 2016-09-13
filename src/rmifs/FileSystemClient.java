@@ -4,8 +4,7 @@ package rmifs;
 /**
  * @author mpalumbo, cpatzek, soezdemir
  * @version 1.01
- * @date Sankt.Nimmerleinstag
- *
+ * @date indefinitely
  */
 
 import java.io.*;
@@ -20,9 +19,11 @@ import java.rmi.RemoteException;
 
 public class FileSystemClient
 {
-	private VerwalterInterface vserver;  //Attribute zum Zugriff auf Verwalter Server Funktion
-	private FileSystemClient fsclient;
+	private VerwalterInterface vserver;  //Attribute zum Zugriff auf Verwalter Server Funktionen
+	public FileSystemClient fsclient;
+
 	private enum MENUE { CLOSE, LIST, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE, RENAME, OS_NAME, FALSE };
+
 	/**
 	* Hauptmethode der Demo
 	* startet eine Menue
@@ -37,7 +38,7 @@ public class FileSystemClient
 		try 
 		{
 			serverPort = Integer.parseInt(args[0]);
-			System.setProperty("java.rmi.server.hostname", "192.168.0.101");
+			System.setProperty("java.rmi.server.hostname", "localhost");//192.168.0.101
 			fsc = new FileSystemClient(serverPort, args[1]);
 			while(menue_eingabe != MENUE.CLOSE)
 			{
@@ -356,7 +357,8 @@ public class FileSystemClient
 	 * @throws RemoteException
 	 * @author soezdemir
 	 */
-	public String getClientName() {
+	public String getClientName()
+	{
 		System.out.println("Funktion: getClientName");
 		String clientName;
 		clientName = fsclient.getClientName();
@@ -364,7 +366,8 @@ public class FileSystemClient
 		return clientName;
 	}
 
-	public String getClientAddress(){
+	public String getClientAddress()
+	{
 		System.out.println("Funktion: getClientAddress");
 		String clientAddress;
 		clientAddress = fsclient.getClientAddress();
@@ -372,7 +375,8 @@ public class FileSystemClient
 		return clientAddress;
 	}
 
-	public String getClientOS(){
+	public String getClientOS()
+	{
 		System.out.println("Funktion: getClientOS");
 		String clientOSName;
 		clientOSName = fsclient.getClientOS();

@@ -1,10 +1,11 @@
+//package src.rmifs;
+package rmifs;
+
 /**
 * Klasse zum Darstellen eines Dateisystems
 * @author Marco Palumbo, Nadine Breitenstein
 * @version 1.01
 */
-//package src.rmifs;
-package rmifs;
 
 import java.io.*;
 import java.nio.*;

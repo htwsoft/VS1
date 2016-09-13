@@ -1,6 +1,14 @@
 //package src.rmifs;
 package rmifs;
 
+/**
+ * VerwalterServer ist gleichzeitig Client und Server.
+ * Zwischenstelle zwischen Client und FileServer.
+ * @author cpatzek, soezdemir
+ * @version 1.02
+ * @date 2016-09-03
+ */
+
 import java.io.IOException;
 import java.net.Socket;
 import java.rmi.RemoteException;
@@ -12,17 +20,11 @@ import java.rmi.server.UnicastRemoteObject;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-/**
- * VerwalterServer ist gleichzeitig Client und Server.
- * Zwischenstelle zwischen Client und FileServer.
- * @author cpatzek
- * @version 1.01
- * @date 2016-09-03
- */
+
 
 public class VerwalterServer implements VerwalterInterface, RMIClientSocketFactory {
     private FSInterface fsserver;
-    //private FileSystemClient fsclient;//ToDo
+    //public FileSystemClient fsclient = new FileSystemClient();//ToDo
     /**
      * enthaelt die Liste aller verfuegbaren(remote) VerwalterServer
      * und indirekt deren verbundenen FileServer (Beispiel IP-Adressen)
@@ -33,7 +35,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     /**
      * HOST entspricht der IP-Adresse des lokalen FileServers
      */
-    private final static String HOST= null; //192.168.0.101
+    private final static String HOST = null; //192.168.0.101
 
     /**
      * PORT_NR entspricht dem gebundenen Port des FileServers
@@ -55,6 +57,19 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         Registry registry = LocateRegistry.getRegistry(HOST, PORT_NR);
         this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
     }
+
+    /** //ToDo
+    private FileSystemClient() throws RemoteException, NotBoundException
+    {
+        super();
+        if (System.getSecurityManager() == null)
+        {
+            System.setSecurityManager(new SecurityManager());
+        }
+        Registry registry = LocateRegistry.getRegistry(HOST, PORT_NR);
+        this.fsclient = (FileSystemClient) registry.lookup("FileSystemClient");
+
+    }**/
 
     /**
      * Erstellt einen Socket für remote Verbindungen(Funktion des Interface RMIClientSocketFactory)
@@ -98,24 +113,28 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     }
     /** wird erledigt durch soezdemir
      * Methoden sollen Informationen über
-     * den verbundenen Client zurückgeben
+     * einen verbundenen Client zurückgeben
     //ToDo
-    public String getClientOS() throws RemoteException{
+    public String getClientOS() throws RemoteException
+    {
         System.out.println("client osname");
         return this.fsclient.getClientOS();
-    }
+    }*/
 
-    //ToDo
-    public String getClientAddress() throws RemoteException{
+    /** //ToDo
+    public String getClientAddress() throws RemoteException
+    {
         System.out.println("clientaddress");
         return this.fsclient.getClientAddress();
     }
+
     //ToDo
-    public String getClientName() throws RemoteException{
+    public String getClientName() throws RemoteException
+    {
         System.out.println("clientname");
         return this.fsclient.getClientName();
-    }
-**/
+    }*/
+
     public boolean delete(String file) throws RemoteException
     {
         return this.fsserver.delete(file);
@@ -128,7 +147,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
 
     public boolean createDir(String dir) throws RemoteException
     {
-        return fsserver.createDir(dir);
+        return this.fsserver.createDir(dir);
     }
 
     /**
@@ -181,7 +200,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
                 Registry registry =  LocateRegistry.createRegistry(serverPort);
                 //Objekt an registry binden
                 registry.rebind("VerwalterServer", stub);
-                System.out.println("Server bound ...\n Port open at 4711");
+                System.out.println("Server bound ...\n Port open at " + serverPort);
             }
             else
             {
