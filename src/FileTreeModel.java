@@ -6,6 +6,7 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import java.io.File;
+import java.io.Serializable;
 
 /**
  * The methods in this class allow the JTree component to traverse
@@ -13,11 +14,14 @@ import java.io.File;
  **/
 
 
-public class FileTreeModel implements TreeModel
+public class FileTreeModel implements TreeModel, Serializable
 {
     // We specify the root directory when we create the model.
-    protected File root;
-    public FileTreeModel(File root) { this.root = root; }
+    public File root;
+    public FileTreeModel(File root)
+    {
+        this.root = root;
+    }
 
     // The model knows how to return the root object of the tree
     public Object getRoot() { return root; }

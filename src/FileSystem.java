@@ -4,21 +4,17 @@
 * @version 1.0
 */
 
-import javax.swing.event.TreeModelListener;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreePath;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.nio.*;
 import java.nio.file.*;
-import static java.nio.file.StandardCopyOption.*;
+import java.io.Serializable;
 
 /**
 * Klasse Filesystem dient zur leichteren Kommunikation/ Darstellung
 * mit einem beliebigen FileSystem
 */
-public class FileSystem
+public class FileSystem implements Serializable
 {
 	private String osname; //Name des Betriebsystems
 	private String hostname;
@@ -94,6 +90,14 @@ public class FileSystem
 			this.fileListe[0] = path;
 		}
 	}
+
+	/***/
+	public FileTreeModel baum(File wurzel) throws IOException
+	{
+		FileTreeModel b = new FileTreeModel(wurzel);
+		return b;
+	}
+
 	/**
 	* Funktion sucht nach der übergebenen Datei ab dem angegebenen Ordner
 	* @param file Datei nach der gesucht werden soll

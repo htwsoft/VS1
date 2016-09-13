@@ -1,8 +1,6 @@
 import java.io.File;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 /**
  * Created by Christian Patzek on 03.09.2016.
@@ -22,4 +20,6 @@ interface VerwalterInterface extends Remote
     public String getHostName() throws RemoteException; //ToDoooooooooooooooooooooooooooo
     public String getHostAdress() throws RemoteException; //ToDoooooooooooooooooooooooooooo
     public File getFile(String pfad)throws RemoteException;  //meins
+
+    public FileTreeModel getFileTreeModel(File wurzel) throws RemoteException;
 }

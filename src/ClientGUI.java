@@ -258,7 +258,7 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
         if(o == startClientButton)
         {
             int serverPort;
-            String host = "10.9.41.43";
+            String host = "192.168.0.102";
             try
             {
                 serverPort = Integer.parseInt(portTextFeld.getText().trim());
@@ -385,8 +385,9 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
             {
                 File wurzel = this.vServer.getFile(pfad);
                 // Create a TreeModel object to represent our tree of files
-                FileTreeModel model2 = new FileTreeModel(wurzel);
-                //FileTreeModel model2 = new FileTreeModel();
+                //FileTreeModel model2 = this.vServer.getFile(pfad);
+                //FileTreeModel model2 = new FileTreeModel(wurzel);
+                FileTreeModel model2 = this.vServer.getFileTreeModel(wurzel);
                 tree1.setModel(model2);
             } catch (RemoteException e1)
             {
@@ -394,27 +395,27 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
             }
 
             /**Baum wird auf den Inhalten dirListe und fileListe zusammengebaut*/
-            DefaultTreeModel model = (DefaultTreeModel)tree1.getModel();
-            DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
-            root.removeAllChildren();
-            root.setUserObject(pfad + " " + new SimpleDateFormat("HH:mm:ss").format(new Date()));
-
-            for (int i = 0; i < dirListe.length; i++)
-            {
-                if(!dirListe[i].equals(""))
-                {
-                    root.add(new DefaultMutableTreeNode(dirListe[i]));
-                }
-            }
-
-            for (int i = 0; i < fileListe.length; i++)
-            {
-                if(!fileListe[i].equals(""))
-                {
-                    root.add(new DefaultMutableTreeNode(fileListe[i]));
-                }
-            }
-            model.reload(root);
+//            DefaultTreeModel model = (DefaultTreeModel)tree1.getModel();
+//            DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
+//            root.removeAllChildren();
+//            root.setUserObject(pfad + " " + new SimpleDateFormat("HH:mm:ss").format(new Date()));
+//
+//            for (int i = 0; i < dirListe.length; i++)
+//            {
+//                if(!dirListe[i].equals(""))
+//                {
+//                    root.add(new DefaultMutableTreeNode(dirListe[i]));
+//                }
+//            }
+//
+//            for (int i = 0; i < fileListe.length; i++)
+//            {
+//                if(!fileListe[i].equals(""))
+//                {
+//                    root.add(new DefaultMutableTreeNode(fileListe[i]));
+//                }
+//            }
+//            model.reload(root);
         }
 
         if(o == seachButton)
