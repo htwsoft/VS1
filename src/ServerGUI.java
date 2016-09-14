@@ -387,13 +387,7 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
     {
         append("\n Funktion: getFileTreeModel: \n");
         FileTreeModel a = null;
-        try
-        {
-            a = this.fs.baum();
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+        a = this.fs.getFileTreeModel();
         return a;
     }
 

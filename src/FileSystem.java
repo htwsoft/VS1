@@ -48,7 +48,7 @@ public class FileSystem implements Serializable
 		//meins
 		this.pfad = null;
 		this.wurzel = null;
-		this.model = null;
+		this.model = new FileTreeModel();
 	}
 	
 	/**
@@ -268,6 +268,11 @@ public class FileSystem implements Serializable
 	public File gib()
 	{
 		return this.wurzel;
+	}
+
+	public FileTreeModel getFileTreeModel()
+	{
+		return this.model = new FileTreeModel();
 	}
 
 
