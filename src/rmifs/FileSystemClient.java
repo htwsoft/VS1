@@ -14,18 +14,15 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.lang.*;
-import java.net.UnknownHostException.*;
-import java.net.InetAddress;
-
 
 public class FileSystemClient
 {
 	private VerwalterInterface vserver;  //Attribute zum Zugriff auf Verwalter Server Funktionen
-
+	private String clientAddress = "not set!";
+	private String clientName = "not set!";
+	private String clientOS = "not set!";
 	private enum MENUE { CLOSE, LIST, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE, RENAME, OS_NAME, FALSE }
-	private String clientAddress = "";
-	private String clientName = "";
-	private String clientOS = "";
+
 
 	/**
 	* Hauptmethode der Demo
@@ -36,14 +33,21 @@ public class FileSystemClient
 	{
 		FileSystemClient fsc = null;
 		//FileSystemClient fsclient = new FileSystemClient(4712, "localhost");
+
 		int serverPort = 0;
 		int eingabe = -1;
 		MENUE menue_eingabe = MENUE.FALSE;
 		try 
 		{
 			serverPort = Integer.parseInt(args[0]);
-			System.setProperty("java.rmi.server.hostname", "localhost");//192.168.0.101
+			System.setProperty("java.rmi.server.hostname", "192.168.0.23");//192.168.0.101
+
 			fsc = new FileSystemClient(serverPort, args[1]);
+			NetworkController nc = new NetworkController(fsc);
+
+			System.out.println(nc);
+			System.out.println(fsc);
+
 			while(menue_eingabe != MENUE.CLOSE)
 			{
 				eingabe = fsc.zeigeMenue();
@@ -63,10 +67,15 @@ public class FileSystemClient
 				}
 			}	
 		} 
-		catch (Exception e) 
+		catch (IOException ioe)
 		{
-			System.err.println("FileSystemClient exception:"); e.printStackTrace();
+			ioe.printStackTrace();
 		}
+		catch (NotBoundException nbe)
+		{
+			nbe.printStackTrace();
+		}
+
 		System.exit(0);
 	} 
 	
@@ -141,7 +150,7 @@ public class FileSystemClient
 		}
 		catch(IOException e)
 		{
-			System.out.println("Fehler: " + e.getMessage());	
+			e.printStackTrace();
 		}
 	}
 	
@@ -174,9 +183,9 @@ public class FileSystemClient
 				}
 			}
 		}
-		catch(IOException e)
+		catch(IOException ioe)
 		{
-			System.out.println("Fehler: " + e.getMessage());	
+			ioe.printStackTrace();
 		}			
 	}
 
@@ -309,9 +318,6 @@ public class FileSystemClient
 			//Auswahlmenue zeigen bis eingabe richtig
 			try
 			{
-				//Rückgabeparameter für den Verwalter & FileSystemServer
-				vserver.setClientAddress(getClientAddress());
-				//System.out.print(toString());
 				//Terminal Ausgabe Menue
 				System.out.println("");
 				System.out.println("---------------------");
@@ -367,62 +373,38 @@ public class FileSystemClient
 	 * @throws RemoteException
 	 * @author soezdemir
 	 */
-	public void setClientAddress(String clientAddress) {
-		System.out.println("***** Client: -> IP: " + clientAddress);
+	public void setClientAddress(String clientAddress){
+		this.clientAddress = clientAddress;
+
 	}
 
-	public String getClientName()
-	{
-		//String clientName = "";
-		try {
-			InetAddress clientMachine = Inet4Address.getLocalHost();
-			clientName = clientMachine.getHostName();
-			System.out.println("ClientName:\t" + clientName);
+	public String getClientAddress(){
+		return this.clientAddress;
 
-		}catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		return clientName;
 	}
 
-	public String getClientAddress()
-	{
-		//String clientAddress = "";
-		try {
-			InetAddress clientIP = Inet4Address.getLocalHost();
-			clientAddress = clientIP.getHostAddress();
-			System.out.println("ClientIP:\t" + clientIP);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return clientAddress;
+	public void setClientOS(String clientOS){
+		this.clientOS = clientOS;
 	}
 
-	public String getClientOS()
-	{
-		try {
-		//System.out.println("Funktion: os.name, os.version, os.arch");
-		String clientOS = System.getProperty("os.name") +
-							", Version " + System.getProperty("os.version") +
-							" on " + System.getProperty("os.arch") + " architecture.";
-		System.out.println("ClientOS:\t" + clientOS);
-		}catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		return clientOS;
+	public String  getClientOS (){
+		return this.clientOS;
+	}
+
+	public void sendClientAddress(String clientAddress) throws RemoteException {
+		vserver.sendClientAddress(clientAddress);
+		//System.out.println("***** Client: -> IP: " + clientAddress);
+	}
+
+	public String toString(){
+		StringBuffer sb = new StringBuffer();
+		sb.append("*clientaddress: " + clientAddress);
+
+		return " ";  //sb.toString();
+
 	}
 
 
-	@Override
-	public final String toString()
-	{
-			String output = "\nIP Address: " + clientAddress +
-							" | Client: "  + getClientName() +
-							" | OS Name: " + getClientOS();
-			return output;
-	}
 
- }
+}
 

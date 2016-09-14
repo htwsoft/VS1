@@ -25,7 +25,7 @@ interface VerwalterInterface extends Remote{
     public String getOSName()throws RemoteException;
     public String getHostName() throws RemoteException;
     public String getHostAddress() throws RemoteException;
-    public void setClientAddress(String clientAddress) throws RemoteException;
+    public void sendClientAddress(String clientAddress) throws RemoteException;
     //public String setClientName(String clientName) throws RemoteException;
     //public String setClientOS(String clientOS) throws RemoteException; //ToDo
 }

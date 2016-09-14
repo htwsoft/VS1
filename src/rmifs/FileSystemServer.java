@@ -326,7 +326,7 @@ public class FileSystemServer implements FSInterface
 		return hostAddress;
 	}
 
-	public void setClientAddress(String clientAddress) throws RemoteException
+	public void sendClientAddress(String clientAddress) throws RemoteException
 	{
 		System.out.println("\n " + clientAddress + " is connected to Server " + getHostAddress());
 	}

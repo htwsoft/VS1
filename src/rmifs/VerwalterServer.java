@@ -109,10 +109,10 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         return this.fsclient.getClientOS();
     }*/
 
-    public void setClientAddress(String clientAddress) throws RemoteException
+    public void sendClientAddress(String clientAddress) throws RemoteException
     {
         System.out.println("clientaddress");
-        fsserver.setClientAddress(clientAddress);
+        fsserver.sendClientAddress(clientAddress);
     }
 
     /** //ToDo
