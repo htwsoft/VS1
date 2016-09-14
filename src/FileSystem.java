@@ -105,6 +105,9 @@ public class FileSystem implements Serializable
 	{
 //		FileTreeModel b = new FileTreeModel(wurzel);
 //		return b;
+		model = new FileTreeModel();
+		model.getRoot();
+
 		//return this.model = new FileTreeModel(wurzel);
 		//return this.model = new FileTreeModel("\\");
 		return this.model = new FileTreeModel();
@@ -165,7 +168,6 @@ public class FileSystem implements Serializable
 			{
 				returnWert = false;
 			}
-			
 		}
 		return returnWert;
 	}

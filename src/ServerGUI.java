@@ -379,6 +379,7 @@ public class ServerGUI extends JFrame implements FSInterface, ActionListener
             e.printStackTrace();
         }
         serverTextArea.append(String.valueOf(wurzel));
+        a = new FileTreeModel();
         return a;
     }
 
