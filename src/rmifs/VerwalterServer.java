@@ -5,8 +5,8 @@ package rmifs;
  * VerwalterServer ist gleichzeitig Client und Server.
  * Zwischenstelle zwischen Client und FileServer.
  * @author cpatzek, soezdemir
- * @version 1.02
- * @date 2016-09-03
+ * @version 1.03
+ * @date 2016-09-14
  */
 
 import java.io.IOException;

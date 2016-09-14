@@ -3,19 +3,19 @@ package rmifs;
 
 /**
  * @author mpalumbo, cpatzek, soezdemir
- * @version 1.01
+ * @version 1.03
  * @date indefinitely
  */
 
 import java.io.*;
 import java.util.*;
 import java.rmi.*;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.lang.*;
 import java.net.UnknownHostException.*;
-import java.rmi.RemoteException;
-import java.net.*;
+import java.net.InetAddress;
 
 
 public class FileSystemClient

@@ -4,8 +4,8 @@ package rmifs;
 /**
  * Interface für die VerwalterServer
  * @author cpatzek & soezdemir
- * @version 1.01
- * @date 2016-09-03
+ * @version 1.03
+ * @date 2016-09-14
  */
 
 import java.rmi.Remote;
@@ -25,7 +25,7 @@ interface VerwalterInterface extends Remote{
     public String getOSName()throws RemoteException;
     public String getHostName() throws RemoteException;
     public String getHostAddress() throws RemoteException;
-    public void setClientAddress(String clientAddress) throws RemoteException; //ToDo
-    //public String getClientName() throws RemoteException; //ToDo
-    //public String getClientOS() throws RemoteException; //ToDo
+    public void setClientAddress(String clientAddress) throws RemoteException;
+    //public String setClientName(String clientName) throws RemoteException;
+    //public String setClientOS(String clientOS) throws RemoteException; //ToDo
 }

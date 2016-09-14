@@ -24,9 +24,8 @@ public interface FSInterface extends Remote
 	public boolean rename(String oldName, String newName) throws RemoteException;
 	public String getOSName()throws RemoteException;
 	public String getHostName() throws RemoteException;
-	public String getHostAddress() throws RemoteException; //ToDo
-	public void setClientAddress(String clientAddress) throws RemoteException; //ToDo
-
-	//public String getClientName() throws RemoteException; //ToDo
-	//public String getClientOS() throws RemoteException; //ToDo
+	public String getHostAddress() throws RemoteException;
+	public void setClientAddress(String clientAddress) throws RemoteException;
+	//public String setClientName(String clientName) throws RemoteException; //ToDo
+	//public String setClientOS(String clientOS) throws RemoteException; //ToDo
 }
