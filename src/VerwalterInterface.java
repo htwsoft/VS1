@@ -23,5 +23,5 @@ interface VerwalterInterface extends Remote
 
     public FileTreeModel getFileTreeModel(File wurzel) throws RemoteException;
 
-    FileTreeModel getFileTreeModel() throws RemoteException;;
+    FileTreeModel getFileTreeModel() throws RemoteException;
 }

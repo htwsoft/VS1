@@ -48,6 +48,7 @@ public class FileSystem implements Serializable
 		//meins
 		this.pfad = null;
 		this.wurzel = null;
+		this.model = null;
 	}
 	
 	/**

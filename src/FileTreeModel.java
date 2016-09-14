@@ -3,6 +3,7 @@
  */
 
 import javax.swing.event.TreeModelListener;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import java.io.File;
@@ -14,31 +15,31 @@ import java.io.Serializable;
  **/
 
 
-public class FileTreeModel implements TreeModel, Serializable
+public class FileTreeModel extends DefaultTreeModel implements TreeModel, Serializable
 {
     private static final long serialVersionUID = -3566579378634529000L;
-
     // We specify the root directory when we create the model.
-    public File root;
-    public FileTreeModel(File root)
-    {
-        this.root = root;
-    }
-    public FileTreeModel(String pfad)
-    {
-        this.root = new File(pfad);
-    }
+    private File root2;
+//    public FileTreeModel(File root)
+//    {
+//        this.root = root;
+//    }
+//    public FileTreeModel(String pfad)
+//    {
+//        this.root = new File(pfad);
+//    }
 
     public FileTreeModel()
     {
-        this.root = new File("\\");
+        super(null);
+        this.root2 = new File("\\");
     }
 
     // The model knows how to return the root object of the tree
     public Object getRoot()
     {
         //return root;
-        return this.root;
+        return this.root2;
     }
 
     // Tell JTree whether an object in the tree is a leaf or not

@@ -258,7 +258,7 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
         if(o == startClientButton)
         {
             int serverPort;
-            String host = "192.168.0.102";
+            String host = "10.9.41.43";
             try
             {
                 serverPort = Integer.parseInt(portTextFeld.getText().trim());
@@ -391,6 +391,7 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
                 //FileTreeModel model2 = this.vServer.getFileTreeModel(wurzel);
                 FileTreeModel model2 = this.vServer.getFileTreeModel();
                 tree1.setModel(model2);
+                model2.reload();
             } catch (RemoteException e1)
             {
                 e1.printStackTrace();
