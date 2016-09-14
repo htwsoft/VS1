@@ -76,6 +76,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
      */
     public String getServerList()
     {
+        System.out.println("serverlist");
         return VERWALTER_LISTE;
     }
 
@@ -110,6 +111,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
 
     public void setClientAddress(String clientAddress) throws RemoteException
     {
+        System.out.println("clientaddress");
         fsserver.setClientAddress(clientAddress);
     }
 

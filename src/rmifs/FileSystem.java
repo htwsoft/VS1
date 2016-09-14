@@ -11,6 +11,7 @@ import java.io.*;
 import java.nio.*;
 import java.nio.file.*;
 import java.net.*;
+import java.net.Inet4Address;
 import static java.nio.file.StandardCopyOption.*;
 
 /**
@@ -34,8 +35,8 @@ public class FileSystem
 		this.osname = System.getProperty("os.name");
 
 		try {
-			this.hostname = InetAddress.getLocalHost().getHostName();
-			this.hostAddress = InetAddress.getLocalHost().getHostAddress();
+			this.hostname = Inet4Address.getLocalHost().getHostName();
+			this.hostAddress = Inet4Address.getLocalHost().getHostAddress();
 		} catch (UnknownHostException uhe) {
 			uhe.printStackTrace();
 		}

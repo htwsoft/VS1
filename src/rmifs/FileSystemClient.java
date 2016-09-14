@@ -22,8 +22,10 @@ public class FileSystemClient
 {
 	private VerwalterInterface vserver;  //Attribute zum Zugriff auf Verwalter Server Funktionen
 
-	private enum MENUE { CLOSE, LIST, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE, RENAME, OS_NAME, FALSE };
-	private String clientAddress;
+	private enum MENUE { CLOSE, LIST, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE, RENAME, OS_NAME, FALSE }
+	private String clientAddress = "";
+	private String clientName = "";
+	private String clientOS = "";
 
 	/**
 	* Hauptmethode der Demo
@@ -33,13 +35,14 @@ public class FileSystemClient
 	public static void main(String args[]) 
 	{
 		FileSystemClient fsc = null;
+		//FileSystemClient fsclient = new FileSystemClient(4712, "localhost");
 		int serverPort = 0;
 		int eingabe = -1;
 		MENUE menue_eingabe = MENUE.FALSE;
 		try 
 		{
 			serverPort = Integer.parseInt(args[0]);
-			System.setProperty("java.rmi.server.hostname", "192.168.0.11");//192.168.0.101
+			System.setProperty("java.rmi.server.hostname", "localhost");//192.168.0.101
 			fsc = new FileSystemClient(serverPort, args[1]);
 			while(menue_eingabe != MENUE.CLOSE)
 			{
@@ -294,23 +297,22 @@ public class FileSystemClient
 	* Funktion zeigt ein Auswahlmenue und liefert 
 	* die Auswahl des Benutzers zurück
 	*/
-	private int zeigeMenue()
+	private int zeigeMenue ()
 	{
 		//Scanner liste eingabe des Benutzers ein
 		InputStreamReader isr = new InputStreamReader(System.in);
 		BufferedReader br = new BufferedReader(isr);
+		toString();
 		int eingabe = -1;
 		while(eingabe < 0 || eingabe > 8)
 		{
 			//Auswahlmenue zeigen bis eingabe richtig
 			try
 			{
-				/**System.out.println("Client Name: "  +
-						" | IP Adresse : " + getClientAddress() +
-						" | OS Name	: " );
-				 */
-				vserver.setClientAddress(getClientAddress());//Rückgabeparameter für den FileSystemServer
-
+				//Rückgabeparameter für den Verwalter & FileSystemServer
+				vserver.setClientAddress(getClientAddress());
+				//System.out.print(toString());
+				//Terminal Ausgabe Menue
 				System.out.println("");
 				System.out.println("---------------------");
 				System.out.println("Menue:");
@@ -365,47 +367,62 @@ public class FileSystemClient
 	 * @throws RemoteException
 	 * @author soezdemir
 	 */
+	public void setClientAddress(String clientAddress) {
+		System.out.println("***** Client: -> IP: " + clientAddress);
+	}
 
+	public String getClientName()
+	{
+		//String clientName = "";
+		try {
+			InetAddress clientMachine = Inet4Address.getLocalHost();
+			clientName = clientMachine.getHostName();
+			System.out.println("ClientName:\t" + clientName);
 
+		}catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return clientName;
+	}
 
 	public String getClientAddress()
 	{
-		String clientAddress = "";
+		//String clientAddress = "";
 		try {
-			InetAddress clientIP = InetAddress.getLocalHost();
+			InetAddress clientIP = Inet4Address.getLocalHost();
 			clientAddress = clientIP.getHostAddress();
-			System.out.println("Client IP: " + clientAddress);
-		}catch (Exception e)
-		{
+			System.out.println("ClientIP:\t" + clientIP);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return clientAddress;
 	}
 
-	public void setClientAddress(String clientAddress) {
-		System.out.println("Client: -> IP: " + clientAddress);
-	}
-
-	public String getClientName()
-	{
-		System.out.println("Funktion: getClientName");
-		String clientName;
-		clientName = getClientName();
-		System.out.println("Return: \"" + clientName + "\"");
-		return clientName;
-	}
-
-
-
 	public String getClientOS()
 	{
-		System.out.println("Funktion: getClientOS");
-		String clientOSName;
-		clientOSName = getClientOS();
-		System.out.println("Return: \"" + clientOSName + "\"");
-		return clientOSName;
+		try {
+		//System.out.println("Funktion: os.name, os.version, os.arch");
+		String clientOS = System.getProperty("os.name") +
+							", Version " + System.getProperty("os.version") +
+							" on " + System.getProperty("os.arch") + " architecture.";
+		System.out.println("ClientOS:\t" + clientOS);
+		}catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return clientOS;
 	}
 
+
+	@Override
+	public final String toString()
+	{
+			String output = "\nIP Address: " + clientAddress +
+							" | Client: "  + getClientName() +
+							" | OS Name: " + getClientOS();
+			return output;
+	}
 
  }
 

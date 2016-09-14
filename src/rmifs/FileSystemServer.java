@@ -12,6 +12,7 @@ import java.nio.*;
 import java.nio.file.*;
 import static java.nio.file.StandardCopyOption.*;
 import java.net.InetAddress;
+import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.rmi.*;
 import java.rmi.registry.Registry;
@@ -20,6 +21,7 @@ import java.rmi.server.*;
 import java.util.*;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.net.InetAddress;
 
 /**
 * RMI-Server für das FileSystem
@@ -300,7 +302,7 @@ public class FileSystemServer implements FSInterface
 		System.out.println("Funktion: getOSName");
 		String osName;
 		osName = fs.getOSName();
-		//System.out.println("System runs on \"" + osName + "\"");
+		System.out.println("System runs on \"" + osName + "\"");
 		return osName;
 	}
 
@@ -315,7 +317,7 @@ public class FileSystemServer implements FSInterface
 		System.out.println("Funktion: getHostName");
 		String hostName;
 		hostName = fs.getHostName();
-		//System.out.println("Hostname is \"" + hostName + "\"");
+		System.out.println("Hostname is \"" + hostName + "\"");
 		return hostName;
 	}
 	public String getHostAddress() throws RemoteException
@@ -329,7 +331,7 @@ public class FileSystemServer implements FSInterface
 
 	public void setClientAddress(String clientAddress) throws RemoteException
 	{
-		System.out.println("\n " + clientAddress + " is connected to Server...");
+		System.out.println("\n " + clientAddress + " is connected to Server " + getHostAddress());
 	}
 
 	/**
