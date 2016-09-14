@@ -14,6 +14,8 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+
+
 /**
  * Created by Eugen Eberle on 20.08.2016.
  */
@@ -381,43 +383,43 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
             }
 
             /**Nur lokal?*/
-            try
-            {
-//                File wurzel = this.vServer.getFile(pfad);
-//                client.append(String.valueOf(wurzel));
-                // Create a TreeModel object to represent our tree of files
-                //FileTreeModel model2 = this.vServer.getFile(pfad);
-                //FileTreeModel model2 = new FileTreeModel(wurzel);
-                //FileTreeModel model2 = this.vServer.getFileTreeModel(wurzel);
-                FileTreeModel model2 = this.vServer.getFileTreeModel();
-                tree1.setModel(model2);
-            } catch (RemoteException e1)
-            {
-                e1.printStackTrace();
-            }
+//            try
+//            {
+////                File wurzel = this.vServer.getFile(pfad);
+////                client.append(String.valueOf(wurzel));
+//                // Create a TreeModel object to represent our tree of files
+//                //FileTreeModel model2 = this.vServer.getFile(pfad);
+//                //FileTreeModel model2 = new FileTreeModel(wurzel);
+//                //FileTreeModel model2 = this.vServer.getFileTreeModel(wurzel);
+//                FileTreeModel model2 = this.vServer.getFileTreeModel();
+//                tree1.setModel(model2);
+//            } catch (RemoteException e1)
+//            {
+//                e1.printStackTrace();
+//            }
 
             /**Baum wird auf den Inhalten dirListe und fileListe zusammengebaut*/
-//            DefaultTreeModel model = (DefaultTreeModel)tree1.getModel();
-//            DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
-//            root.removeAllChildren();
-//            root.setUserObject(pfad + " " + new SimpleDateFormat("HH:mm:ss").format(new Date()));
-//
-//            for (int i = 0; i < dirListe.length; i++)
-//            {
-//                if(!dirListe[i].equals(""))
-//                {
-//                    root.add(new DefaultMutableTreeNode(dirListe[i]));
-//                }
-//            }
-//
-//            for (int i = 0; i < fileListe.length; i++)
-//            {
-//                if(!fileListe[i].equals(""))
-//                {
-//                    root.add(new DefaultMutableTreeNode(fileListe[i]));
-//                }
-//            }
-//            model.reload(root);
+            DefaultTreeModel model = (DefaultTreeModel)tree1.getModel();
+            DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
+            root.removeAllChildren();
+            root.setUserObject(pfad + " " + new SimpleDateFormat("HH:mm:ss").format(new Date()));
+
+            for (int i = 0; i < dirListe.length; i++)
+            {
+                if(!dirListe[i].equals(""))
+                {
+                    root.add(new DefaultMutableTreeNode(dirListe[i]));
+                }
+            }
+
+            for (int i = 0; i < fileListe.length; i++)
+            {
+                if(!fileListe[i].equals(""))
+                {
+                    root.add(new DefaultMutableTreeNode(fileListe[i]));
+                }
+            }
+            model.reload(root);
         }
 
         if(o == seachButton)

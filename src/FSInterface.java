@@ -20,9 +20,4 @@ public interface FSInterface extends java.rmi.Remote
 	public String getOSName()throws RemoteException;
 	public String getHostName() throws RemoteException; //ToDoooooooooooooooooooooooooooo
 	public String getHostAdress() throws RemoteException; //ToDoooooooooooooooooooooooooooo
-	//public File getFile(String pfad)throws RemoteException;  //meins
-
-	public FileTreeModel getFileTreeModel(File wurzel)throws RemoteException;
-
-	FileTreeModel getFileTreeModel() throws RemoteException;
 }

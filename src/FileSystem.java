@@ -22,11 +22,6 @@ public class FileSystem implements Serializable
 	private Path [] dirListe; //Liste der gefundenen Ordner bei Browse
 	private Path [] fileListe; //Liste der gefundenen Dateien bei Browse
 
-	//meins
-	private String pfad;
-	private File wurzel;
-	private FileTreeModel model;
-	
 	/**
 	* Konstruktor der FileSystem Klasse
 	* Initialisiert die internen variablen
@@ -44,11 +39,6 @@ public class FileSystem implements Serializable
 		} catch (UnknownHostException uhe) {
 			uhe.printStackTrace();
 		}
-
-		//meins
-		this.pfad = null;
-		this.wurzel = null;
-		this.model = new FileTreeModel();
 	}
 	
 	/**
@@ -91,26 +81,6 @@ public class FileSystem implements Serializable
 			this.fileListe = new Path[1]; 
 			this.fileListe[0] = path;
 		}
-	}
-	/***/
-	public FileTreeModel baum(File wurzel) throws IOException
-	{
-//		FileTreeModel b = new FileTreeModel(wurzel);
-//		return b;
-		//return this.model = new FileTreeModel(wurzel);
-		//return this.model = new FileTreeModel("\\");
-		return this.model = new FileTreeModel();
-	}
-	public FileTreeModel baum() throws IOException
-	{
-//		FileTreeModel b = new FileTreeModel(wurzel);
-//		return b;
-		model = new FileTreeModel();
-		model.getRoot();
-
-		//return this.model = new FileTreeModel(wurzel);
-		//return this.model = new FileTreeModel("\\");
-		return this.model = new FileTreeModel();
 	}
 
 	/**
@@ -259,23 +229,5 @@ public class FileSystem implements Serializable
 	{
 		return this.dirListe;
 	}
-
-
-	public File getDatei(String pfad)
-	{
-		wurzel = new File(pfad);
-		return this.wurzel;
-	}
-
-	public File gib()
-	{
-		return this.wurzel;
-	}
-
-	public FileTreeModel getFileTreeModel()
-	{
-		return this.model = new FileTreeModel();
-	}
-
 
 }

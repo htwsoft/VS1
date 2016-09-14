@@ -181,24 +181,4 @@ public class VerwalterGUI extends JFrame implements VerwalterInterface, RMIClien
     {
         return this.fsserver.browseDirs(dir);
     }
-
-
-//    @Override
-//    public File getFile(String pfad) throws RemoteException
-//    {
-//        return this.fsserver.getFile(pfad);
-//    }
-
-    @Override
-    public FileTreeModel getFileTreeModel(File wurzel) throws RemoteException
-    {
-        return this.fsserver.getFileTreeModel(wurzel);
-    }
-
-    //@Override
-    public FileTreeModel getFileTreeModel() throws RemoteException
-    {
-        return this.fsserver.getFileTreeModel();
-    }
-
 }
