@@ -42,6 +42,7 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
     private JLabel ip;
     private JLabel ipLabel;
     private JButton sWechselButton;
+    private JLabel banner;
 
     private VerwalterInterface vServer;
 
@@ -74,7 +75,7 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
 
         frame.pack();
         frame.setVisible(true);
-        frame.setSize(1000, 800);
+        frame.setSize(1100, 800);
         //frame.setResizable(false);
         frame.setLocation(10, 10);
 
@@ -107,6 +108,10 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
         searchFeld.setEnabled(false);
         sWechselButton.setEnabled(false);
         tree1.setEnabled(false);
+
+
+       frame.pack();
+
 
 
         /** listener fuer den tree*/
