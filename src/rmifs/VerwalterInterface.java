@@ -10,8 +10,6 @@ package rmifs;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 interface VerwalterInterface extends Remote{
     public String getServerList() throws RemoteException;
@@ -26,6 +24,6 @@ interface VerwalterInterface extends Remote{
     public String getHostName() throws RemoteException;
     public String getHostAddress() throws RemoteException;
     public void sendClientAddress(String clientAddress) throws RemoteException;
-    //public String setClientName(String clientName) throws RemoteException;
-    //public String setClientOS(String clientOS) throws RemoteException; //ToDo
+    //public String sendClientName(String clientName) throws RemoteException;
+    //public String sendClientOS(String clientOS) throws RemoteException; //ToDo
 }

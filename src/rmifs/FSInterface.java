@@ -26,6 +26,6 @@ public interface FSInterface extends Remote
 	public String getHostName() throws RemoteException;
 	public String getHostAddress() throws RemoteException;
 	public void sendClientAddress(String clientAddress) throws RemoteException;
-	//public String setClientName(String clientName) throws RemoteException; //ToDo
-	//public String setClientOS(String clientOS) throws RemoteException; //ToDo
+	//public String sendClientName(String clientName) throws RemoteException; //ToDo
+	//public String sendClientOS(String clientOS) throws RemoteException; //ToDo
 }

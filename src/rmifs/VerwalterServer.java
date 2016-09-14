@@ -17,8 +17,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.RMIClientSocketFactory;
 import java.rmi.server.UnicastRemoteObject;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 
 
@@ -29,13 +27,13 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
      * enthaelt die Liste aller verfuegbaren(remote) VerwalterServer
      * und indirekt deren verbundenen FileServer (Beispiel IP-Adressen)
      */
-    private static final String VERWALTER_LISTE =   "Name: Server[1] IP: 192.168.0.101\n" +
-                                                    "Name: Server[2] IP: 192.168.0.102\n" +
-                                                    "Name: Server[3] IP: 192.168.0.103";
+    private static final String VERWALTER_LISTE =   "Name: BspServer[1] IP: 192.168.0.101\n" +
+                                                    "Name: BspServer[2] IP: 192.168.0.102\n" +
+                                                    "Name: BspServer[3] IP: 192.168.0.103";
     /**
      * HOST entspricht der IP-Adresse des lokalen FileServers
      */
-    private final static String HOST = null; //192.168.0.101
+    private final static String HOST = "192.168.0.23"; //192.168.0.101
 
     /**
      * PORT_NR entspricht dem gebundenen Port des FileServers
@@ -76,7 +74,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
      */
     public String getServerList()
     {
-        System.out.println("serverlist");
+        System.out.println("request serverlist");
         return VERWALTER_LISTE;
     }
 
@@ -86,32 +84,23 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     }
 
     public String getOSName()throws RemoteException
-    {   System.out.println("osname");
+    {   System.out.println("request serverOSname");
        return this.fsserver.getOSName();
     }
 
     public String getHostName() throws RemoteException
-    {   System.out.println("hostname");
+    {   System.out.println("request hostname " );
         return this.fsserver.getHostName();
     }
 
     public String getHostAddress() throws RemoteException
-    {   System.out.println("hostaddress");
+    {   System.out.println("request hostaddress");
         return this.fsserver.getHostAddress();
     }
-    /** wird erledigt durch soezdemir
-     * Methoden sollen Informationen über
-     * einen verbundenen Client zurückgeben
-    //ToDo
-    public String getClientOS() throws RemoteException
-    {
-        System.out.println("client osname");
-        return this.fsclient.getClientOS();
-    }*/
 
     public void sendClientAddress(String clientAddress) throws RemoteException
     {
-        System.out.println("clientaddress");
+        System.out.println("send clientaddress by rmi handshake");
         fsserver.sendClientAddress(clientAddress);
     }
 

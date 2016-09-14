@@ -40,7 +40,7 @@ public class FileSystemClient
 		try 
 		{
 			serverPort = Integer.parseInt(args[0]);
-			System.setProperty("java.rmi.server.hostname", "192.168.0.23");//192.168.0.101
+			System.setProperty("java.rmi.server.hostname", "192.168.0.11");//192.168.0.101
 
 			fsc = new FileSystemClient(serverPort, args[1]);
 			NetworkController nc = new NetworkController(fsc);
@@ -335,11 +335,12 @@ public class FileSystemClient
 				System.out.print("Was moechten Sie tun?: ");
 				eingabe = Integer.parseInt(br.readLine());
 			}
-			catch(Exception e)
+			catch(IOException ioe)
 			{
-				System.out.println("Fehlerhafte Eingabe!");
+				ioe.printStackTrace();
 			}
 		}
+
 		System.out.println("");
 
 		return eingabe;

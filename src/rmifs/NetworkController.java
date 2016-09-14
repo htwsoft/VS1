@@ -5,9 +5,6 @@ import java.rmi.RemoteException;
 import java.util.Collections;
 import java.util.Enumeration;
 
-import static java.lang.System.in;
-import static java.lang.System.out;
-
 /**
  * Created by soezdemir on 14.09.16.
  */
@@ -20,6 +17,10 @@ public class NetworkController {
 
     private FileSystemClient client;
 
+    /**Konstruktor initialisiert den Client
+     *
+     * @param client
+     */
     public NetworkController(FileSystemClient client) {
         init(client);
     }
@@ -33,8 +34,8 @@ public class NetworkController {
             soe.printStackTrace();
         } catch (UnknownHostException uhe) {
             uhe.printStackTrace();
-        } catch (RemoteException ree) {
-            ree.printStackTrace();
+        } catch (RemoteException rex) {
+            rex.printStackTrace();
         }
     }
 
@@ -63,7 +64,7 @@ public class NetworkController {
 
         Enumeration<InetAddress> inetAddresses = netint.getInetAddresses();
         for (InetAddress inetAddress : Collections.list(inetAddresses))
-            if(inetAddress.toString().length() <= 15){
+            if(inetAddress.toString().length() <= 15 && inetAddress.toString().length() >= 7){
                 getClient().setClientAddress(inetAddress.getHostAddress());
                 getClient().sendClientAddress(inetAddress.getHostAddress());
             }
