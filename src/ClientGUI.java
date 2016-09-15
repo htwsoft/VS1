@@ -513,8 +513,8 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
         if(o == sWechselButton)
         {
             int serverPort;
-            Object[] selectionValues = { "xxx.xxx.xxx.xxx", "yyy.yyy.yyy.yyy", "192.168.0.102" };
-            String initialSelection = "xxx.xxx.xxx.xxx";
+            Object[] selectionValues = { "10.9.41.43", "10.9.40.171", "10.9.40.174" };
+            String initialSelection = "10.9.41.43";
             Object selection = JOptionPane.showInputDialog(null, "Zu welchen Server wechseln?",
                     "Server Wechsel", JOptionPane.QUESTION_MESSAGE, null, selectionValues, initialSelection);
 
