@@ -17,6 +17,11 @@ import java.lang.*;
 
 public class FileSystemClient
 {
+	private final static String SERVER_HOST_IP_1 = "192.168.0.11";
+	private final static String SERVER_HOST_IP_2 = "192.168.0.23";
+	private final static String SERVER_HOST_IP_3 = "192.168.0.24";
+	private final static int SERVER_PORT = 4712;
+
 	private VerwalterInterface vserver;  //Attribute zum Zugriff auf Verwalter Server Funktionen
 	private String clientAddress = "not set!";
 	private String clientName = "not set!";
@@ -34,6 +39,9 @@ public class FileSystemClient
 	*/	
 	public static void main(String args[]) 
 	{
+		//**** regelt RMI Kommunikation ***** muss anfang der main bleiben
+		System.setProperty("java.security.policy", "java.policy" );
+		System.setProperty("java.rmi.server.hostname", SERVER_HOST_IP_3);
 		FileSystemClient fsc = null;
 		//FileSystemClient fsclient = new FileSystemClient(4712, "localhost");
 
@@ -42,10 +50,10 @@ public class FileSystemClient
 		MENUE menue_eingabe = MENUE.FALSE;
 		try 
 		{
-			serverPort = Integer.parseInt(args[0]);
-			System.setProperty("java.rmi.server.hostname", "192.168.0.11");//192.168.0.101
+			serverPort = SERVER_PORT; //Integer.parseInt(args[0]);
 
-			fsc = new FileSystemClient(serverPort, args[1]);
+
+			fsc = new FileSystemClient(serverPort, SERVER_HOST_IP_3); //args[1]
 			NetworkController nc = new NetworkController(fsc);
 
 			System.out.println(nc);

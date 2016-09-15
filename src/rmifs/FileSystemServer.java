@@ -37,6 +37,9 @@ public class FileSystemServer implements FSInterface
 	 */
 	public static void main(String args[])
 	{
+		//**** regelt RMI Kommunikation ***** muss anfang der main bleiben
+		System.setProperty("java.security.policy", "java.policy" );
+
 		try
 		{
 			if(args.length >= 1)

@@ -21,6 +21,12 @@ import java.rmi.server.UnicastRemoteObject;
 
 
 public class VerwalterServer implements VerwalterInterface, RMIClientSocketFactory {
+
+    private final static String SERVER_HOST_IP_1 = "192.168.0.11";
+    private final static String SERVER_HOST_IP_2 = "192.168.0.23";
+    private final static String SERVER_HOST_IP_3 = "192.168.0.24";
+
+
     private FSInterface fsserver;
     public FileSystemClient client;//ToDo
     private String clientAddress = "not set!";
@@ -30,13 +36,13 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
      * enthaelt die Liste aller verfuegbaren(remote) VerwalterServer
      * und indirekt deren verbundenen FileServer (Beispiel IP-Adressen)
      */
-    private static final String VERWALTER_LISTE =   "Name: BspServer[1] IP: 192.168.0.101\n" +
-                                                    "Name: BspServer[2] IP: 192.168.0.102\n" +
-                                                    "Name: BspServer[3] IP: 192.168.0.103";
+    private static final String VERWALTER_LISTE =   "Name: BspServer[1] IP: 192.168.0.11\n" +
+                                                    "Name: BspServer[2] IP: 192.168.0.23\n" +
+                                                    "Name: BspServer[3] IP: 192.168.0.24";
     /**
      * HOST entspricht der IP-Adresse des lokalen FileServers
      */
-    private final static String HOST = "172.19.1.209"; //192.168.0.101 //192.168.0.23
+    private final static String HOST = "192.168.0.24"; //192.168.0.101 //192.168.0.23
 
     /**
      * PORT_NR entspricht dem gebundenen Port des FileServers
@@ -107,14 +113,11 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         return this.fsserver.getHostAddress();
     }
 
-    //ToDo
-    public void getClientAddress(String clientAddress) throws RemoteException
-    {
-        fsserver.sendClientAddress(clientAddress);
-    }
+
 
     public void sendClientAddress(String clientAddress) throws RemoteException
     {
+        clientIP = clientAddress;
         System.out.println("send clientaddress by rmi handshake [" + clientAddress + "]");
         fsserver.sendClientAddress(clientAddress);
 
@@ -184,6 +187,9 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
      */
     public static void main(String args[])
     {
+        //**** regelt RMI Kommunikation ***** muss anfang der main bleiben
+        System.setProperty("java.security.policy", "java.policy" );
+
         try
         {
             VerwalterServer verwalterServer = new VerwalterServer();
@@ -192,7 +198,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
                 int serverPort = 0;//Clientaufruf mit 4711
                 serverPort = Integer.parseInt(args[0]);
                 //Noetig für RMI Client Anbindung zum VerwalterServer z.B. 192.168.0.101 Port 4711
-                System.setProperty("java.rmi.server.hostname", "localhost");
+                System.setProperty("java.rmi.server.hostname", "192.168.0.24");
                 //Stellt das Objekt dem System zur Verfügung
                 VerwalterInterface stub = (VerwalterInterface) UnicastRemoteObject.exportObject(verwalterServer, serverPort);
                 //Registry erstellen um Objekt ansprechen zu können
