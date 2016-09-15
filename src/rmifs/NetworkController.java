@@ -1,5 +1,6 @@
 package rmifs;
 
+import java.io.IOException;
 import java.net.*;
 import java.rmi.RemoteException;
 import java.util.Collections;
@@ -78,7 +79,7 @@ public class NetworkController {
         try {
             InetAddress clientMachine = Inet4Address.getLocalHost();
             clientName = clientMachine.getHostName();
-            System.out.println("ClientName:\t" + clientName);
+            //System.out.println("ClientName:\t" + clientName);
 
         }catch (Exception e)
         {
@@ -117,7 +118,7 @@ public class NetworkController {
     @Override
     public final String toString()
     {
-        String output = "\nIP Address: " + getClient().getClientAddress() +
+        String output = "IP Address: " + getClient().getClientAddress() +
                 " | Client: "  + getClientName() +
                 " | OS Name: " + getClient().getClientOS();
         return output;

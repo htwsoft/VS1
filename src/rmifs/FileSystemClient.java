@@ -21,6 +21,9 @@ public class FileSystemClient
 	private String clientAddress = "not set!";
 	private String clientName = "not set!";
 	private String clientOS = "not set!";
+
+
+
 	private enum MENUE { CLOSE, LIST, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE, RENAME, OS_NAME, FALSE }
 
 
@@ -206,9 +209,9 @@ public class FileSystemClient
 				System.out.println("Ordner konnte NICHT erstellt werden!");
 			}
 		}
-		catch(IOException e)
+		catch(IOException ioe)
 		{
-			System.out.println("Fehler: " + e.getMessage());	
+			ioe.printStackTrace();
 		}			
 	}
 	
@@ -394,7 +397,7 @@ public class FileSystemClient
 
 	public void sendClientAddress(String clientAddress) throws RemoteException {
 		vserver.sendClientAddress(clientAddress);
-		//System.out.println("***** Client: -> IP: " + clientAddress);
+		System.out.println("\n***** Client: -> IP: [" + clientAddress + "] *****\n");
 	}
 
 	public String toString(){

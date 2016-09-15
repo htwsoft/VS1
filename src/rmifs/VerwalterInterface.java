@@ -8,6 +8,7 @@ package rmifs;
  * @date 2016-09-14
  */
 
+import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -22,8 +23,9 @@ interface VerwalterInterface extends Remote{
     public boolean rename(String oldName, String newName) throws RemoteException;
     public String getOSName()throws RemoteException;
     public String getHostName() throws RemoteException;
-    public String getHostAddress() throws RemoteException;
+    public String getHostAddress() throws RemoteException, NotBoundException;
     public void sendClientAddress(String clientAddress) throws RemoteException;
-    //public String sendClientName(String clientName) throws RemoteException;
+    //public String sendClientName(String clientName) throws RemoteException;//ToDo
     //public String sendClientOS(String clientOS) throws RemoteException; //ToDo
+    public void getClientAddress(String clientAddress) throws RemoteException;//ToDo
 }

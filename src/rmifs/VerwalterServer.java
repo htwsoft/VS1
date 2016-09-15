@@ -8,7 +8,7 @@ package rmifs;
  * @version 1.03
  * @date 2016-09-14
  */
-
+import java.lang.String;
 import java.io.IOException;
 import java.net.Socket;
 import java.rmi.RemoteException;
@@ -22,7 +22,10 @@ import java.rmi.server.UnicastRemoteObject;
 
 public class VerwalterServer implements VerwalterInterface, RMIClientSocketFactory {
     private FSInterface fsserver;
-    //public FileSystemClient fsclient = new FileSystemClient();//ToDo
+    public FileSystemClient client;//ToDo
+    private String clientAddress = "not set!";
+    private String clientIP = "*unknown*";
+
     /**
      * enthaelt die Liste aller verfuegbaren(remote) VerwalterServer
      * und indirekt deren verbundenen FileServer (Beispiel IP-Adressen)
@@ -33,7 +36,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     /**
      * HOST entspricht der IP-Adresse des lokalen FileServers
      */
-    private final static String HOST = "192.168.0.23"; //192.168.0.101
+    private final static String HOST = "172.19.1.209"; //192.168.0.101 //192.168.0.23
 
     /**
      * PORT_NR entspricht dem gebundenen Port des FileServers
@@ -54,6 +57,12 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         }
         Registry registry = LocateRegistry.getRegistry(HOST, PORT_NR);
         this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
+
+    }
+
+    public FileSystemClient client(String clientIP) throws RemoteException, NotBoundException{
+        client = new FileSystemClient(4711, getHostAddress());
+        return client;
     }
 
     /**
@@ -74,7 +83,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
      */
     public String getServerList()
     {
-        System.out.println("request serverlist");
+        System.out.println("request serverlist from " + clientIP);
         return VERWALTER_LISTE;
     }
 
@@ -84,35 +93,42 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     }
 
     public String getOSName()throws RemoteException
-    {   System.out.println("request serverOSname");
+    {   System.out.println("request serverOSname from " + clientIP);
        return this.fsserver.getOSName();
     }
 
     public String getHostName() throws RemoteException
-    {   System.out.println("request hostname " );
+    {   System.out.println("request hostname from " + clientIP);
         return this.fsserver.getHostName();
     }
 
-    public String getHostAddress() throws RemoteException
-    {   System.out.println("request hostaddress");
+    public String getHostAddress() throws RemoteException, NotBoundException
+    {   System.out.println("request hostaddress from " + clientIP);
         return this.fsserver.getHostAddress();
+    }
+
+    //ToDo
+    public void getClientAddress(String clientAddress) throws RemoteException
+    {
+        fsserver.sendClientAddress(clientAddress);
     }
 
     public void sendClientAddress(String clientAddress) throws RemoteException
     {
-        System.out.println("send clientaddress by rmi handshake");
+        System.out.println("send clientaddress by rmi handshake [" + clientAddress + "]");
         fsserver.sendClientAddress(clientAddress);
+
     }
 
     /** //ToDo
-    public String getClientAddress() throws RemoteException
+    public String setClientAddress() throws RemoteException
     {
         System.out.println("clientaddress");
         return this.fsclient.getClientAddress();
     }
 
     //ToDo
-    public String getClientName() throws RemoteException
+    public String setClientName() throws RemoteException
     {
         System.out.println("clientname");
         return this.fsclient.getClientName();
@@ -183,17 +199,22 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
                 Registry registry =  LocateRegistry.createRegistry(serverPort);
                 //Objekt an registry binden
                 registry.rebind("VerwalterServer", stub);
-                System.out.println("Server bound ...\n Port open at " + serverPort);
+                System.out.println("Server bound .....\tPort open at " + serverPort);
             }
             else
             {
                 System.out.println("Bitte Server-Port zum binden angeben!");
             }
         }
-        catch(Exception e)
+        catch(IOException ioe)
         {
-            System.out.println( "Fehler: " + e.toString() );
+            ioe.printStackTrace();
         }
+        catch (NotBoundException nbe)
+        {
+            nbe.printStackTrace();
+        }
+
     }
 
 }
