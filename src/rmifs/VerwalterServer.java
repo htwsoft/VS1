@@ -113,7 +113,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
 
 
     /**
-    *
+     * holt sich die IPv4 Adresse des verbundenen Clients
      */
     public void sendClientAddress(String clientAddress) throws RemoteException
     {
@@ -123,19 +123,22 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
 
     }
 
-    /** //ToDo
+    //ToDo
+    /**
     public String setClientAddress() throws RemoteException
     {
         System.out.println("clientaddress");
         return this.fsclient.getClientAddress();
     }
-
     //ToDo
     public String setClientName() throws RemoteException
     {
         System.out.println("clientname");
         return this.fsclient.getClientName();
-    }*/
+    }
+     */
+
+
 
     public boolean delete(String file) throws RemoteException
     {
@@ -208,7 +211,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
                 //Stellt das Objekt dem System zur Verfügung
                 VerwalterInterface stub = (VerwalterInterface) UnicastRemoteObject.exportObject(verwalterServer, serverPort);
                 //Registry erstellen um Objekt ansprechen zu können
-                Registry registry =  LocateRegistry.createRegistry(serverPort);
+                Registry registry =  LocateRegistry.createRegistry(serverPort); //ToDo lookup für VerwalterServer & FileServer
                 //Objekt an registry binden
                 registry.rebind("VerwalterServer", stub);
                 System.out.println("Server bound .....\tPort open at " + serverPort);

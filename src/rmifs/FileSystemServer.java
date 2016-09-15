@@ -1,12 +1,6 @@
 //package src.rmifs;
 package rmifs;
 
-/**
-* RMI-Server für ein FileSystem
-* @author Marco Palumbo
-* @version 1.01
-*/
-
 import java.io.*;
 import java.nio.*;
 import java.nio.file.*;
@@ -21,6 +15,13 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 /**
+* RMI-Server für ein FileSystem
+* @author Marco Palumbo
+* @version 1.03
+*/
+
+
+/**
 * RMI-Server für das FileSystem
 */
 public class FileSystemServer implements FSInterface
@@ -29,20 +30,16 @@ public class FileSystemServer implements FSInterface
 	private final static String SERVER_HOST_IP_2 = "192.168.0.23";
 	private final static String SERVER_HOST_IP_3 = "192.168.0.24";
 
-
 	private FileSystem fs = new FileSystem();
-	//public static FSInterface fsserver = new FileSystemServer();
-	//public FileSystemClient fsclient;
-	//public VerwalterInterface verwalterInterface;
 
 	/**
 	 * Hauptmethode
 	 * Startet den FileSystem-Server
-	 * @param Port-Nummer des FileSystemServers
+	 * @param args Portnummer des FileSystemServers
 	 */
 	public static void main(String args[])
 	{
-		//**** regelt RMI Kommunikation ***** muss anfang der main bleiben
+		//**** regelt RMI Kommunikation ***** muss Anfang der main bleiben
 		System.setProperty("java.security.policy", "java.policy" );
 		System.setProperty("java.rmi.server.hostname", SERVER_HOST_IP_3);
 		try
@@ -83,7 +80,7 @@ public class FileSystemServer implements FSInterface
 	/**
 	* Funktion sucht alle Ordner eines angegebenen Directory
 	* @param dir Ordner der durchsucht werden soll 
-	* @return einen String mita allen gefunden Ordner durch ";" getrennt
+	* @return einen String mit allen gefunden Ordner durch ";" getrennt
 	*/
 	public FileSystemServer(){super();}
 	public String browseDirs(String dir) throws RemoteException

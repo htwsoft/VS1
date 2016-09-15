@@ -6,6 +6,7 @@ package rmifs;
 * @author Marco Palumbo, Nadine Breitenstein
 * @version 1.01
 */
+//ToDo Beobachter (Observer) Entwurfsmuster implementieren um Veränderungen am FileSystem zu melden
 
 import java.io.*;
 import java.nio.*;

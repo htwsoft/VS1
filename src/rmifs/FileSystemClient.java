@@ -1,12 +1,6 @@
 //package src.rmifs;
 package rmifs;
 
-/**
- * @author mpalumbo, cpatzek, soezdemir
- * @version 1.03
- * @date indefinitely
- */
-
 import java.io.*;
 import java.util.*;
 import java.rmi.*;
@@ -15,12 +9,19 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.lang.*;
 
+/**
+ * @author mpalumbo, cpatzek, soezdemir
+ * @version 1.03
+ * @date indefinitely
+ */
+//ToDo dringend aufräumen
+
 public class FileSystemClient
 {
 	private final static String SERVER_HOST_IP_1 = "192.168.0.11";
 	private final static String SERVER_HOST_IP_2 = "192.168.0.23";
 	private final static String SERVER_HOST_IP_3 = "192.168.0.24";
-	private final static int SERVER_PORT = 4712;
+	private final static int SERVER_PORT = 4712; 					//ToDo variable Ports und IPs
 
 	private VerwalterInterface vserver;  //Attribute zum Zugriff auf Verwalter Server Funktionen
 	private String clientAddress = "not set!";
@@ -122,6 +123,7 @@ public class FileSystemClient
 		}
 		Registry registry = LocateRegistry.getRegistry(host, portNr);
 		this.vserver = (VerwalterInterface) registry.lookup("VerwalterServer");
+		//ToDo lookup für VerwalterServer & FileServer
 	}
 	
 	/**
