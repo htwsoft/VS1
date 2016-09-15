@@ -28,7 +28,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
 
 
     private FSInterface fsserver;
-    public FileSystemClient client;//ToDo
+    //public FileSystemClient client;//ToDo
     private String clientAddress = "not set!";
     private String clientIP = "*unknown*";
 
@@ -66,10 +66,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
 
     }
 
-    public FileSystemClient client(String clientIP) throws RemoteException, NotBoundException{
-        client = new FileSystemClient(4711, getHostAddress());
-        return client;
-    }
+
 
     /**
      * Erstellt einen Socket für remote Verbindungen(Funktion des Interface RMIClientSocketFactory)
@@ -115,7 +112,9 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     }
 
 
-
+    /**
+    *
+     */
     public void sendClientAddress(String clientAddress) throws RemoteException
     {
         clientIP = clientAddress;
@@ -166,6 +165,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
      */
     public String search(String file, String startDir) throws RemoteException
     {
+        System.out.println("request search from " + clientIP);
         String erg = this.fsserver.search(file, startDir);
         if(erg.equals(""))
         {

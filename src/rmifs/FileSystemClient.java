@@ -41,9 +41,9 @@ public class FileSystemClient
 	{
 		//**** regelt RMI Kommunikation ***** muss anfang der main bleiben
 		System.setProperty("policy/java.security.policy", "policy/java.policy" );
-		System.setProperty("java.rmi.server.hostname", SERVER_HOST_IP_3);
+		//System.setProperty("java.rmi.server.hostname", SERVER_HOST_IP_3);//warum steht das hier????
 		FileSystemClient fsc = null;
-		//FileSystemClient fsclient = new FileSystemClient(4712, "localhost");
+		//FileSystemClient fsclient = nsendew FileSystemClient(4712, "localhost");
 
 		int serverPort = 0;
 		int eingabe = -1;
@@ -52,7 +52,7 @@ public class FileSystemClient
 		{
 			serverPort = SERVER_PORT; //Integer.parseInt(args[0]);
 
-
+			//noetig für die Verbindung zum Verwalter (verwalterPort, vewalterIP)
 			fsc = new FileSystemClient(serverPort, SERVER_HOST_IP_3); //args[1]
 			NetworkController nc = new NetworkController(fsc);
 
@@ -385,28 +385,31 @@ public class FileSystemClient
 	 * @throws RemoteException
 	 * @author soezdemir
 	 */
-	public void setClientAddress(String clientAddress){
+	public void setClientAddress(String clientAddress)throws RemoteException{
 		this.clientAddress = clientAddress;
-
-	}
-
-	public String getClientAddress(){
-		return this.clientAddress;
-
-	}
-
-	public void setClientOS(String clientOS){
-		this.clientOS = clientOS;
-	}
-
-	public String  getClientOS (){
-		return this.clientOS;
+		sendClientAddress(clientAddress);
 	}
 
 	public void sendClientAddress(String clientAddress) throws RemoteException {
 		vserver.sendClientAddress(clientAddress);
 		System.out.println("\n***** Client: -> IP: [" + clientAddress + "] *****\n");
 	}
+
+
+	public String getClientAddress(){
+		return this.clientAddress;
+
+	}
+
+	public void setClientOS(String clientOS){this.clientOS = clientOS;
+	}
+
+	public String  getClientOS ()
+	{
+		//vserver.sendClientAddress(clientAddress);
+		return this.clientOS;
+	}
+
 
 	public String toString(){
 		StringBuffer sb = new StringBuffer();

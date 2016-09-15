@@ -67,7 +67,7 @@ public class NetworkController {
         for (InetAddress inetAddress : Collections.list(inetAddresses))
             if(inetAddress.toString().length() <= 15 && inetAddress.toString().length() >= 7){
                 getClient().setClientAddress(inetAddress.getHostAddress());
-                getClient().sendClientAddress(inetAddress.getHostAddress());
+                //getClient().sendClientAddress(inetAddress.getHostAddress());
             }
 
     }

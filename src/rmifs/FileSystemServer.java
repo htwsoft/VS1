@@ -32,8 +32,8 @@ public class FileSystemServer implements FSInterface
 
 	private FileSystem fs = new FileSystem();
 	//public static FSInterface fsserver = new FileSystemServer();
-	public FileSystemClient fsclient;
-	public VerwalterInterface verwalterInterface;
+	//public FileSystemClient fsclient;
+	//public VerwalterInterface verwalterInterface;
 
 	/**
 	 * Hauptmethode
