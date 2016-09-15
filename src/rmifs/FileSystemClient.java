@@ -40,7 +40,7 @@ public class FileSystemClient
 	public static void main(String args[]) 
 	{
 		//**** regelt RMI Kommunikation ***** muss anfang der main bleiben
-		System.setProperty("java.security.policy", "java.policy" );
+		System.setProperty("policy/java.security.policy", "policy/java.policy" );
 		System.setProperty("java.rmi.server.hostname", SERVER_HOST_IP_3);
 		FileSystemClient fsc = null;
 		//FileSystemClient fsclient = new FileSystemClient(4712, "localhost");

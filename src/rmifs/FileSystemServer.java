@@ -25,6 +25,11 @@ import java.net.UnknownHostException;
 */
 public class FileSystemServer implements FSInterface
 {
+	private final static String SERVER_HOST_IP_1 = "192.168.0.11";
+	private final static String SERVER_HOST_IP_2 = "192.168.0.23";
+	private final static String SERVER_HOST_IP_3 = "192.168.0.24";
+
+
 	private FileSystem fs = new FileSystem();
 	//public static FSInterface fsserver = new FileSystemServer();
 	public FileSystemClient fsclient;
@@ -39,7 +44,7 @@ public class FileSystemServer implements FSInterface
 	{
 		//**** regelt RMI Kommunikation ***** muss anfang der main bleiben
 		System.setProperty("java.security.policy", "java.policy" );
-
+		System.setProperty("java.rmi.server.hostname", SERVER_HOST_IP_3);
 		try
 		{
 			if(args.length >= 1)

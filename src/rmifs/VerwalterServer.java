@@ -95,6 +95,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
 
     public boolean rename(String oldName, String newName) throws RemoteException
     {
+        System.out.println("request rename from " + clientIP);
         return this.fsserver.rename(oldName, newName);
     }
 
@@ -118,7 +119,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     public void sendClientAddress(String clientAddress) throws RemoteException
     {
         clientIP = clientAddress;
-        System.out.println("send clientaddress by rmi handshake [" + clientAddress + "]");
+        System.out.println("send clientaddress via rmi handshake [" + clientAddress + "]");
         fsserver.sendClientAddress(clientAddress);
 
     }
@@ -139,16 +140,19 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
 
     public boolean delete(String file) throws RemoteException
     {
+        System.out.println("request delete from " + clientIP);
         return this.fsserver.delete(file);
     }
 
     public boolean createFile(String file) throws RemoteException
     {
+        System.out.println("request createFile from " + clientIP);
         return this.fsserver.createFile(file);
     }
 
     public boolean createDir(String dir) throws RemoteException
     {
+        System.out.println("request createDir from " + clientIP);
         return this.fsserver.createDir(dir);
     }
 
@@ -173,11 +177,13 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
 
     public String browseFiles(String dir) throws RemoteException
     {
+        System.out.println("request browse from " + clientIP);
         return this.fsserver.browseFiles(dir);
     }
 
     public String browseDirs(String dir) throws RemoteException
     {
+        System.out.println("request browseDir from " + clientIP);
         return this.fsserver.browseDirs(dir);
     }
 

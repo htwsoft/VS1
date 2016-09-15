@@ -1,7 +1,7 @@
     
 // Standard extensions get all permissions by default
 
-//MEINS
+//MEINS nein.. nicht deins ;-) MAINZ
 grant {
   permission java.security.AllPermission;
 };
@@ -24,7 +24,7 @@ grant {
         // information.
         permission java.lang.RuntimePermission "stopThread";
 		
-		//MEINS
+		//MEINS  nein.. nicht deins ;-) MAINZ
 		//permission java.net.SocketPermission "localhost:0", "resolve, listen";
 		
         // allows anyone to listen on dynamic ports
