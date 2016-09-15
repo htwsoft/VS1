@@ -279,7 +279,6 @@
         </constraints>
         <properties>
           <alignmentY value="0.0"/>
-          <disabledIcon value="banner.png"/>
           <doubleBuffered value="false"/>
           <enabled value="true"/>
           <focusable value="false"/>
