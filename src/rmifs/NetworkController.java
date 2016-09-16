@@ -1,3 +1,4 @@
+//package src.rmifs;
 package rmifs;
 
 import java.net.*;
@@ -6,13 +7,12 @@ import java.util.Collections;
 import java.util.Enumeration;
 
 /**
+ * Ermittelt Netzwerkinformationen des Clients und stellt
+ * diese dem FileSystemClient zur Verfügung
  * @author  soezdemir & cpatzek
  * @version 1.03
  * @date    2016-09-14
- *
- * Kurzbeschreibung:
- *      Ermittelt Netzwerkinformationen des Clients
- */
+  */
 public class NetworkController {
 
     private String clientAddress = "";
@@ -93,7 +93,7 @@ public class NetworkController {
         for (InetAddress inetAddress : Collections.list(inetAddresses))
             if(inetAddress.toString().length() <= 15 && inetAddress.toString().length() >= 7){
                 getClient().setClientAddress(inetAddress.getHostAddress());
-                getClient().sendClientAddress(inetAddress.getHostAddress());
+                //getClient().sendClientAddress(inetAddress.getHostAddress());
             }
     }
 

@@ -5,11 +5,14 @@ package rmifs;
  * VerwalterServer ist gleichzeitig Client und Server.
  * Zwischenstelle zwischen Client und FileServer.
  * @author cpatzek & soezdemir
- * @version 1.03
+ * @version 1.04
  * @date 2016-09-14
  */
+
 import java.lang.String;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.net.Socket;
 import java.rmi.RemoteException;
 import java.rmi.NotBoundException;
@@ -32,7 +35,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     //public FileSystemClient client;//ToDo
     private String clientAddress = "not set!";
     private String clientIP = "*unknown*";
-
+    private String timeStamp = "not set yet"; //ToDo
     /**
      * enthaelt die Liste aller verfuegbaren(remote) VerwalterServer
      * und indirekt deren verbundenen FileServer (Beispiel IP-Adressen)
@@ -67,10 +70,9 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
 
     }
 
-
-
     /**
-     * Erstellt einen Socket für remote Verbindungen(Funktion des Interface RMIClientSocketFactory)
+     * Erstellt einen Socket für remote Verbindungen
+     * (Funktion des Interface RMIClientSocketFactory)
      * @param host Adresse des Clients
      * @param port Port der Verbindung
      * @return Den Socket für den Client
@@ -82,121 +84,13 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     }
 
     /**
-     *
-     * @return Name und IP-Adressen aller VerwalterServer
-     */
-    public String getServerList()
-    {
-        System.out.println("request serverlist from " + clientIP);
-        return VERWALTER_LISTE;
-    }
-
-    public boolean rename(String oldName, String newName) throws RemoteException
-    {
-        System.out.println("request rename from " + clientIP);
-        return this.fsserver.rename(oldName, newName);
-    }
-
-    public String getOSName()throws RemoteException
-    {   System.out.println("request serverOSname from " + clientIP);
-       return this.fsserver.getOSName();
-    }
-
-    public String getHostName() throws RemoteException
-    {   System.out.println("request hostname from " + clientIP);
-        return this.fsserver.getHostName();
-    }
-
-    public String getHostAddress() throws RemoteException, NotBoundException
-    {   System.out.println("request hostaddress from " + clientIP);
-        return this.fsserver.getHostAddress();
-    }
-
-
-    /**
-     * holt sich die IPv4 Adresse des verbundenen Clients
-     */
-    public void sendClientAddress(String clientAddress) throws RemoteException
-    {
-        clientIP = clientAddress;
-        System.out.println("send clientaddress via rmi handshake [" + clientAddress + "]");
-        fsserver.sendClientAddress(clientAddress);
-
-    }
-
-    //ToDo
-    /**
-    public String setClientAddress() throws RemoteException
-    {
-        System.out.println("clientaddress");
-        return this.fsclient.getClientAddress();
-    }
-    //ToDo
-    public String setClientName() throws RemoteException
-    {
-        System.out.println("clientname");
-        return this.fsclient.getClientName();
-    }
-     */
-
-
-
-    public boolean delete(String file) throws RemoteException
-    {
-        System.out.println("request delete from " + clientIP);
-        return this.fsserver.delete(file);
-    }
-
-    public boolean createFile(String file) throws RemoteException
-    {
-        System.out.println("request createFile from " + clientIP);
-        return this.fsserver.createFile(file);
-    }
-
-    public boolean createDir(String dir) throws RemoteException
-    {
-        System.out.println("request createDir from " + clientIP);
-        return this.fsserver.createDir(dir);
-    }
-
-    /**
-     * Prüft ob eine Datei gefunden wurde und macht entsprechende Rückgaben
-     * @param file Name der Datei
-     * @param startDir Name des StartDirectories
-     * @return Entweder die Angabe, dass keine Datei gefunden wurde, oder die Dateien die gefunden wurden
-     *         und weitere Rueckgabe von Server Liste
-     * @throws RemoteException
-     */
-    public String search(String file, String startDir) throws RemoteException
-    {
-        System.out.println("request search from " + clientIP);
-        String erg = this.fsserver.search(file, startDir);
-        if(erg.equals(""))
-        {
-            return ("Nicht gefunden, pruefen Sie andere Server!" + getServerList());
-        }
-        else
-            return erg;
-    }
-
-    public String browseFiles(String dir) throws RemoteException
-    {
-        System.out.println("request browse from " + clientIP);
-        return this.fsserver.browseFiles(dir);
-    }
-
-    public String browseDirs(String dir) throws RemoteException
-    {
-        System.out.println("request browseDir from " + clientIP);
-        return this.fsserver.browseDirs(dir);
-    }
-
-    /**
      * Legt Port für Verbindung fest und baut Verbindung zum FileServer auf(siehe Konstruktor)
-     * @param args IP und Port des VerwalterServers(Konstanten stattdessen verwenden?)
+     * @param args IP und Port des VerwalterServers //ToDo Konstanten stattdessen verwenden?
      */
     public static void main(String args[])
     {
+        String timeStamp = ""; //ToDo timeStamp
+
         //**** regelt RMI Kommunikation ***** muss anfang der main bleiben
         System.setProperty("java.security.policy", "java.policy" );
 
@@ -207,6 +101,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
             {
                 int serverPort = 0;//Clientaufruf mit 4711
                 serverPort = Integer.parseInt(args[0]);
+
                 //Noetig für RMI Client Anbindung zum VerwalterServer z.B. 192.168.0.11 Port 4711
                 System.setProperty("java.rmi.server.hostname", SERVER_HOST_FGVT); //"172.19.1.209" fgvt
                 //Stellt das Objekt dem System zur Verfügung
@@ -215,7 +110,10 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
                 Registry registry =  LocateRegistry.createRegistry(serverPort); //ToDo lookup für VerwalterServer & FileServer
                 //Objekt an registry binden
                 registry.rebind("VerwalterServer", stub);
-                System.out.println("Server bound .....\tPort open at " + serverPort);
+
+                //Terminalausgaben am VerwalterServer
+                System.out.println("Systemtime: " + timeStamp); //ToDo timeStamp
+                System.out.println("\nServer bound ...\tPort open at " + serverPort);
             }
             else
             {
@@ -231,6 +129,116 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
             nbe.printStackTrace();
         }
 
+    }
+
+    /**
+     *
+     * @return Name und IP-Adressen aller VerwalterServer
+     */
+    public String getServerList()
+    {
+        System.out.println(getTime(timeStamp) + " - Client [" + clientIP + "] request serverlist");
+        return VERWALTER_LISTE;
+    }
+
+    /**
+     * Prüft ob eine Datei gefunden wurde und macht entsprechende Rückgaben
+     * @param file Name der Datei
+     * @param startDir Name des StartDirectories
+     * @return Entweder die Angabe, dass keine Datei gefunden wurde, oder die Dateien die gefunden wurden
+     *         und weitere Rueckgabe von Server Liste
+     * @throws RemoteException
+     */
+    public String search(String file, String startDir) throws RemoteException
+    {
+        System.out.println(getTime(timeStamp) + " - Client [" + clientAddress + "] request search");
+        String erg = this.fsserver.search(file, startDir);
+        if(erg.equals(""))
+        {
+            return ("Nicht gefunden, pruefen Sie andere Server!" + getServerList());
+        }
+        else
+            return erg;
+    }
+
+    public String browseFiles(String dir) throws RemoteException
+    {
+        System.out.println(getTime(timeStamp) + " - Client [" + clientIP + "] request browse");
+        return this.fsserver.browseFiles(dir);
+    }
+
+    public String browseDirs(String dir) throws RemoteException
+    {
+        System.out.println(getTime(timeStamp) + " - Client [" + clientIP + "] request browseDir");
+        return this.fsserver.browseDirs(dir);
+    }
+
+    public boolean delete(String file) throws RemoteException
+    {
+        System.out.println(getTime(timeStamp) + " - Client [" + clientIP + "] request delete");
+        return this.fsserver.delete(file);
+    }
+
+    public boolean createFile(String file) throws RemoteException
+    {
+        System.out.println(getTime(timeStamp) + " - Client [" + clientIP + "] request createFile");
+        return this.fsserver.createFile(file);
+    }
+
+    public boolean createDir(String dir) throws RemoteException
+    {
+        System.out.println(getTime(timeStamp) + " - Client [" + clientIP + "] request createDir");
+        return this.fsserver.createDir(dir);
+    }
+
+    public boolean rename(String oldName, String newName) throws RemoteException
+    {
+        System.out.println(getTime(timeStamp) + " - Client [" + clientIP + "] request rename");
+        return this.fsserver.rename(oldName, newName);
+    }
+
+    public String getOSName()throws RemoteException
+    {   System.out.println(getTime(timeStamp) + " - Client [" + clientIP + "] request serverOSname");
+        return this.fsserver.getOSName();
+    }
+
+    public String getHostName() throws RemoteException
+    {   System.out.println(getTime(timeStamp) + " - Client [" + clientIP + "] request hostname");
+        return this.fsserver.getHostName();
+    }
+
+    public String getHostAddress() throws RemoteException, NotBoundException
+    {   System.out.println(getTime(timeStamp) + " - Client [" + clientIP + "] request hostaddress");
+        return this.fsserver.getHostAddress();
+    }
+
+    /**
+     * holt sich die IPv4 Adresse des verbundenen Clients
+     */
+    public void sendClientAddress(String clientAddress) throws RemoteException
+    {
+        clientIP = clientAddress;
+        System.out.println(getTime(timeStamp) + " - Client [" + clientAddress
+                                                + "] connected via RMI handshake");
+        fsserver.sendClientAddress(clientAddress);
+    }
+
+
+    /** //ToDo timeStamp @soezdemir
+     * ermittelt Systemzeit des Servers
+     * @return timeStamp
+     */
+    public void setTime(String timeStamp)
+    {
+        this.timeStamp = timeStamp;
+        //SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss");
+        //Timestamp time = new Timestamp(System.currentTimeMillis());
+        //return String time = sdf.format(time);
+    }
+    public String getTime(String timeStamp)
+    {
+        timeStamp = new SimpleDateFormat("yyyy-MM-dd / HH:mm:ss").format(new Date());
+        return this.timeStamp = timeStamp;
     }
 
 }
