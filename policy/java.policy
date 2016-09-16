@@ -10,6 +10,34 @@ grant codeBase "file:${{java.ext.dirs}}/*" {
         permission java.security.AllPermission;
 };
 
+//Sicherheitsvorkehrungen auf Clientseite 
+//@author soezdemir
+//@date 2016-09-16
+//@version 1.01
+grant codeBase "file:c:/path/to/dateclient/*"
+{
+   // Allow the client to connect to the server , example server = 192.168.45.3
+   // client braucht accept, connect, resolve
+   // ACHTUNG: IP Adressen funktionieren nur im Test LAN
+   // Ports ab 1024 aufwärts werden freigegeben
+   permission java.net.SocketPermission "192.168.0.11:1024-", "accept, connect, resolve";
+   permission java.net.SocketPermission "192.168.0.23:1024-", "accept, connect, resolve";
+   permission java.net.SocketPermission "192.168.0.24:1024-", "accept, connect, resolve";
+   permission java.net.SocketPermission "172.19.1.209:1024-", "accept, connect, resolve";
+};
+//Sicherheitsvorkehrungen auf Serverseite 
+//@author soezdemir
+//@date 2016-09-16
+//@version 1.01
+grant codeBase "file:c:/path/to/dateserver/*"
+{
+   // Allow the server to connect
+   permission java.net.SocketPermission "192.168.0.11:1024-", "accept, connect, resolve";
+   permission java.net.SocketPermission "192.168.0.23:1024-", "accept, connect, resolve";
+   permission java.net.SocketPermission "192.168.0.24:1024-", "accept, connect, resolve";
+   permission java.net.SocketPermission "172.19.1.209:1024-", "accept, connect, resolve";
+};
+
 // default permissions granted to all domains
 
 grant {
