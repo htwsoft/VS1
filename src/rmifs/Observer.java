@@ -1,12 +1,22 @@
+package rmifs;
+
 /**
 * Klasse zum ueberwachen eines Ordners auf Aenderungen
 * @author Marco Palumbo
-* @version 1.0
+* @version 1.01
+* @date 2016-09-16
 */
 
+import java.lang.*;
 import java.io.*;
+import java.nio.file.Path;
 import java.nio.file.*;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
+
 import static java.nio.file.StandardWatchEventKinds.*;
+
 
 
 /**
@@ -58,6 +68,7 @@ public class Observer
 					continue;
 				}
 				//Auslesen des Namens der geaenderten Datei oder des Ordners
+                @SuppressWarnings("unchecked") //noetig um Warnings waehrend des compilens zu unterdrücken
 				WatchEvent<Path> ev = (WatchEvent<Path>)event;
 				this.modifiedObject =ev.context().toString();
 			}
