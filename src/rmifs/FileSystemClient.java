@@ -21,7 +21,8 @@ public class FileSystemClient
 	private final static String SERVER_HOST_IP_1 = "192.168.0.11";
 	private final static String SERVER_HOST_IP_2 = "192.168.0.23";
 	private final static String SERVER_HOST_IP_3 = "192.168.0.24";
-	private final static int SERVER_PORT = 4712; 					//ToDo variable Ports und IPs
+	private final static String SERVER_HOST_FGVT = "172.19.1.209"; //localhost
+	private final static int SERVER_PORT = 4712; 	//ToDo variable Ports und IPs
 
 	private VerwalterInterface vserver;  //Attribute zum Zugriff auf Verwalter Server Funktionen
 	private String clientAddress = "not set!";
@@ -54,7 +55,7 @@ public class FileSystemClient
 			serverPort = SERVER_PORT; //Integer.parseInt(args[0]);
 
 			//noetig für die Verbindung zum Verwalter (verwalterPort, vewalterIP)
-			fsc = new FileSystemClient(serverPort, SERVER_HOST_IP_3); //args[1]
+			fsc = new FileSystemClient(serverPort, SERVER_HOST_FGVT); //args[1]
 			NetworkController nc = new NetworkController(fsc);
 
 			System.out.println(nc);

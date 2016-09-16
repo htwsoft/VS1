@@ -5,6 +5,7 @@ import java.io.*;
 import java.nio.*;
 import java.nio.file.*;
 import static java.nio.file.StandardCopyOption.*;
+import static java.nio.file.StandardWatchEventKinds.*;
 import java.util.*;
 import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
@@ -29,6 +30,7 @@ public class FileSystemServer implements FSInterface
 	private final static String SERVER_HOST_IP_1 = "192.168.0.11";
 	private final static String SERVER_HOST_IP_2 = "192.168.0.23";
 	private final static String SERVER_HOST_IP_3 = "192.168.0.24";
+	private final static String SERVER_HOST_FGVT = "172.19.1.209"; //localhost
 
 	private FileSystem fs = new FileSystem();
 
@@ -41,7 +43,7 @@ public class FileSystemServer implements FSInterface
 	{
 		//**** regelt RMI Kommunikation ***** muss Anfang der main bleiben
 		System.setProperty("java.security.policy", "java.policy" );
-		System.setProperty("java.rmi.server.hostname", SERVER_HOST_IP_3);
+		System.setProperty("java.rmi.server.hostname", SERVER_HOST_FGVT);
 		try
 		{
 			if(args.length >= 1)

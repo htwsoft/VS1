@@ -6,9 +6,9 @@ import java.util.Collections;
 import java.util.Enumeration;
 
 /**
- * @author  soezdemir
+ * @author  soezdemir & cpatzek
  * @version 1.03
- * @date    14.09.16.
+ * @date    2016-09-14
  *
  * Kurzbeschreibung:
  *      Ermittelt Netzwerkinformationen des Clients
@@ -77,8 +77,8 @@ public class NetworkController {
         Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
 
         for (NetworkInterface netint : Collections.list(nets))
-            if( netint.isUp() && !netint.isLoopback())
-                displayInterfaceInformation(netint);
+            if( netint.isUp() && !netint.isLoopback()) //filtert nur aktive Netzwerkschnittstelle
+                displayInterfaceInformation(netint);//Methodenaufruf displayInterfaceInformation()
     }
 
     /**
@@ -151,8 +151,8 @@ public class NetworkController {
     public final String toString()
     {
         String output = "IP Address: " + getClient().getClientAddress() +
-                " | Client: "  + getClientName() +          //ToDo getClient().getClientName()
-                " | OS Name: " + getClient().getClientOS();
+                " | Client: "  + getClientName() + "\n" + //ToDo getClient().getClientName()
+                "OS Name: " + getClient().getClientOS();
         return output;
     }
 

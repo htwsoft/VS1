@@ -6,14 +6,14 @@ package rmifs;
 * @author Marco Palumbo, Nadine Breitenstein
 * @version 1.01
 */
-//ToDo Beobachter (Observer) Entwurfsmuster implementieren um Veränderungen am FileSystem zu melden
-
+//ToDo Beobachter (Observer) Entwurfsmuster implementieren um Veränderungen am FileSystem zu melden diese
+//ToDo StandardWatchEventKinds with NIO
 import java.io.*;
-import java.nio.*;
-import java.nio.file.*;
 import java.net.*;
 import java.net.Inet4Address;
+import java.nio.file.*;
 import static java.nio.file.StandardCopyOption.*;
+import static java.nio.file.StandardWatchEventKinds.*;
 
 /**
 * Klasse Filesystem dient zur leichteren Kommunikation/ Darstellung
@@ -22,8 +22,8 @@ import static java.nio.file.StandardCopyOption.*;
 public class FileSystem
 {	
 	private String osname; //Name des Betriebsystems
-	private String hostname; // Name der Machine
-	private String hostAddress; // IP der Machine
+	private String hostname; // Name der FileSystem Maschine
+	private String hostAddress; // IP der FileSystem Maschine
 	private Path [] dirListe; //Liste der gefundenen Ordner bei Browse
 	private Path [] fileListe; //Liste der gefundenen Dateien bei Browse
 	
@@ -185,7 +185,7 @@ public class FileSystem
 	*/
 	public boolean rename(String oldName, String newName) throws IOException
 	{
-		Path pathOld = Paths.get(oldName); //Ordner indem der zu ändernde Ordnder oder Datei liegt
+		Path pathOld = Paths.get(oldName); //Ordner indem der zu ändernde Ordner oder Datei liegt
 		
 		if( !Files.exists(pathOld, LinkOption.NOFOLLOW_LINKS))
 		{
@@ -216,18 +216,13 @@ public class FileSystem
 	}	
 	
 	/**
-	* Funktion liefert den Betriebsystemnamen,
+	* Funktionen liefern den Betriebsystemnamen,
 	* sowie Maschinenname und IP-Adresse des
 	* FileSystems zurück
 	* @return osname, hostname, hostAddress
 	*/
-	public String getOSName()
-	{
-		return this.osname;
-	}
-
+	public String getOSName() {return this.osname;}
 	public String getHostName() {return this.hostname;}
-
 	public String getHostAddress() {return this.hostAddress;}
 
 	/**

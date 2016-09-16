@@ -4,7 +4,7 @@ package rmifs;
 /**
  * VerwalterServer ist gleichzeitig Client und Server.
  * Zwischenstelle zwischen Client und FileServer.
- * @author cpatzek, soezdemir
+ * @author cpatzek & soezdemir
  * @version 1.03
  * @date 2016-09-14
  */
@@ -25,6 +25,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     private final static String SERVER_HOST_IP_1 = "192.168.0.11";
     private final static String SERVER_HOST_IP_2 = "192.168.0.23";
     private final static String SERVER_HOST_IP_3 = "192.168.0.24";
+    private final static String SERVER_HOST_FGVT = "172.19.1.209"; //localhost
 
 
     private FSInterface fsserver;
@@ -42,7 +43,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     /**
      * HOST entspricht der IP-Adresse des lokalen FileServers
      */
-    private final static String HOST = "192.168.0.24"; //192.168.0.101 //192.168.0.23
+    private final static String HOST = SERVER_HOST_FGVT; //192.168.0.11 //192.168.0.23 //192.168.0.24
 
     /**
      * PORT_NR entspricht dem gebundenen Port des FileServers
@@ -207,7 +208,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
                 int serverPort = 0;//Clientaufruf mit 4711
                 serverPort = Integer.parseInt(args[0]);
                 //Noetig für RMI Client Anbindung zum VerwalterServer z.B. 192.168.0.101 Port 4711
-                System.setProperty("java.rmi.server.hostname", "192.168.0.24");
+                System.setProperty("java.rmi.server.hostname", SERVER_HOST_FGVT); //192.168.0.24
                 //Stellt das Objekt dem System zur Verfügung
                 VerwalterInterface stub = (VerwalterInterface) UnicastRemoteObject.exportObject(verwalterServer, serverPort);
                 //Registry erstellen um Objekt ansprechen zu können
