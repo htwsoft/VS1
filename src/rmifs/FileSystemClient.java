@@ -55,7 +55,7 @@ public class FileSystemClient
 			serverPort = SERVER_PORT; //Integer.parseInt(args[0]);
 
 			//noetig für die Verbindung zum Verwalter (verwalterPort, vewalterIP)
-			fsc = new FileSystemClient(serverPort, SERVER_HOST_FGVT); 	//args[1]
+			fsc = new FileSystemClient(serverPort, SERVER_HOST_IP_1); 	//args[1]
 			NetworkController nc = new NetworkController(fsc);  		//"172.19.1.209" fgvt
 
 			System.out.println(nc);
@@ -364,7 +364,7 @@ public class FileSystemClient
 	/**
 	 * Fragt die verfuegbaren VerwalterServer ab, also deren Name und IP
      */
-	private void list()
+	private void list() throws RemoteException
 	{
 		String serverListe;
 		try
@@ -401,7 +401,6 @@ public class FileSystemClient
 
 	public String getClientAddress(){
 		return this.clientAddress;
-
 	}
 
 	public void setClientOS(String clientOS){this.clientOS = clientOS;

@@ -24,6 +24,7 @@ grant codeBase "file:c:/path/to/dateclient/*"
    permission java.net.SocketPermission "192.168.0.23:1024-", "accept, connect, resolve";
    permission java.net.SocketPermission "192.168.0.24:1024-", "accept, connect, resolve";
    permission java.net.SocketPermission "172.19.1.209:1024-", "accept, connect, resolve";
+   permission java.net.SocketPermission "192.168.0.19:1024-", "accept, connect, resolve";
 };
 //Sicherheitsvorkehrungen auf Serverseite 
 //@author soezdemir
@@ -35,6 +36,7 @@ grant codeBase "file:c:/path/to/dateserver/*"
    permission java.net.SocketPermission "192.168.0.11:1024-", "accept, connect, resolve";
    permission java.net.SocketPermission "192.168.0.23:1024-", "accept, connect, resolve";
    permission java.net.SocketPermission "192.168.0.24:1024-", "accept, connect, resolve";
+   permission java.net.SocketPermission "192.168.0.19:1024-", "accept, connect, resolve";
    permission java.net.SocketPermission "172.19.1.209:1024-", "accept, connect, resolve";
 };
 

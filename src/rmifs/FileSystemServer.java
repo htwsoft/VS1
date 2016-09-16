@@ -32,7 +32,10 @@ public class FileSystemServer implements FSInterface
 	private final static String SERVER_HOST_IP_3 = "192.168.0.24";
 	private final static String SERVER_HOST_FGVT = "172.19.1.209"; //localhost der fgvt
 
+
+	//ToDo FileSystemListe für mehrere FileSystems
 	private FileSystem fs = new FileSystem();
+	private String clientAddress;
 
 	/**
 	 * Hauptmethode
@@ -43,7 +46,7 @@ public class FileSystemServer implements FSInterface
 	{
 		//**** regelt RMI Kommunikation ***** muss Anfang der main bleiben
 		System.setProperty("java.security.policy", "java.policy" );
-		System.setProperty("java.rmi.server.hostname", SERVER_HOST_FGVT); //"172.19.1.209" fgvt
+		System.setProperty("java.rmi.server.hostname", SERVER_HOST_IP_1); //"172.19.1.209" fgvt
 		try
 		{
 			if(args.length >= 1)
@@ -335,7 +338,12 @@ public class FileSystemServer implements FSInterface
 
 	public void sendClientAddress(String clientAddress) throws RemoteException
 	{
+		this.clientAddress = clientAddress;
 		System.out.println("\n " + clientAddress + " is connected to Server " + getHostAddress());
+	}
+
+	public String getClientAddress() throws  RemoteException{
+		return this.clientAddress;
 	}
 
 	/**
@@ -389,5 +397,6 @@ public class FileSystemServer implements FSInterface
 		System.out.println("Return: \"" + ergListe + "\"");
 		return ergListe;	
 	}
-	
+
+
 }

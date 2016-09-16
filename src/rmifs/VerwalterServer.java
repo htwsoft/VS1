@@ -33,7 +33,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
 
     private FSInterface fsserver;
     //public FileSystemClient client;//ToDo
-    private String clientAddress = "not set!";
+    private String clientAddress = "not set yet";
     private String clientIP = "*unknown*";
     private String timeStamp = "not set yet"; //ToDo
     /**
@@ -46,7 +46,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     /**
      * HOST entspricht der IP-Adresse des lokalen FileServers
      */
-    private final static String HOST = SERVER_HOST_FGVT; //192.168.0.11 //192.168.0.23 //192.168.0.24
+    private final static String HOST = SERVER_HOST_IP_1; //192.168.0.11 //192.168.0.23 //192.168.0.24
                                                          //"172.19.1.209" fgvt
     /**
      * PORT_NR entspricht dem gebundenen Port des FileServers
@@ -103,7 +103,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
                 serverPort = Integer.parseInt(args[0]);
 
                 //Noetig für RMI Client Anbindung zum VerwalterServer z.B. 192.168.0.11 Port 4711
-                System.setProperty("java.rmi.server.hostname", SERVER_HOST_FGVT); //"172.19.1.209" fgvt
+                System.setProperty("java.rmi.server.hostname", SERVER_HOST_IP_1); //"172.19.1.209" fgvt
                 //Stellt das Objekt dem System zur Verfügung
                 VerwalterInterface stub = (VerwalterInterface) UnicastRemoteObject.exportObject(verwalterServer, serverPort);
                 //Registry erstellen um Objekt ansprechen zu können
@@ -112,7 +112,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
                 registry.rebind("VerwalterServer", stub);
 
                 //Terminalausgaben am VerwalterServer
-                System.out.println("Systemtime: " + timeStamp); //ToDo timeStamp
+                verwalterServer.log(" : Systemzeit ");
                 System.out.println("\nServer bound ...\tPort open at " + serverPort);
             }
             else
@@ -135,9 +135,9 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
      *
      * @return Name und IP-Adressen aller VerwalterServer
      */
-    public String getServerList()
+    public String getServerList() throws RemoteException
     {
-        System.out.println(getTime(timeStamp) + " - Client [" + clientIP + "] request serverlist");
+        log(" - Client [" + fsserver.getClientAddress() + "] request serverlist");
         return VERWALTER_LISTE;
     }
 
@@ -151,11 +151,11 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
      */
     public String search(String file, String startDir) throws RemoteException
     {
-        System.out.println(getTime(timeStamp) + " - Client [" + clientAddress + "] request search");
+        log(" - Client [" + clientIP + "] request search");
         String erg = this.fsserver.search(file, startDir);
         if(erg.equals(""))
         {
-            return ("Nicht gefunden, pruefen Sie andere Server!" + getServerList());
+            return ("Nicht gefunden, pruefen Sie andere Server!\n" + getServerList());
         }
         else
             return erg;
@@ -163,53 +163,60 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
 
     public String browseFiles(String dir) throws RemoteException
     {
-        System.out.println(getTime(timeStamp) + " - Client [" + clientIP + "] request browse");
+        log(" - Client [" + clientIP + "] request browse");
         return this.fsserver.browseFiles(dir);
     }
 
     public String browseDirs(String dir) throws RemoteException
     {
-        System.out.println(getTime(timeStamp) + " - Client [" + clientIP + "] request browseDir");
+        log(" - Client [" + clientIP + "] request browseDir");
         return this.fsserver.browseDirs(dir);
     }
 
     public boolean delete(String file) throws RemoteException
     {
-        System.out.println(getTime(timeStamp) + " - Client [" + clientIP + "] request delete");
+        log(" - Client [" + clientIP + "] request delete");
         return this.fsserver.delete(file);
     }
 
     public boolean createFile(String file) throws RemoteException
     {
-        System.out.println(getTime(timeStamp) + " - Client [" + clientIP + "] request createFile");
+        log(" - Client [" + clientIP + "] request createFile");
         return this.fsserver.createFile(file);
     }
 
     public boolean createDir(String dir) throws RemoteException
     {
-        System.out.println(getTime(timeStamp) + " - Client [" + clientIP + "] request createDir");
+        log(" - Client [" + clientIP + "] request createDir");
         return this.fsserver.createDir(dir);
     }
 
     public boolean rename(String oldName, String newName) throws RemoteException
     {
-        System.out.println(getTime(timeStamp) + " - Client [" + clientIP + "] request rename");
+        log(" - Client [" + clientIP + "] request rename");
         return this.fsserver.rename(oldName, newName);
     }
 
     public String getOSName()throws RemoteException
-    {   System.out.println(getTime(timeStamp) + " - Client [" + clientIP + "] request serverOSname");
+    {
+        log(" - Client [" + clientIP + "] request serverOSname");
         return this.fsserver.getOSName();
     }
 
     public String getHostName() throws RemoteException
-    {   System.out.println(getTime(timeStamp) + " - Client [" + clientIP + "] request hostname");
+    {
+        log(" - Client [" + clientIP + "] request hostname");
         return this.fsserver.getHostName();
     }
 
     public String getHostAddress() throws RemoteException, NotBoundException
-    {   System.out.println(getTime(timeStamp) + " - Client [" + clientIP + "] request hostaddress");
+    {
+        log(" - Client [" + clientIP + "] request hostaddress");
         return this.fsserver.getHostAddress();
+    }
+
+    public String getClientAddress() throws RemoteException {
+        return fsserver.getClientAddress();
     }
 
     /**
@@ -217,9 +224,9 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
      */
     public void sendClientAddress(String clientAddress) throws RemoteException
     {
+
         clientIP = clientAddress;
-        System.out.println(getTime(timeStamp) + " - Client [" + clientAddress
-                                                + "] connected via RMI handshake");
+        log(" - Client [" + clientAddress + "] connected via RMI handshake");
         fsserver.sendClientAddress(clientAddress);
     }
 
@@ -228,17 +235,21 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
      * ermittelt Systemzeit des Servers
      * @return timeStamp
      */
-    public void setTime(String timeStamp)
+    private void setTime()
     {
+        timeStamp = new SimpleDateFormat("yyyy-MM-dd / HH:mm:ss").format(new Date());
         this.timeStamp = timeStamp;
         //SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss");
         //Timestamp time = new Timestamp(System.currentTimeMillis());
         //return String time = sdf.format(time);
     }
-    public String getTime(String timeStamp)
+    public String getTime()
     {
-        timeStamp = new SimpleDateFormat("yyyy-MM-dd / HH:mm:ss").format(new Date());
-        return this.timeStamp = timeStamp;
+        return this.timeStamp;
     }
 
+    private void log(String message) {
+        setTime();
+        System.out.println(getTime() + message);
+    }
 }
