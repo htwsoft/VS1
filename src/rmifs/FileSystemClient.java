@@ -21,7 +21,7 @@ public class FileSystemClient
 	private final static String SERVER_HOST_IP_1 = "192.168.0.11";
 	private final static String SERVER_HOST_IP_2 = "192.168.0.23";
 	private final static String SERVER_HOST_IP_3 = "192.168.0.24";
-	private final static String SERVER_HOST_FGVT = "172.19.1.209"; //localhost
+	private final static String SERVER_HOST_FGVT = "172.19.1.209"; //localhost der fgvt
 	private final static int SERVER_PORT = 4712; 	//ToDo variable Ports und IPs
 
 	private VerwalterInterface vserver;  //Attribute zum Zugriff auf Verwalter Server Funktionen
@@ -43,7 +43,7 @@ public class FileSystemClient
 	{
 		//**** regelt RMI Kommunikation ***** muss anfang der main bleiben
 		System.setProperty("policy/java.security.policy", "policy/java.policy" );
-		//System.setProperty("java.rmi.server.hostname", SERVER_HOST_IP_3);//warum steht das hier????
+		//System.setProperty("java.rmi.server.hostname", SERVER_HOST_IP_1);//warum steht das hier????
 		FileSystemClient fsc = null;
 		//FileSystemClient fsclient = nsendew FileSystemClient(4712, "localhost");
 
@@ -55,8 +55,8 @@ public class FileSystemClient
 			serverPort = SERVER_PORT; //Integer.parseInt(args[0]);
 
 			//noetig für die Verbindung zum Verwalter (verwalterPort, vewalterIP)
-			fsc = new FileSystemClient(serverPort, SERVER_HOST_FGVT); //args[1]
-			NetworkController nc = new NetworkController(fsc);
+			fsc = new FileSystemClient(serverPort, SERVER_HOST_FGVT); 	//args[1]
+			NetworkController nc = new NetworkController(fsc);  		//"172.19.1.209" fgvt
 
 			System.out.println(nc);
 			System.out.println(fsc);
