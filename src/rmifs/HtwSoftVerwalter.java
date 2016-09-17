@@ -1,13 +1,6 @@
 //package src.rmifs;
 package rmifs;
 
-/**
- * Startet den VerwalterServer
- * @author soezdemir
- * @version 1.02
- * @date 2016-09-16
- */
-
 import java.lang.String;
 import java.rmi.RemoteException;
 import java.rmi.NotBoundException;
@@ -15,63 +8,71 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
-
+/**
+ * HtwSoftVerwalter-Klasse zum starten eines VerwalterServers
+ * und zur Initialisierung einer RMI Verbindung fuer FileSystemClients
+ * @author soezdemir
+ * @version 1.03
+ * @date 2016-09-16
+ */
 public class HtwSoftVerwalter {
 
-    private final static String SERVER_HOST_IP_1 = "192.168.0.24";
-    private final static String SERVER_HOST_IP_2 = "192.168.0.23";
-    private final static String SERVER_HOST_IP_3 = "192.168.0.11";
-    private final static String SERVER_HOST_FGVT = "172.19.1.209"; //localhost in fgvt
+    public final static String SYSTEM_HOST_IP = "192.168.0.24";
+    public final static int SYSTEM_PORT = 4711;
+    public final static int VERWALTER_PORT = 4712;
 
     /**
-     * HOST entspricht der IP-Adresse des lokalen FileServers
+     * SYSTEM-HOST-IP Adresse des lokalen FileServers
      */
-    private final static String HOST = SERVER_HOST_IP_1;
+    private final static String HOST = SYSTEM_HOST_IP;
 
     /**
-     * PORT_NR entspricht dem gebundenen Port des FileServers
+     * PORT_NR des lokalen FileServers
      */
-    private final static int PORT_NR = 4711;
+    private final static int PORT_NR = SYSTEM_PORT;
+
+    /**
+     * VPORT_NR des lokalen VerwalterServers
+     */
+    private final static int VPORT_NR = VERWALTER_PORT;
 
 
     public static void main(String args[]){
 
-        //**** regelt RMI Kommunikation ***** muss anfang der main bleiben
-        //und setzt policy fest
         System.setProperty("java.security.policy", "policy/java.policy" );
-        init(); // initialisiert den VerwalterServer mit server port und ip
-                // für den Client
-
-
+        init();
     }
 
 
+    //ToDo lookup fuer VerwalterServer & FileServer
+    /**
+     * Methode zur Initialisierung einer RMI Verbindung
+    *  System.setProperty noetig fuer RMI Client Anbindung zum VerwalterServer
+    *  UnicastRemoteObject stellt das Objekt dem Client zur Verfügung
+     * LocateRegistry.createRegistry macht Objekte ansprechbar
+     * registry.rebind zum binden an Registry
+     **/
     public static void init(){
 
         try {
-
             VerwalterServer verwalterServer = new VerwalterServer(PORT_NR, HOST);
 
-            //Noetig fuer RMI Client Anbindung zum VerwalterServer z.B. 192.168.0.11 Port 4711
-            System.setProperty("java.rmi.server.hostname", SERVER_HOST_IP_1); //"172.19.1.209" fgvt
-            //Stellt das Objekt dem System zur Verfuegung
-            VerwalterInterface stub = (VerwalterInterface) UnicastRemoteObject.exportObject(verwalterServer, PORT_NR+1);
-            //Registry erstellen um Objekt ansprechen zu können
-            Registry registry =  LocateRegistry.createRegistry(PORT_NR+1); //ToDo lookup fuer VerwalterServer & FileServer
-            //Objekt an registry binden
+            System.setProperty("java.rmi.server.hostname", HOST);
+            VerwalterInterface stub = (VerwalterInterface) UnicastRemoteObject.exportObject(verwalterServer, VPORT_NR);
+            Registry registry =  LocateRegistry.createRegistry(VPORT_NR);
             registry.rebind("VerwalterServer", stub);
 
-
             verwalterServer.log("\nServer bound ...\tPort open at " + ((PORT_NR)+1));
-        } catch (RemoteException rex){
+        }
+        catch (RemoteException rex)
+        {
             rex.printStackTrace();
-        } catch (NotBoundException nbe){
+        }
+        catch (NotBoundException nbe)
+        {
             nbe.printStackTrace();
         }
-
     }
-
-
 
 
 }//ENDE
