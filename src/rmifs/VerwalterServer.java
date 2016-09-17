@@ -92,7 +92,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         String timeStamp = ""; //ToDo timeStamp
 
         //**** regelt RMI Kommunikation ***** muss anfang der main bleiben
-        System.setProperty("java.security.policy", "java.policy" );
+        System.setProperty("java.security.policy", "policy/java.policy" );
 
         try
         {
@@ -142,7 +142,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     }
 
     /**
-     * Prüft ob eine Datei gefunden wurde und macht entsprechende Rückgaben
+     * <br> Prüft ob eine Datei gefunden wurde und macht entsprechende Rückgaben </br>
      * @param file Name der Datei
      * @param startDir Name des StartDirectories
      * @return Entweder die Angabe, dass keine Datei gefunden wurde, oder die Dateien die gefunden wurden

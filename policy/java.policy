@@ -14,7 +14,10 @@ grant codeBase "file:${{java.ext.dirs}}/*" {
 //@author soezdemir
 //@date 2016-09-16
 //@version 1.01
-grant codeBase "file:c:/path/to/dateclient/*"
+// @Windows grant codeBase "file:c:/path/to/dateserver/*"
+// @Unix    grant codeBase "file:bin/-"
+
+grant codeBase "file:policy/-"
 {
    // Allow the client to connect to the server , example server = 192.168.45.3
    // client braucht accept, connect, resolve
