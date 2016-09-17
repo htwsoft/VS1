@@ -1,4 +1,3 @@
-//package src.rmifs;
 package rmifs;
 
 /**
@@ -8,12 +7,15 @@ package rmifs;
 */
 //ToDo Beobachter (Observer) Entwurfsmuster implementieren um Veränderungen am FileSystem zu melden diese
 //ToDo StandardWatchEventKinds with NIO
-import java.io.*;
-import java.net.*;
+
+import java.io.File;
+import java.io.IOException;
 import java.net.Inet4Address;
-import java.nio.file.*;
-import static java.nio.file.StandardCopyOption.*;
-import static java.nio.file.StandardWatchEventKinds.*;
+import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
 * Klasse Filesystem dient zur leichteren Kommunikation/ Darstellung

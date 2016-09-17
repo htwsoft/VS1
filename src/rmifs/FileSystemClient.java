@@ -1,13 +1,13 @@
-//package src.rmifs;
 package rmifs;
 
-import java.io.*;
-import java.util.*;
-import java.rmi.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.lang.*;
+import java.util.Scanner;
 
 /**
  * @author mpalumbo, cpatzek, soezdemir
@@ -168,39 +168,12 @@ public class FileSystemClient
 		}
 	}
 	
-	private void search()
+	private boolean search() throws RemoteException
 	{
-		String pfad = "";
-		String startDir = "";
-		String erg = "";
-		String [] fileListe;
-		Scanner eingabe = new Scanner(System.in);
-		System.out.print("Was soll gesucht werden?: ");
-		pfad = eingabe.nextLine();
-		System.out.print("Wo soll gesucht werden?: ");
-		startDir = eingabe.nextLine();
-		try
-		{
-			erg = this.vserver.search(pfad, startDir);
-			if(erg.contains("Nicht gefunden,"))
-			{
-				System.out.println(erg);
-			}
-			else
-			{
-				fileListe = erg.split("[;]");
-				System.out.println("Found-Files");
-				System.out.println("---------------------------------------------------------------");
-				for(int i=0; i<fileListe.length; i++)
-				{
-					System.out.println(fileListe[i]);
-				}
-			}
-		}
-		catch(IOException ioe)
-		{
-			ioe.printStackTrace();
-		}			
+		String file = "";
+		String dir = "";
+		return vserver.search(file, dir);
+
 	}
 
 	private void createDir()

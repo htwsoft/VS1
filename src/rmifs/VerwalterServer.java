@@ -1,4 +1,3 @@
-//package src.rmifs;
 package rmifs;
 
 /**
@@ -9,17 +8,16 @@ package rmifs;
  * @date 2016-09-14
  */
 
-import java.lang.String;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.net.Socket;
-import java.rmi.RemoteException;
+import java.nio.file.Path;
 import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.RMIClientSocketFactory;
-import java.rmi.server.UnicastRemoteObject;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 
@@ -75,16 +73,10 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
      *         und weitere Rueckgabe von Server Liste
      * @throws RemoteException
      */
-    public String search(String file, String startDir) throws RemoteException
+    public boolean search(String file, String startDir) throws RemoteException
     {
         log(" - Client [" + clientIP + "] request search");
-        String erg = this.fsserver.search(file, startDir);
-        if(erg.equals(""))
-        {
-            return ("Nicht gefunden, pruefen Sie andere Server!\n" + getServerList());
-        }
-        else
-            return erg;
+        return this.fsserver.search(file, startDir);
     }
 
     public String browseFiles(String dir) throws RemoteException
@@ -186,7 +178,9 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
     }
 
-
+    public Path [] getFileList() throws RemoteException{
+        return fsserver.getFileList();
+    }
 
 
 }

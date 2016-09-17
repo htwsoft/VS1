@@ -1,19 +1,12 @@
-//package src.rmifs;
+
 package rmifs;
 
-import java.io.*;
-import java.nio.*;
-import java.nio.file.*;
-import static java.nio.file.StandardCopyOption.*;
-import static java.nio.file.StandardWatchEventKinds.*;
-import java.util.*;
-import java.rmi.registry.Registry;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.server.*;
-import java.rmi.Remote;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.rmi.RemoteException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.util.LinkedList;
+import java.util.List;
+
 
 /**
 * RMI-Server für ein FileSystem
@@ -27,67 +20,22 @@ import java.net.UnknownHostException;
 */
 public class FileSystemServer implements FSInterface
 {
-	private final static String SERVER_HOST_IP_1 = "192.168.0.24";
-	private final static String SERVER_HOST_IP_2 = "192.168.0.23";
-	private final static String SERVER_HOST_IP_3 = "192.168.0.11";
-	private final static String SERVER_HOST_FGVT = "172.19.1.209"; //localhost der fgvt
-
-
 	//ToDo FileSystemListe für mehrere FileSystems
 	private FileSystem fs = new FileSystem();
 	private String clientAddress;
-
-	/**
-	 * Hauptmethode
-	 * Startet den FileSystem-Server
-	 * @param args Portnummer des FileSystemServers
-	 */
-	public static void main(String args[])
-	{
-		//**** regelt RMI Kommunikation ***** muss Anfang der main bleiben
-		System.setProperty("java.security.policy", "java.policy" );
-		System.setProperty("java.rmi.server.hostname", SERVER_HOST_IP_1); //"172.19.1.209" fgvt
-		try
-		{
-			if(args.length >= 1)
-			{
-				int serverPort = 0;
-				serverPort = Integer.parseInt(args[0]);
-				//Security Manager ermöglicht/regelt zugriff auf Klasse
-				if (System.getSecurityManager() == null)
-				{
-					System.setSecurityManager ( new SecurityManager() );
-				}
-				FileSystemServer fsServer = new FileSystemServer();
-				//Registry erstellen um Objekt ansprechen zu können
-				Registry registry =  LocateRegistry.createRegistry(serverPort);
-				//Stellt das Objekt dem System zur Verfügung
-				FSInterface stub = (FSInterface) UnicastRemoteObject.exportObject(fsServer, serverPort);
-
-				//Objekt an registry binden
-				registry.rebind("FileSystemServer", stub);
-				System.out.println("Server bound ...\nPort now open at " + serverPort);
-				System.out.print("\nServer Name: " + fsServer.getHostName()
-									+ "\nServer IP: " + fsServer.getHostAddress()
-									+ "\nServer runs on " + fsServer.getOSName());
-			}
-			else
-			{
-				System.out.println("Bitte Server-Port zum binden angeben!");
-			}
-		}
-		catch(Exception e)
-		{
-			System.out.println( "Fehler: " + e.toString() );
-		}
-	}
+	private List<FileSystem> fileSystems;
 
 	/**
 	* Funktion sucht alle Ordner eines angegebenen Directory
-	* @param dir Ordner der durchsucht werden soll 
+	* dir Ordner der durchsucht werden soll
 	* @return einen String mit allen gefunden Ordner durch ";" getrennt
 	*/
-	public FileSystemServer(){super();}
+	public FileSystemServer(){
+		super();
+		fileSystems = new LinkedList<FileSystem>();
+		fileSystems.add(fs);
+	}
+
 	public String browseDirs(String dir) throws RemoteException
 	{
 		Path [] dirListe = null;
@@ -171,43 +119,18 @@ public class FileSystemServer implements FSInterface
 	* @param startDir Ordner ab dem die Datei gesucht werden soll
 	* @return Liste mit Dateien die auf den Such-String passen mit ";" getrennt
 	*/
-	public String search(String file, String startDir) throws RemoteException
-	{
-		System.out.println("Funktion: search - Params: " + file + ", " + startDir);
-		
-		Path [] fileListe = null;
-		String ergListe = "";
-		try
-		{	
-			//search liefert true zurueck wenn mindestens eine Datei 
-			//gefunden wurde
-			if( this.fs.search(file, startDir) )
-			{
-				//Gefundene Dateien speichern und als String
-				//zurück liefern
-				fileListe = this.fs.getFileListe();
-				for(int i=0; i<fileListe.length; i++)
-				{
-					if(i>0)
-					{
-						ergListe = ergListe + ";" + fileListe[i] ;
-					}
-					else
-					{
-						ergListe = ergListe + fileListe[i];
-					}
-				}
+	public boolean search(String file, String startDir) throws RemoteException {
+		boolean isFound = false;
+		for (FileSystem fs : fileSystems) {
+			try {
+				isFound = fs.search(file, startDir);
+			}catch(IOException ioe) {
+				ioe.printStackTrace();
 			}
 		}
-		catch(Exception e)
-		{
-			ergListe = "";
-			System.out.println("Fehler: " + e.toString());
-		}
-		System.out.println("Return: \"" + ergListe + "\"");
-		return ergListe;
+		return isFound;
 	}
-	
+
 	/**
 	* <br> Funktion erstellt eine Datei </br>
 	* @param file Datei die erstellt werden soll
@@ -350,28 +273,10 @@ public class FileSystemServer implements FSInterface
 	* Funktion liefert die Dateien der letzten suche (browse)
 	* @return Dateien des Letzten Browse befehls
 	*/
-	public String getFileListe() throws RemoteException
-	{
-		System.out.println("Funktion: getFileListe");
-		Path [] fileListe = null;
-		String ergListe = "";
-		try
-		{
-			fileListe = this.fs.getFileListe();
-			for(int i=0; i<fileListe.length; i++)
-			{
-				ergListe = ergListe + fileListe[i] + ";";	
-			}
-		}
-		catch(Exception e)
-		{
-			ergListe = "";
-			System.out.println("Fehler: " + e.toString());
-		}
-		System.out.println("Return: \"" + ergListe + "\"");
-		return ergListe;
+	public Path [] getFileList() throws RemoteException {
+		return fs.getFileListe();
 	}
-	
+
 	/**
 	* Funktion liefert die Ordner der letzten suche (browse)
 	* @return Ordner des Letzten Browse befehls

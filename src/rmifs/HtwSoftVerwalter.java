@@ -1,9 +1,7 @@
-//package src.rmifs;
 package rmifs;
 
-import java.lang.String;
-import java.rmi.RemoteException;
 import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
@@ -17,9 +15,9 @@ import java.rmi.server.UnicastRemoteObject;
  */
 public class HtwSoftVerwalter {
 
-    public final static String SYSTEM_HOST_IP = "192.168.0.24";
-    public final static int SYSTEM_PORT = 4711;
-    public final static int VERWALTER_PORT = 4712;
+    public final static String SYSTEM_HOST_IP   = "192.168.0.24";
+    public final static int SYSTEM_PORT         = 4711;
+    public final static int VERWALTER_PORT      = 4712;
 
     /**
      * SYSTEM-HOST-IP Adresse des lokalen FileServers
@@ -37,29 +35,35 @@ public class HtwSoftVerwalter {
     private final static int VPORT_NR = VERWALTER_PORT;
 
 
-    public static void main(String args[]){
-
-        System.setProperty("java.security.policy", "policy/java.policy" );
+    public static void main(String args[])
+    {
         init();
+        start();
+    }
+
+    private static void init()
+    {
+        System.setProperty("java.security.policy", "policy/java.policy" );
+        System.setProperty("java.rmi.server.hostname", HOST);
     }
 
 
     //ToDo lookup fuer VerwalterServer & FileServer
     /**
+     * Erzeugt VerwalterServer
      * Methode zur Initialisierung einer RMI Verbindung
     *  System.setProperty noetig fuer RMI Client Anbindung zum VerwalterServer
     *  UnicastRemoteObject stellt das Objekt dem Client zur Verfügung
      * LocateRegistry.createRegistry macht Objekte ansprechbar
      * registry.rebind zum binden an Registry
      **/
-    public static void init(){
+    private static void start(){
 
         try {
             VerwalterServer verwalterServer = new VerwalterServer(PORT_NR, HOST);
 
-            System.setProperty("java.rmi.server.hostname", HOST);
             VerwalterInterface stub = (VerwalterInterface) UnicastRemoteObject.exportObject(verwalterServer, VPORT_NR);
-            Registry registry =  LocateRegistry.createRegistry(VPORT_NR);
+            Registry registry       =  LocateRegistry.createRegistry(VPORT_NR);
             registry.rebind("VerwalterServer", stub);
 
             verwalterServer.log("\nServer bound ...\tPort open at " + ((PORT_NR)+1));
