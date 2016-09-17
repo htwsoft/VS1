@@ -15,7 +15,7 @@ import java.rmi.server.UnicastRemoteObject;
  */
 public class HtwSoftVerwalter {
 
-    public final static String SYSTEM_HOST_IP   = "192.168.0.24";
+    public final static String SYSTEM_HOST_IP   = "192.168.129.81";
     public final static int SYSTEM_PORT         = 4711;
     public final static int VERWALTER_PORT      = 4712;
 
@@ -43,7 +43,7 @@ public class HtwSoftVerwalter {
 
     private static void init()
     {
-        System.setProperty("java.security.policy", "policy/java.policy" );
+        System.setProperty("policy/java.security.policy", "policy/java.policy" );
         System.setProperty("java.rmi.server.hostname", HOST);
     }
 
