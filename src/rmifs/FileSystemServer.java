@@ -27,9 +27,9 @@ import java.net.UnknownHostException;
 */
 public class FileSystemServer implements FSInterface
 {
-	private final static String SERVER_HOST_IP_1 = "192.168.0.11";
+	private final static String SERVER_HOST_IP_1 = "192.168.0.24";
 	private final static String SERVER_HOST_IP_2 = "192.168.0.23";
-	private final static String SERVER_HOST_IP_3 = "192.168.0.24";
+	private final static String SERVER_HOST_IP_3 = "192.168.0.11";
 	private final static String SERVER_HOST_FGVT = "172.19.1.209"; //localhost der fgvt
 
 

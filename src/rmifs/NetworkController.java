@@ -9,7 +9,7 @@ import java.util.Enumeration;
 /**
  * Ermittelt Netzwerkinformationen des Clients und stellt
  * diese dem FileSystemClient zur Verfügung
- * @author  soezdemir & cpatzek
+ * @author  soezdemir, cpatzek
  * @version 1.03
  * @date    2016-09-14
   */
