@@ -476,7 +476,7 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
             String [] parts = wahl.split(":");
             String loeschPfad = parts[parts.length - 1].trim();
 
-            int jaNein = JOptionPane.showConfirmDialog(null, "Soll  " +loeschPfad+ "  wirklich geloescht werden?", "Delete", JOptionPane.YES_NO_OPTION);//
+            int jaNein = JOptionPane.showConfirmDialog(null, "Soll  " +loeschPfad+ "  wirklich geloescht werden?", "Delete", JOptionPane.YES_NO_OPTION);
 
             if(jaNein == JOptionPane.YES_OPTION)
             {
