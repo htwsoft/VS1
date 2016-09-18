@@ -20,9 +20,10 @@ import java.util.List;
 */
 public class FileSystemServer implements FSInterface
 {
-	//ToDo FileSystemListe für mehrere FileSystems
+
 	private FileSystem fs = new FileSystem();
 	private String clientAddress;
+	//ToDo FileSystemListe für mehrere FileSystems
 	private List<FileSystem> fileSystems;
 
 	/**
@@ -40,7 +41,7 @@ public class FileSystemServer implements FSInterface
 	{
 		Path [] dirListe = null;
 		String ergListe = "";
-		System.out.println("Funktion: browseDirs - Param: " + dir);
+		System.out.println(" --> Funktion: browseDirs\n --> Param: " + dir);
 		try
 		{
 			this.fs.browse(dir);
@@ -66,7 +67,7 @@ public class FileSystemServer implements FSInterface
 		catch(Exception e)
 		{
 			ergListe = "";
-			System.out.println("Funktion: " + e.toString());
+			System.out.println("ERROR: " + e.toString());
 		}
 		System.out.println("Return: \"" + ergListe + "\"");
 		return ergListe;
@@ -81,7 +82,7 @@ public class FileSystemServer implements FSInterface
 	{
 		Path [] fileListe = null;
 		String ergListe = "";
-		System.out.println("Funktion: browseFiles - Param: " + file);
+		System.out.println(" --> Funktion: browseFiles\n --> Param: " + file);
 		try
 		{
 			this.fs.browse(file);
@@ -107,7 +108,7 @@ public class FileSystemServer implements FSInterface
 		catch(Exception e)
 		{
 			ergListe = "";
-			System.out.println("Fehler: " + e.toString());
+			System.out.println("FAILURE: " + e.toString());
 		}
 		System.out.println("Return: \"" + ergListe + "\"");
 		return ergListe;
@@ -139,14 +140,14 @@ public class FileSystemServer implements FSInterface
 	public boolean createFile(String file) throws RemoteException
 	{
 		boolean fileCreated;
-		System.out.println("Funktion: createFile - Param: " + file);
+		System.out.println(" --> Function: createFile\n --> Param: " + file);
 		try
 		{
 			fileCreated = this.fs.create(file, "file");
 		}
 		catch(Exception e)
 		{
-			System.out.println("Fehler: " + e.toString());
+			System.out.println("ERROR: " + e.toString());
 			fileCreated = false;
 			
 		}
@@ -162,14 +163,14 @@ public class FileSystemServer implements FSInterface
 	public boolean createDir(String dir) throws RemoteException
 	{
 		boolean dirCreated;
-		System.out.println("Funktion: createDir - Param: " + dir);
+		System.out.println(" --> Function: createDir\n --> Param: " + dir);
 		try
 		{
 			dirCreated = this.fs.create(dir, "dir");
 		}
 		catch(Exception e)
 		{
-			System.out.println("Fehler: " + e.toString());
+			System.out.println("ERROR: " + e.toString());
 			dirCreated = false;
 			
 		}
@@ -185,14 +186,14 @@ public class FileSystemServer implements FSInterface
 	public boolean delete(String file) throws RemoteException
 	{
 		boolean fileDeleted;
-		System.out.println("Funktion: delete - Param: " + file);
+		System.out.println(" --> Function: delete\n --> Param: " + file);
 		try
 		{
 			fileDeleted = this.fs.delete(file);
 		}
 		catch(Exception e)
 		{
-			System.out.println("Fehler: " + e.toString());
+			System.out.println("ERROR: " + e.toString());
 			fileDeleted = false;	
 		}
 		System.out.println("Return: \"" + fileDeleted + "\"");
@@ -208,14 +209,14 @@ public class FileSystemServer implements FSInterface
 	public boolean rename(String oldName, String newName) throws RemoteException
 	{
 		boolean fileRenamed;
-		System.out.println("Funktion: rename - Params: " + oldName + ", " + newName);
+		System.out.println(" --> Function: rename\n --> Params: " + oldName + ", " + newName);
 		try
 		{
 			fileRenamed = this.fs.rename(oldName, newName);
 		}
 		catch(IOException e)
 		{
-			System.out.println("Fehler: " + e.toString());
+			System.out.println("FAILURE: " + e.toString());
 			fileRenamed = false;
 			
 		}
@@ -229,10 +230,11 @@ public class FileSystemServer implements FSInterface
 	*/		
 	public String getOSName()throws RemoteException
 	{
-		System.out.println("Funktion: getOSName");
+
 		String osName;
 		osName = fs.getOSName();
-		System.out.println("System runs on \"" + osName + "\"");
+		System.out.print("System runs on \"" + osName + "\"");
+		System.out.println("\t --> Function: getOSName");
 		return osName;
 	}
 
@@ -244,18 +246,20 @@ public class FileSystemServer implements FSInterface
      */
 	public String getHostName() throws RemoteException
 	{
-		System.out.println("Funktion: getHostName");
+
 		String hostName;
 		hostName = fs.getHostName();
-		System.out.println("Hostname is \"" + hostName + "\"");
+		System.out.print("Hostname is \"" + hostName + "\"");
+		System.out.println("\t--> Function: getHostName");
 		return hostName;
 	}
 	public String getHostAddress() throws RemoteException
 	{
-		System.out.println("Funktion: getHostAddress");
+
 		String hostAddress;
 		hostAddress = fs.getHostAddress();
-		System.out.println("Server IP is \"" + hostAddress + "\"");
+		System.out.print("Server IP is \"" + hostAddress + "\"");
+		System.out.println("\t--> Function: getHostAddress");
 		return hostAddress;
 	}
 
@@ -283,7 +287,7 @@ public class FileSystemServer implements FSInterface
 	*/	
 	public String getDirListe() throws RemoteException
 	{
-		System.out.println("Funktion: getDirListe");
+		System.out.println("\t--> Function: getDirListe");
 		Path [] dirListe = null;
 		String ergListe = "";
 		try
@@ -297,11 +301,10 @@ public class FileSystemServer implements FSInterface
 		catch(Exception e)
 		{
 			ergListe = "";
-			System.out.println("Fehler: " + e.toString());
+			System.out.println("ERROR: " + e.toString());
 		}
 		System.out.println("Return: \"" + ergListe + "\"");
 		return ergListe;	
 	}
 
-
-}
+}//ENDE
