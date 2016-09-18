@@ -1,8 +1,6 @@
 package rmifs;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -11,28 +9,16 @@ import java.util.Scanner;
 
 /**
  * @author mpalumbo, cpatzek, soezdemir
- * @version 1.03
+ * @version 1.04
  * @date indefinitely
  */
-//ToDo dringend aufräumen
 
 public class FileSystemClient
 {
-	private final static String SERVER_HOST_IP_1 = "192.168.0.24";
-	private final static String SERVER_HOST_IP_2 = "192.168.0.23";
-	private final static String SERVER_HOST_IP_3 = "192.168.0.11";
-	private final static String SERVER_HOST_FGVT = "172.19.1.209"; //localhost der fgvt
-	private final static int SERVER_PORT = 4712; 	//ToDo variable Ports und IPs
-
 	private VerwalterInterface vserver;  //Attribute zum Zugriff auf Verwalter Server Funktionen
 	private String clientAddress = "not set!";
 	private String clientName = "not set!";
 	private String clientOS = "not set!";
-
-
-
-
-
 
 	/**
 	* Konstruktor 
@@ -96,7 +82,6 @@ public class FileSystemClient
 		String file = "";
 		String dir = "";
 		return vserver.search(file, dir);
-
 	}
 
 	public void createDir()
@@ -203,13 +188,11 @@ public class FileSystemClient
 			System.out.println("| Name des Hosts:  " + this.vserver.getHostName());//ToDo
 			System.out.println("| IP des Hosts	:  " + this.vserver.getHostAddress());//ToDo
 			System.out.println("|-------------------------------------------------");
-
 		}
 		catch(Exception e)
-		{
-			System.out.println("Fehler: " + e.getMessage());
-		}
-		
+        {
+            System.out.println("Fehler: " + e.getMessage());
+        }
 	}	
 	
 
@@ -230,8 +213,6 @@ public class FileSystemClient
 		}
 	}
 
-
-
 	//ToDo --> noch in Bearbeitung durch soezdemir
 	/**
 	 * Folgende Methoden liefern den Namen, IP-Adresse
@@ -240,27 +221,30 @@ public class FileSystemClient
 	 * @throws RemoteException
 	 * @author soezdemir
 	 */
-	public void setClientAddress(String clientAddress)throws RemoteException{
+	public void setClientAddress(String clientAddress)throws RemoteException
+    {
 		this.clientAddress = clientAddress;
 		sendClientAddress(clientAddress);
 	}
 
-	public void sendClientAddress(String clientAddress) throws RemoteException {
+	public void sendClientAddress(String clientAddress) throws RemoteException
+    {
 		vserver.sendClientAddress(clientAddress);
 		System.out.println("\n***** Client: -> IP: [" + clientAddress + "] *****\n");
 	}
 
-
-	public String getClientAddress(){
+	public String getClientAddress()
+    {
 		return this.clientAddress;
 	}
 
-	public void setClientOS(String clientOS){this.clientOS = clientOS;
+	public void setClientOS(String clientOS)
+    {
+        this.clientOS = clientOS;
 	}
 
 	public String  getClientOS ()
 	{
-		//vserver.sendClientAddress(clientAddress);
 		return this.clientOS;
 	}
 
@@ -272,8 +256,5 @@ public class FileSystemClient
 		return " ";  //sb.toString();
 
 	}
-
-
-
 }
 

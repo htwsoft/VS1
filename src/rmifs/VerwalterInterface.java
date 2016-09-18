@@ -25,7 +25,7 @@ interface VerwalterInterface extends Remote{
     public String getHostName() throws RemoteException;
     public String getHostAddress() throws RemoteException, NotBoundException;
     public void sendClientAddress(String clientAddress) throws RemoteException;
-    public Path[] getFileList() throws RemoteException;
+    public Path [] getFileList() throws RemoteException;
     //public String sendClientName(String clientName) throws RemoteException;//ToDo
     //public String sendClientOS(String clientOS) throws RemoteException; //ToDo
 

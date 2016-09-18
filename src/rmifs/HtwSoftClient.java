@@ -8,11 +8,10 @@ import java.rmi.RemoteException;
 
 /**
  * HtwSoftClient-Klasse zum starten eines FileSystemClients
- * @author soezdemir, aaljovic, mpalumbo
- * @version 1.01
+ * @author soezdemir
+ * @version 1.02
  * @date 2016-09-16
  */
-
 public class HtwSoftClient {
 
     private enum MENUE { CLOSE, LIST, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE, RENAME, OS_NAME, FALSE }
@@ -22,11 +21,15 @@ public class HtwSoftClient {
 
     private static FileSystemClient client;
 
+    /**
+     * Main() Funktion
+     * initialisiert System Security Einstellungen und startet Anschließend den FileSystemClient
+     * @param args
+     */
     public static void main(String args [])
     {
         init();
         start();
-
     }
 
     private static void init()
@@ -105,7 +108,6 @@ public class HtwSoftClient {
                 ioe.printStackTrace();
             }
             System.exit(0);
-
         }
 
     /**
@@ -119,11 +121,9 @@ public class HtwSoftClient {
         BufferedReader br = new BufferedReader(isr);
         int eingabe = -1;
         while(eingabe < 0 || eingabe > 8)
-        {
-            //Auswahlmenue zeigen bis eingabe richtig
-            try
+        { //Auswahlmenue zeigen bis eingabe richtig
+          try
             {
-                //Terminal Ausgabe Menue
                 System.out.println("");
                 System.out.println("---------------------");
                 System.out.println("Menue:");
@@ -145,12 +145,7 @@ public class HtwSoftClient {
                 ioe.printStackTrace();
             }
         }
-
         System.out.println("");
-
         return eingabe;
-
     }
-
-
 }//ENDE

@@ -6,7 +6,10 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
 /**
- * Created by soez on 17.09.16.
+ * HtwSoftserver-Klasse zum starten eines FileSystemServers
+ * @author soezdemir
+ * @version 1.03
+ * @date 2016-09-18
  */
 public class HtwSoftServer {
 
