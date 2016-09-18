@@ -20,9 +20,10 @@ import java.util.List;
 */
 public class FileSystemServer implements FSInterface
 {
-	//ToDo FileSystemListe für mehrere FileSystems
+
 	private FileSystem fs = new FileSystem();
 	private String clientAddress;
+	//ToDo FileSystemListe für mehrere FileSystems
 	private List<FileSystem> fileSystems;
 
 	/**
@@ -229,10 +230,11 @@ public class FileSystemServer implements FSInterface
 	*/		
 	public String getOSName()throws RemoteException
 	{
-		System.out.println("Funktion: getOSName");
+
 		String osName;
 		osName = fs.getOSName();
-		System.out.println("System runs on \"" + osName + "\"");
+		System.out.print("System runs on \"" + osName + "\"");
+		System.out.println("\t --> Function: getOSName");
 		return osName;
 	}
 
