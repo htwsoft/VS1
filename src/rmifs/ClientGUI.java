@@ -1,20 +1,18 @@
+package rmifs;
+
 import javax.swing.*;
-import javax.swing.event.EventListenerList;
-import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.rmi.Naming;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.*;
-
-
+import java.util.Date;
 
 /**
  * Created by Eugen Eberle on 20.08.2016.
@@ -44,7 +42,7 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
     private JButton sWechselButton;
     private JLabel banner;
 
-    private VerwalterInterface vServer;
+    public VerwalterInterface vServer;
 
     /**Fuer die Tree-Ansicht */
 //    protected EventListenerList listeners;
@@ -252,7 +250,7 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
     }
 
     /**
-     * Button gedrückt
+     * Button gedrï¿½ckt
      */
     public void actionPerformed(ActionEvent e)
     {
@@ -453,8 +451,8 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
                     {
                         client.append(fileListe2[i] + "\n");
                     }
-                } catch (IOException eSeach) {
-                    System.out.println("Fehler: " + eSeach.getMessage());
+                } catch (IOException eSearch) {
+                    System.out.println("Fehler: " + eSearch.getMessage());
                 }
                 searchLabel.setText("Was suchen?");
                 searchFeld.setText("");
@@ -465,7 +463,7 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
         if(o == deleteButton)
         {
             JFrame eingabe = new JFrame();
-            String pfad = JOptionPane.showInputDialog(eingabe, "Was soll gelöscht werden?", "Delete", JOptionPane.PLAIN_MESSAGE);
+            String pfad = JOptionPane.showInputDialog(eingabe, "Was soll gelï¿½scht werden?", "Delete", JOptionPane.PLAIN_MESSAGE);
             try
             {
                 if( this.vServer.delete(pfad) )

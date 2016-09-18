@@ -76,13 +76,42 @@ public class FileSystemClient
 			e.printStackTrace();
 		}
 	}
-	
-	public boolean search() throws RemoteException
-	{
-		String file = "";
-		String dir = "";
-		return vserver.search(file, dir);
-	}
+
+    public void search() throws RemoteException
+    {
+        String pfad = "";
+        String startDir = "";
+        String erg = "";
+        String [] fileListe;
+        Scanner eingabe = new Scanner(System.in);
+        System.out.print("Was soll gesucht werden?: ");
+        pfad = eingabe.nextLine();
+        System.out.print("Wo soll gesucht werden?: ");
+        startDir = eingabe.nextLine();
+        try
+        {
+            erg = this.vserver.search(pfad, startDir);
+            if(erg.contains("Nicht gefunden,"))
+            {
+                System.out.println(erg);
+            }
+            else
+            {
+                fileListe = erg.split("[;]");
+                System.out.println("Found-Files");
+                System.out.println("---------------------------------------------------------------");
+
+                for(int i=0; i<fileListe.length; i++)
+                {
+                    System.out.println(fileListe[i]);
+                }
+            }
+        }
+        catch(IOException e)
+        {
+            System.out.println("Fehler: " + e.getMessage());
+        }
+    }
 
 	public void createDir()
 	{

@@ -120,16 +120,41 @@ public class FileSystemServer implements FSInterface
 	* @param startDir Ordner ab dem die Datei gesucht werden soll
 	* @return Liste mit Dateien die auf den Such-String passen mit ";" getrennt
 	*/
-	public boolean search(String file, String startDir) throws RemoteException {
-		boolean isFound = false;
-		for (FileSystem fs : fileSystems) {
-			try {
-				isFound = fs.search(file, startDir);
-			}catch(IOException ioe) {
-				ioe.printStackTrace();
+	public String search(String file, String startDir) throws RemoteException
+	{
+		System.out.println(" --> Function: search - Params: " + file + ", " + startDir);
+
+		Path [] fileListe = null;
+		String ergListe = "";
+		try
+		{
+			//search liefert true zurueck wenn mindestens eine Datei
+			//gefunden wurde
+			if( this.fs.search(file, startDir) )
+			{
+				//Gefundene Dateien speichern und als String
+				//zurück liefern
+				fileListe = this.fs.getFileListe();
+				for(int i=0; i<fileListe.length; i++)
+				{
+					if(i>0)
+					{
+						ergListe = ergListe + ";" + fileListe[i] ;
+					}
+					else
+					{
+						ergListe = ergListe + fileListe[i];
+					}
+				}
 			}
 		}
-		return isFound;
+		catch(Exception e)
+		{
+			ergListe = "";
+			System.out.println("Fehler: " + e.toString());
+		}
+		System.out.println("Return: \"" + ergListe + "\"");
+		return ergListe;
 	}
 
 	/**

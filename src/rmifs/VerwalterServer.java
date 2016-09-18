@@ -73,7 +73,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
      *         und weitere Rueckgabe von Server Liste
      * @throws RemoteException
      */
-    public boolean search(String file, String startDir) throws RemoteException
+    public String search(String file, String startDir) throws RemoteException
     {
         log(" - Client [" + clientIP + "] request search");
         return this.fsserver.search(file, startDir);
