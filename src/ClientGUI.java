@@ -4,6 +4,7 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.rmi.Naming;
@@ -83,6 +84,13 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
         ImageIcon img = new ImageIcon("htw.png");
         frame.setIconImage(img.getImage());
 
+        /**GIF*/
+//        ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("htwsaar.gif")); // load the image to a imageIcon
+//        Image image = imageIcon.getImage(); // transform it
+//        Image newimg = image.getScaledInstance(147, 100,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way
+//        imageIcon = new ImageIcon(newimg);  // transform it back
+//        gif.setIcon(imageIcon);
+
 
         clientTextArea.append("Hallo \n\n");
         startClientButton.addActionListener(this);
@@ -109,8 +117,8 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
         sWechselButton.setEnabled(false);
         tree1.setEnabled(false);
 
-
-       frame.pack();
+        frame.pack();
+        frame.setLocation(50, 50);
 
 
 
@@ -265,7 +273,7 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
         if(o == startClientButton)
         {
             int serverPort;
-            String host = "192.168.0.101";
+            String host = "192.168.0.103";
             try
             {
                 serverPort = Integer.parseInt(portTextFeld.getText().trim());
@@ -388,23 +396,19 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
             }
 
             /**Nur lokal?*/
-//            try
-//            {
-////                File wurzel = this.vServer.getFile(pfad);
-////                client.append(String.valueOf(wurzel));
-//                // Create a TreeModel object to represent our tree of files
-//                //FileTreeModel model2 = this.vServer.getFile(pfad);
-//                //FileTreeModel model2 = new FileTreeModel(wurzel);
-//                //FileTreeModel model2 = this.vServer.getFileTreeModel(wurzel);
-//                FileTreeModel model2 = this.vServer.getFileTreeModel();
-//                tree1.setModel(model2);
-//            } catch (RemoteException e1)
-//            {
-//                e1.printStackTrace();
-//            }
+            //                File wurzel = this.vServer.getFile(pfad);
+//                client.append(String.valueOf(wurzel));
+            // Create a TreeModel object to represent our tree of files
+            //FileTreeModel model2 = this.vServer.getFile(pfad);
+            //File wurzel = new File("\\");
+            //FileTreeModel model2 = new FileTreeModel(wurzel);
+            //FileTreeModel model2 = this.vServer.getFileTreeModel(wurzel);
+            //FileTreeModel model2 = this.vServer.getFileTreeModel();
+            //tree1.setModel(model2);
 
-            /**Baum wird auf den Inhalten dirListe und fileListe zusammengebaut*/
+            /**Baum wird aus den Inhalten dirListe und fileListe zusammengebaut*/
             DefaultTreeModel model = (DefaultTreeModel)tree1.getModel();
+            tree1.setModel(model);
             DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
             root.removeAllChildren();
             root.setUserObject(pfad + " " + new SimpleDateFormat("HH:mm:ss").format(new Date()));
@@ -425,6 +429,10 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
                 }
             }
             model.reload(root);
+//            System.out.print(model.getChildCount(root));
+//            DefaultMutableTreeNode newRoot = (DefaultMutableTreeNode) model.getChild(root, 25);
+//            newRoot.add(new DefaultMutableTreeNode("test"));
+            
         }
 
         if(o == seachButton)
@@ -464,24 +472,29 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
 
         if(o == deleteButton)
         {
-            JFrame eingabe = new JFrame();
-            String pfad = JOptionPane.showInputDialog(eingabe, "Was soll gelöscht werden?", "Delete", JOptionPane.PLAIN_MESSAGE);
-            try
+            String wahl = clientTextArea.getText().trim();
+            String [] parts = wahl.split(":");
+            String loeschPfad = parts[parts.length - 1].trim();
+
+            int jaNein = JOptionPane.showConfirmDialog(null, "Soll  " +loeschPfad+ "  wirklich geloescht werden?", "Delete", JOptionPane.YES_NO_OPTION);
+
+            if(jaNein == JOptionPane.YES_OPTION)
             {
-                if( this.vServer.delete(pfad) )
+                try
                 {
-                    client.append("Ordner oder Datei wurde geloescht!\n");
-                    JOptionPane.showMessageDialog(null, "Ordner oder Datei wurde geloescht!", "Delete", JOptionPane.INFORMATION_MESSAGE);
+                    if( this.vServer.delete(loeschPfad) )
+                    {
+                        JOptionPane.showMessageDialog(null, loeschPfad+ "  wurde geloescht!", "Delete", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                    else
+                    {
+                        JOptionPane.showMessageDialog(null, "Ordner oder Datei konnte NICHT geloescht werden!", "Delete", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
-                else
+                catch(IOException eDelete)
                 {
-                    JOptionPane.showMessageDialog(null, "Ordner oder Datei konnte NICHT geloescht werden!", "Delete", JOptionPane.ERROR_MESSAGE);
-                    System.out.println("Ordner oder Datei konnte NICHT geloescht werden!");
+                    client.append("Fehler: " + eDelete.getMessage());
                 }
-            }
-            catch(IOException eDelete)
-            {
-                System.out.println("Fehler: " + eDelete.getMessage());
             }
         }
 

@@ -27,17 +27,11 @@ public class FileTreeModel extends DefaultTreeModel implements TreeModel, Serial
         super(null);
         this.root = root;
     }
-    public FileTreeModel(String pfad)
-    {
-        super(null);
-        this.root = new File(pfad);
-    }
 
     // The model knows how to return the root object of the tree
     public Object getRoot()
     {
-        //return root;
-        return this.root;
+        return root;
     }
 
     // Tell JTree whether an object in the tree is a leaf or not
