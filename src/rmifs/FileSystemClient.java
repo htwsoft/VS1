@@ -31,86 +31,9 @@ public class FileSystemClient
 
 
 
-	private enum MENUE { CLOSE, LIST, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE, RENAME, OS_NAME, FALSE }
 
 
-	/**
-	* Hauptmethode der Demo
-	* startet eine Menue
-	* @param args übergeben Parameter erster Parameter ist der Port zum Server
-	*/	
-	public static void main(String args[]) 
-	{
-		//**** regelt RMI Kommunikation ***** muss anfang der main bleiben
-		System.setProperty("policy/java.security.policy", "policy/java.policy" );
-		//System.setProperty("java.rmi.server.hostname", SERVER_HOST_IP_1);//warum steht das hier????
-		FileSystemClient fsc = null;
-		//FileSystemClient fsclient = nsendew FileSystemClient(4712, "localhost");
 
-		int serverPort = 0;
-		int eingabe = -1;
-		MENUE menue_eingabe = MENUE.FALSE;
-		try 
-		{
-			serverPort = SERVER_PORT; //Integer.parseInt(args[0]);
-
-			//noetig für die Verbindung zum Verwalter (verwalterPort, vewalterIP)
-			fsc = new FileSystemClient(serverPort, SERVER_HOST_IP_1); 	//args[1]
-			NetworkController nc = new NetworkController(fsc);  		//"172.19.1.209" fgvt
-
-			System.out.println(nc);
-			System.out.println(fsc);
-
-			while(menue_eingabe != MENUE.CLOSE)
-			{
-				eingabe = fsc.zeigeMenue();
-				menue_eingabe = fsc.intToMenue(eingabe);
-				switch(menue_eingabe)
-				{
-					case CLOSE: System.out.println("Programm wurde beendet!"); break;
-					case LIST: fsc.list(); break;
-					case BROWSE: fsc.browse(); break;
-					case SEARCH: fsc.search(); break;
-					case CREATE_DIR: fsc.createDir(); break;
-					case CREATE_FILE: fsc.createFile(); break;
-					case DELETE: fsc.delete(); break;
-					case RENAME: fsc.rename(); break;
-					case OS_NAME: fsc.osname(); break;
-					default: System.out.println("Falsche Eingabe!"); break;
-				}
-			}	
-		} 
-		catch (IOException ioe)
-		{
-			ioe.printStackTrace();
-		}
-		catch (NotBoundException nbe)
-		{
-			nbe.printStackTrace();
-		}
-
-		System.exit(0);
-	} 
-	
-	public MENUE intToMenue(int eingabe)
-	{
-		MENUE menue_eingabe = MENUE.FALSE;
-		switch(eingabe)
-		{		
-			case 0: menue_eingabe = MENUE.CLOSE; break;
-			case 1: menue_eingabe = MENUE.LIST; break;
-			case 2: menue_eingabe = MENUE.BROWSE; break;
-			case 3: menue_eingabe = MENUE.SEARCH; break;
-			case 4: menue_eingabe = MENUE.CREATE_DIR; break;
-			case 5: menue_eingabe = MENUE.CREATE_FILE; break;
-			case 6: menue_eingabe = MENUE.DELETE; break;
-			case 7: menue_eingabe = MENUE.RENAME; break;
-			case 8: menue_eingabe = MENUE.OS_NAME; break;
-			default: menue_eingabe = MENUE.FALSE; break;
-		}
-		return menue_eingabe;
-	}
-	
 	/**
 	* Konstruktor 
 	* erzeugt eine FileSystem-Klasse
@@ -130,7 +53,7 @@ public class FileSystemClient
 	/**
 	* Führt die Browse-Methode der FileSystemServer-Klasse aus
 	*/
-	private void browse()
+	public void browse()
 	{
 		String pfad = "";
 		String erg = "";
@@ -168,7 +91,7 @@ public class FileSystemClient
 		}
 	}
 	
-	private boolean search() throws RemoteException
+	public boolean search() throws RemoteException
 	{
 		String file = "";
 		String dir = "";
@@ -176,7 +99,7 @@ public class FileSystemClient
 
 	}
 
-	private void createDir()
+	public void createDir()
 	{
 		String pfad = "";
 		Scanner eingabe = new Scanner(System.in);
@@ -199,7 +122,7 @@ public class FileSystemClient
 		}			
 	}
 	
-	private void createFile()
+	public void createFile()
 	{
 		String pfad = "";
 		Scanner eingabe = new Scanner(System.in);
@@ -222,7 +145,7 @@ public class FileSystemClient
 		}			
 	}
 	
-	private void delete()
+	public void delete()
 	{
 		String pfad = "";
 		Scanner eingabe = new Scanner(System.in);
@@ -245,7 +168,7 @@ public class FileSystemClient
 		}	
 	}
 	
-	private void rename()
+	public void rename()
 	{
 		String oldName = "";
 		String newName = "";
@@ -271,7 +194,7 @@ public class FileSystemClient
 		}	
 	}	
 	
-	private void osname()
+	public void osname()
 	{
 		try
 		{
@@ -289,55 +212,11 @@ public class FileSystemClient
 		
 	}	
 	
-	/**
-	* Funktion zeigt ein Auswahlmenue und liefert 
-	* die Auswahl des Benutzers zurück
-	*/
-	private int zeigeMenue ()
-	{
-		//Scanner liste eingabe des Benutzers ein
-		InputStreamReader isr = new InputStreamReader(System.in);
-		BufferedReader br = new BufferedReader(isr);
-		toString();
-		int eingabe = -1;
-		while(eingabe < 0 || eingabe > 8)
-		{
-			//Auswahlmenue zeigen bis eingabe richtig
-			try
-			{
-				//Terminal Ausgabe Menue
-				System.out.println("");
-				System.out.println("---------------------");
-				System.out.println("Menue:");
-				System.out.println("0: Beenden");
-				System.out.println("1: Server List");
-				System.out.println("2: Browse");
-				System.out.println("3: Search");
-				System.out.println("4: Create Dir");
-				System.out.println("5: Create File");
-				System.out.println("6: Delete");
-				System.out.println("7: Rename");
-				System.out.println("8: OS-Name");
-				System.out.println("---------------------");
-				System.out.print("Was moechten Sie tun?: ");
-				eingabe = Integer.parseInt(br.readLine());
-			}
-			catch(IOException ioe)
-			{
-				ioe.printStackTrace();
-			}
-		}
-
-		System.out.println("");
-
-		return eingabe;
-
-	}
 
 	/**
 	 * Fragt die verfuegbaren VerwalterServer ab, also deren Name und IP
      */
-	private void list() throws RemoteException
+	public void list() throws RemoteException
 	{
 		String serverListe;
 		try
