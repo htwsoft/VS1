@@ -36,7 +36,6 @@ public class FileSystem
 	public FileSystem()
 	{
 		this.osname = System.getProperty("os.name");
-
 		try {
 			this.hostname = Inet4Address.getLocalHost().getHostName();
 			this.hostAddress = Inet4Address.getLocalHost().getHostAddress();
@@ -45,7 +44,6 @@ public class FileSystem
 		}
 		this.dirListe = null;
 		this.fileListe = null;
-
 	}
 	
 	/**
