@@ -18,14 +18,16 @@ import java.util.Scanner;
 
 public class FileSystemClient
 {
-	private final static String SERVER_HOST_IP = "192.168.129.81";
-	private final static int VERWALTER_SERVER_PORT = 4712; 	//ToDo variable Ports und IPs
+	private final static String SERVER_HOST_IP_1 = "192.168.0.24";
+	private final static String SERVER_HOST_IP_2 = "192.168.0.23";
+	private final static String SERVER_HOST_IP_3 = "192.168.0.11";
+	private final static String SERVER_HOST_FGVT = "172.19.1.209"; //localhost der fgvt
+	private final static int SERVER_PORT = 4712; //ToDo variable Ports und IPs
 
 	private VerwalterInterface vserver;  //Attribute zum Zugriff auf Verwalter Server Funktionen
 	private String clientAddress = "not set!";
 	private String clientName = "not set!";
 	private String clientOS = "not set!";
-
 
 	/**
 	* Konstruktor 
@@ -266,5 +268,7 @@ public class FileSystemClient
 
 	}
 
-}//ENDE
+
+
+}
 
