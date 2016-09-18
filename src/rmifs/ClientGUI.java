@@ -36,6 +36,7 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
     private JTree tree1;
     private JTextField searchFeld;
     private JLabel searchLabel;
+    private JLabel gifLabel;
     private JScrollPane baumScroll;
     private JLabel ip;
     private JLabel ipLabel;
@@ -542,7 +543,7 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
     public static void main(String[] args) throws IOException
     {
         //Propertys aus Datei laden
-        System.setProperty("java.security.policy", "java.policy");
+        //System.setProperty("java.security.policy", "java.policy");
         client = new ClientGUI();
     }
 }
