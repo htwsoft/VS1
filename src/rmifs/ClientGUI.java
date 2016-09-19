@@ -20,6 +20,8 @@ import java.util.Date;
 
 public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cloneable, Serializable,
 {
+
+
     static ClientGUI client;
     private JPanel clientPanel;
     private JTextField portTextFeld;
@@ -79,11 +81,11 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
         frame.setLocation(10, 10);
 
         /**Logo laden, muss im selben dir sein wie die java Files oder absoluten Pfad eingeben */
-        ImageIcon img = new ImageIcon("htw.png");
+        ImageIcon img = new ImageIcon("graphics/htw.png");
         frame.setIconImage(img.getImage());
 
 
-        clientTextArea.append("Hallo \n\n");
+        clientTextArea.append("Welcome \n\n");
         startClientButton.addActionListener(this);
         browseButton.addActionListener(this);
         seachButton.addActionListener(this);
@@ -108,8 +110,7 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
         sWechselButton.setEnabled(false);
         tree1.setEnabled(false);
 
-
-       frame.pack();
+        frame.pack();
 
 
 
@@ -184,7 +185,38 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
 //        }
 //        return children.size();
 //    }
-//    public Object getChild(Object parent, int index)
+//    p
+    /** Alles fuer den Tree_ANFANG, wird in der aktuellen Version nicht benutzt*/
+//    private static final Object LEAF = new Serializable()
+//    {};
+//
+//    public ClientGUI(File root2)
+//    {
+//        this.root = root2.getParentFile();
+//        if (!root.isDirectory())
+//        {
+//            map.put(root, LEAF);
+//        }
+//        this.listeners = new EventListenerList();
+//        this.map = new HashMap();
+//    }
+//
+//    public Object getRoot()
+//    {
+//        return root;
+//    }
+//    public boolean isLeaf(Object node)
+//    {
+//        return map.get(node) == LEAF;
+//    }
+//    public int getChildCount(Object node)
+//    {
+//        java.util.List children = children(node);
+//
+//        if (children == null)
+//        {
+//            return 0;
+//     public Object getChild(Object parent, int index)
 //    {
 //        return children(parent).get(index);
 //    }
@@ -251,10 +283,11 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
     }
 
     /**
-     * Button gedr�ckt
+     * Button gedrueckt
      */
     public void actionPerformed(ActionEvent e)
     {
+
         /**
          * Die Quelle des Events finden,
          * d.h. welcher Button wurden geklickt?
@@ -264,7 +297,7 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
         if(o == startClientButton)
         {
             int serverPort;
-            String host = "192.168.0.101";
+            String host =  "192.168.0.26";
             try
             {
                 serverPort = Integer.parseInt(portTextFeld.getText().trim());
@@ -543,7 +576,9 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
     public static void main(String[] args) throws IOException
     {
         //Propertys aus Datei laden
-        //System.setProperty("java.security.policy", "java.policy");
+        System.setProperty("java.security.policy", "policy/java.policy");
+
         client = new ClientGUI();
+
     }
 }

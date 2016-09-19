@@ -151,7 +151,7 @@ public class FileSystemServer implements FSInterface
 		catch(Exception e)
 		{
 			ergListe = "";
-			System.out.println("Fehler: " + e.toString());
+			System.out.println("ALERT: " + e.toString());
 		}
 		System.out.println("Return: \"" + ergListe + "\"");
 		return ergListe;

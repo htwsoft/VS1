@@ -16,7 +16,7 @@ public class HtwSoftClient {
 
     private enum MENUE { CLOSE, LIST, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE, RENAME, OS_NAME, FALSE }
 
-    private final static String SERVER_HOST_IP = "192.168.0.24";
+    private final static String SERVER_HOST_IP = "192.168.0.26";
     private final static int VERWALTER_PORT_NR = 4712;
 
     private static FileSystemClient client;
@@ -124,9 +124,9 @@ public class HtwSoftClient {
         { //Auswahlmenue zeigen bis eingabe richtig
           try
             {
-                System.out.println("");
-                System.out.println("---------------------");
-                System.out.println("Menue:");
+                System.out.println("------------------------------------------------------------");
+                System.out.println("--------------------\t\tMenue\t\t--------------------");
+                System.out.println("------------------------------------------------------------");
                 System.out.println("0: Beenden");
                 System.out.println("1: Server List");
                 System.out.println("2: Browse");
@@ -136,7 +136,7 @@ public class HtwSoftClient {
                 System.out.println("6: Delete");
                 System.out.println("7: Rename");
                 System.out.println("8: OS-Name");
-                System.out.println("---------------------");
+                System.out.println("------------------------------------------------------------");
                 System.out.print("Was moechten Sie tun?: ");
                 eingabe = Integer.parseInt(br.readLine());
             }
