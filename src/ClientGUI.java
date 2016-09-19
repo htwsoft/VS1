@@ -518,6 +518,8 @@ class GUITreeSelectionListener implements TreeSelectionListener
     @Override public void valueChanged(TreeSelectionEvent ae)
     {
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) ae.getPath().getLastPathComponent();
+        //event verlassen wenn keine Node ausgewaehlt wurde
+        if(node == null) return;
         DefaultMutableTreeNode dirNode;
         String pfad = node.toString();
         node.removeAllChildren();
