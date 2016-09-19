@@ -21,7 +21,7 @@ import java.util.*;
  * Created by Eugen Eberle on 20.08.2016.
  */
 
-public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cloneable, Serializable,
+public class ClientGUI extends JFrame implements ActionListener
 {
     static ClientGUI client;
     private JPanel clientPanel;
@@ -46,11 +46,6 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
     private JLabel banner;
 
     private VerwalterInterface vServer;
-
-    /**Fuer die Tree-Ansicht */
-//    protected EventListenerList listeners;
-//    private Map map;
-//    private File root;
 
     /**Fuer search*/
     String searchPfad = "";
@@ -84,174 +79,14 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
         ImageIcon img = new ImageIcon("htw.png");
         frame.setIconImage(img.getImage());
 
-        /**GIF*/
-//        ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("htwsaar.gif")); // load the image to a imageIcon
-//        Image image = imageIcon.getImage(); // transform it
-//        Image newimg = image.getScaledInstance(147, 100,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way
-//        imageIcon = new ImageIcon(newimg);  // transform it back
-//        gif.setIcon(imageIcon);
-
-
         clientTextArea.append("Hallo \n\n");
-        startClientButton.addActionListener(this);
-        browseButton.addActionListener(this);
-        seachButton.addActionListener(this);
-        createDirButton.addActionListener(this);
-        createFileButton.addActionListener(this);
-        deleteButton.addActionListener(this);
-        renameButton.addActionListener(this);
-        OSInfoButton.addActionListener(this);
-        sWechselButton.addActionListener(this);
+        addListener();
 
-        /**
-         * Buttons deaktivieren, werden erst nach Verbindung aktiviert
-         */
-        browseButton.setEnabled(false);
-        seachButton.setEnabled(false);
-        createDirButton.setEnabled(false);
-        createFileButton.setEnabled(false);
-        deleteButton.setEnabled(false);
-        renameButton.setEnabled(false);
-        OSInfoButton.setEnabled(false);
-        searchFeld.setEnabled(false);
-        sWechselButton.setEnabled(false);
-        tree1.setEnabled(false);
+        deaktiviereButtons();
 
         frame.pack();
         frame.setLocation(50, 50);
-
-
-
-        /** listener fuer den tree*/
-        tree1.addTreeSelectionListener(new TreeSelectionListener()
-        {
-            @Override
-            public void valueChanged(TreeSelectionEvent e)
-            {
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.getPath().getLastPathComponent();
-                String pfad2 = node.toString();
-                client.append("You selected: " + pfad2+ "\n");
-                try
-                {
-                    String a = vServer.browseDirs(pfad2);
-                    String[] b = a.split("[;]");
-                    String d = vServer.browseFiles(pfad2);
-                    String[] f = d.split("[;]");
-                    for (int o = 0; o < b.length; o++)
-                    {
-                        if (!b[o].equals(""))
-                        {
-                            node.add(new DefaultMutableTreeNode(b[o]));
-                        }
-                    }
-                    for (int i = 0; i < f.length; i++)
-                    {
-                        if (!f[i].equals(""))
-                        {
-                            node.add(new DefaultMutableTreeNode(f[i]));
-                        }
-                    }
-                } catch (RemoteException e1)
-                {
-                    e1.printStackTrace();
-                }
-            }
-        });
-
     }
-
-    /** Alles fuer den Tree_ANFANG, wird in der aktuellen Version nicht benutzt*/
-//    private static final Object LEAF = new Serializable()
-//    {};
-//
-//    public ClientGUI(File root2)
-//    {
-//        this.root = root2.getParentFile();
-//        if (!root.isDirectory())
-//        {
-//            map.put(root, LEAF);
-//        }
-//        this.listeners = new EventListenerList();
-//        this.map = new HashMap();
-//    }
-//
-//    public Object getRoot()
-//    {
-//        return root;
-//    }
-//    public boolean isLeaf(Object node)
-//    {
-//        return map.get(node) == LEAF;
-//    }
-//    public int getChildCount(Object node)
-//    {
-//        java.util.List children = children(node);
-//
-//        if (children == null)
-//        {
-//            return 0;
-//        }
-//        return children.size();
-//    }
-//    public Object getChild(Object parent, int index)
-//    {
-//        return children(parent).get(index);
-//    }
-//    public int getIndexOfChild(Object parent, Object child)
-//    {
-//        return children(parent).indexOf(child);
-//    }
-//    protected java.util.List children(Object node)
-//    {
-//        File f = (File)node;
-//        Object value = map.get(f);
-//        if (value == LEAF)
-//        {
-//            return null;
-//        }
-//        java.util.List children = (java.util.List)value;
-//        if (children == null)
-//        {
-//            File[] c = f.listFiles();
-//            if (c != null)
-//            {
-//                children = new ArrayList(c.length);
-//                for (int len = c.length, i = 0; i < len; i++)
-//                {
-//                    children.add(c[i]);
-//                    if (!c[i].isDirectory())
-//                        map.put(c[i], LEAF);
-//                }
-//            }
-//            else
-//                children = new ArrayList(0);
-//
-//            map.put(f, children);
-//        }
-//        return children;
-//    }
-//    public void valueForPathChanged(TreePath path, Object value)
-//    {
-//    }
-//    public void addTreeModelListener(TreeModelListener l)
-//    {
-//        listeners.add(TreeModelListener.class, l);
-//    }
-//    public void removeTreeModelListener(TreeModelListener l)
-//    {
-//        listeners.remove(TreeModelListener.class, l);
-//    }
-//    public Object clone() {
-//        try {
-//            ClientGUI clone = (ClientGUI) super.clone();
-//            clone.listeners = new EventListenerList();
-//            clone.map = new HashMap(map);
-//            return clone;
-//        } catch (CloneNotSupportedException e) {
-//            throw new InternalError();
-//        }
-//    }
-    /** Alles fuer den Tree_ENDE*/
 
     void append(String text)
     {
@@ -262,296 +97,395 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
     /**
      * Button gedrückt
      */
-    public void actionPerformed(ActionEvent e)
+    public void actionPerformed(ActionEvent ae)
     {
         /**
          * Die Quelle des Events finden,
          * d.h. welcher Button wurden geklickt?
          */
-        Object o = e.getSource();
+        Object aeSource = ae.getSource();
 
-        if(o == startClientButton)
+        if(aeSource == startClientButton)
         {
-            int serverPort;
-            String host = "192.168.0.103";
-            try
+            startClientButton();
+        }
+        else
+        if(aeSource == OSInfoButton)
+        {
+            OSInfoButton();
+        }
+        else
+        if(aeSource == createDirButton)
+        {
+            createDirButton();
+        }
+        else
+        if(aeSource == createFileButton)
+        {
+            createFileButton();
+        }
+        else
+        if(aeSource == browseButton)
+        {
+            browseButton();
+        }
+        else
+        if(aeSource == seachButton)
+        {
+            searchButton();
+        }
+        else
+        if(aeSource == deleteButton)
+        {
+            deleteButton();
+        }
+        else
+        if(aeSource == renameButton)
+        {
+            renameButton();
+        }
+        else
+        if(aeSource == sWechselButton)
+        {
+            wechselButton();
+        }
+    }
+
+    /**
+     * fuehrt die Aktion des startClientButton-button aus
+     * */
+    private void startClientButton()
+    {
+        int serverPort;
+        String host = "192.168.0.103";
+        try
+        {
+            serverPort = Integer.parseInt(portTextFeld.getText().trim());
+        } catch(Exception er)
+        {
+            JOptionPane.showMessageDialog(null, "Fehler bei der Port-Eingabe", "Port-Nr", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        try
+        {
+            if (System.getSecurityManager() == null)
             {
-                serverPort = Integer.parseInt(portTextFeld.getText().trim());
-            } catch(Exception er)
-            {
-                JOptionPane.showMessageDialog(null, "Fehler bei der Port-Eingabe", "Port-Nr", JOptionPane.ERROR_MESSAGE);
-                return;
+                System.setSecurityManager(new SecurityManager());
             }
+            Registry registry = LocateRegistry.getRegistry(host, serverPort+1);
+            this.vServer = (VerwalterInterface) registry.lookup("VerwalterServer");
+            client.append("Verbunden...\n");
+
+            ipLabel.setText(host);
+            // Start-Button deaktivieren nach Start
+            startClientButton.setEnabled(false);
+            // Portfeld deaktivieren nach Start
+            portTextFeld.setEditable(false);
+            aktiviereButtons();
+        }
+        catch(Exception e2)
+        {
+            System.out.println( "Fehler_startButton: " + e2.toString() );
+            client.append( "Fehler: " + e2.toString() );
+        }
+    }
+
+    /**
+     * fuehrt die Aktion des OSInfoButton-button aus
+     * */
+    private void OSInfoButton()
+    {
+        try
+        {
+            client.append(" Verwendetes OS: " + this.vServer.getOSName() + "\n");
+            client.append(" Name des Hosts:  " + this.vServer.getHostName() + "\n\n");
+        }
+        catch(Exception eOS)
+        {
+            System.out.println("Fehler: " + eOS.getMessage());
+        }
+    }
+
+    /**
+     * fuehrt die Aktion des createDir-button aus
+     * */
+    private void createDirButton()
+    {
+        JFrame eingabe = new JFrame();
+        String pfad = JOptionPane.showInputDialog(eingabe, "Welcher Ordner soll erstellt werden?", "Create Directory", JOptionPane.PLAIN_MESSAGE);
+        try
+        {
+            if( this.vServer.createDir(pfad) )
+            {
+                client.append("Ordner wurde erstellt!\n");
+            }
+            else
+            {
+                client.append("Ordner konnte NICHT erstellt werden!\n");
+                JOptionPane.showMessageDialog(null, "Ordner konnte NICHT erstellt werden", "Create Directory", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        catch(IOException eDir)
+        {
+            System.out.println("Fehler: " + eDir.getMessage());
+        }
+    }
+
+    /**
+     * fuehrt die Aktion des createFile-button aus
+     * */
+    private void createFileButton()
+    {
+        JFrame eingabe = new JFrame();
+        String pfad = JOptionPane.showInputDialog(eingabe, "Welche Datei soll erstellt werden?", "Create File", JOptionPane.PLAIN_MESSAGE);
+        try
+        {
+            if( this.vServer.createFile(pfad) )
+            {
+                client.append("Datei wurde erstellt!\n");
+            }
+            else
+            {
+                client.append("Datei konnte NICHT erstellt werden!\n");
+                JOptionPane.showMessageDialog(null, "Datei konnte NICHT erstellt werden!n", "Create File", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        catch(IOException eFile)
+        {
+            System.out.println("Fehler: " + eFile.getMessage());
+        }
+    }
+
+    /**
+     * fuehrt die Aktion des search-button aus
+     * */
+    private void searchButton()
+    {
+        String erg;
+        String [] fileListe2;
+        //Erste Eingabe: Was suchen Sie?
+        //Text im Label ist die Bedingung
+        if (ersteEingabe == true)
+        {
+            searchPfad = searchFeld.getText();
+            searchLabel.setText("Wo suchen?");
+            searchFeld.setText("");
+            ersteEingabe = false;
+        }
+        else if (ersteEingabe == false)
+        {
+            String startDir = searchFeld.getText();
             try
             {
-                if (System.getSecurityManager() == null)
+                erg = this.vServer.search(searchPfad, startDir);
+                fileListe2 = erg.split("[;]");
+                client.append("Found-Files: \n");
+                client.append("---------------------------------------------------------------\n");
+                for (int i = 0; i < fileListe2.length; i++)
                 {
-                    System.setSecurityManager(new SecurityManager());
+                    client.append(fileListe2[i] + "\n");
                 }
-                Registry registry = LocateRegistry.getRegistry(host, serverPort+1);
-                this.vServer = (VerwalterInterface) registry.lookup("VerwalterServer");
-                client.append("Verbunden...\n");
-
-                ipLabel.setText(host);
-                // Start-Button deaktivieren nach Start
-                startClientButton.setEnabled(false);
-                // Portfeld deaktivieren nach Start
-                portTextFeld.setEditable(false);
-                //Buttons aktivieren
-                browseButton.setEnabled(true);
-                seachButton.setEnabled(true);
-                createDirButton.setEnabled(true);
-                createFileButton.setEnabled(true);
-                deleteButton.setEnabled(true);
-                renameButton.setEnabled(true);
-                OSInfoButton.setEnabled(true);
-                searchFeld.setEnabled(true);
-                sWechselButton.setEnabled(true);
-                tree1.setEnabled(true);
+            } catch (IOException eSeach) {
+                System.out.println("Fehler: " + eSeach.getMessage());
             }
-            catch(Exception e2)
+            searchLabel.setText("Was suchen?");
+            searchFeld.setText("");
+            ersteEingabe = true;
+        }
+    }
+
+    /**
+     * fuehrt die Aktion des browse-Button aus
+     * */
+    private void browseButton()
+    {
+        JFrame eingabe = new JFrame();
+        String pfad = JOptionPane.showInputDialog(eingabe, "Welcher Ordner soll untersucht werden?", "Browse", JOptionPane.PLAIN_MESSAGE);
+
+        String erg = null;
+        String [] dirListe = new String[0];
+        String [] fileListe = new String[0];
+
+        try
+        {
+            erg = this.vServer.browseDirs(pfad);
+            dirListe = erg.split("[;]");
+
+            erg = this.vServer.browseFiles(pfad);
+            fileListe = erg.split("[;]");
+        }
+        catch(IOException e11)
+        {
+            System.out.println("Fehler: " + e11.getMessage());
+        }
+
+        /**Baum wird aus den Inhalten dirListe und fileListe zusammengebaut*/
+        DefaultTreeModel model = (DefaultTreeModel)tree1.getModel();
+        tree1.setModel(model);
+        DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
+        root.removeAllChildren();
+        root.setUserObject(pfad + " " + new SimpleDateFormat("HH:mm:ss").format(new Date()));
+
+        for (int i = 0; i < dirListe.length; i++)
+        {
+            if(!dirListe[i].equals(""))
             {
-                System.out.println( "Fehler_startButton: " + e2.toString() );
-                client.append( "Fehler: " + e2.toString() );
+                root.add(new DefaultMutableTreeNode(dirListe[i]));
             }
         }
 
-        if(o == OSInfoButton)
+        for (int i = 0; i < fileListe.length; i++)
         {
-            try
+            if(!fileListe[i].equals(""))
             {
-                client.append(" Verwendetes OS: " + this.vServer.getOSName() + "\n");
-                client.append(" Name des Hosts:  " + this.vServer.getHostName() + "\n\n");
-            }
-            catch(Exception eOS)
-            {
-                System.out.println("Fehler: " + eOS.getMessage());
+                root.add(new DefaultMutableTreeNode(fileListe[i]));
             }
         }
+        model.reload(root);
+    }
 
-        if(o == createDirButton)
+    /**
+     *  Funktion fuehrt die AKtion des delete Buttons aus
+     * */
+    private void deleteButton()
+    {
+        String wahl = clientTextArea.getText().trim();
+        String [] parts = wahl.split(":");
+        String loeschPfad = parts[parts.length - 1].trim();
+
+        int jaNein = JOptionPane.showConfirmDialog(null, "Soll  " +loeschPfad+ "  wirklich geloescht werden?", "Delete", JOptionPane.YES_NO_OPTION);
+
+        if(jaNein == JOptionPane.YES_OPTION)
         {
-            JFrame eingabe = new JFrame();
-            String pfad = JOptionPane.showInputDialog(eingabe, "Welcher Ordner soll erstellt werden?", "Create Directory", JOptionPane.PLAIN_MESSAGE);
             try
             {
-                if( this.vServer.createDir(pfad) )
+                if( this.vServer.delete(loeschPfad) )
                 {
-                    client.append("Ordner wurde erstellt!\n");
+                    JOptionPane.showMessageDialog(null, loeschPfad+ "  wurde geloescht!", "Delete", JOptionPane.INFORMATION_MESSAGE);
                 }
                 else
                 {
-                    client.append("Ordner konnte NICHT erstellt werden!\n");
-                    JOptionPane.showMessageDialog(null, "Ordner konnte NICHT erstellt werden", "Create Directory", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Ordner oder Datei konnte NICHT geloescht werden!", "Delete", JOptionPane.ERROR_MESSAGE);
                 }
             }
-            catch(IOException eDir)
+            catch(IOException eDelete)
             {
-                System.out.println("Fehler: " + eDir.getMessage());
+                client.append("Fehler: " + eDelete.getMessage());
             }
         }
+    }
 
-        if(o == createFileButton)
+    /**
+     * Funtion fuehrt die Aktion fuer den Rename Button aus
+     * */
+    private void renameButton()
+    {
+        JFrame eingabe = new JFrame();
+        String oldName = JOptionPane.showInputDialog(eingabe, "Was soll umbeannt werden?", "Rename", JOptionPane.PLAIN_MESSAGE);
+        String newName = JOptionPane.showInputDialog(eingabe, "Wie lautet die neue Bezeichnung?", "Rename", JOptionPane.PLAIN_MESSAGE);
+        try
         {
-            JFrame eingabe = new JFrame();
-            String pfad = JOptionPane.showInputDialog(eingabe, "Welche Datei soll erstellt werden?", "Create File", JOptionPane.PLAIN_MESSAGE);
-            try
+            if( this.vServer.rename(oldName, newName) )
             {
-                if( this.vServer.createFile(pfad) )
-                {
-                    client.append("Datei wurde erstellt!\n");
-                }
-                else
-                {
-                    client.append("Datei konnte NICHT erstellt werden!\n");
-                    JOptionPane.showMessageDialog(null, "Datei konnte NICHT erstellt werden!n", "Create File", JOptionPane.ERROR_MESSAGE);
-                }
+                System.out.println("Ordner oder Datei wurde umbenannt!");
+                client.append("Ordner oder Datei wurde umbenannt!\n");
+                JOptionPane.showMessageDialog(null, "Ordner oder Datei wurde umbenannt!", "Rename", JOptionPane.INFORMATION_MESSAGE);
             }
-            catch(IOException eFile)
+            else
             {
-                System.out.println("Fehler: " + eFile.getMessage());
+                JOptionPane.showMessageDialog(null, "Ordner oder Datei konnte NICHT umbenannt werden!", "Rename", JOptionPane.ERROR_MESSAGE);
+                System.out.println("Ordner oder Datei konnte NICHT umbenannt werden!");
             }
         }
-
-        if(o == browseButton)
+        catch(IOException eRename)
         {
-            JFrame eingabe = new JFrame();
-            String pfad = JOptionPane.showInputDialog(eingabe, "Welcher Ordner soll untersucht werden?", "Browse", JOptionPane.PLAIN_MESSAGE);
-
-            String erg = null;
-            String [] dirListe = new String[0];
-            String [] fileListe = new String[0];
-
-            try
-            {
-                erg = this.vServer.browseDirs(pfad);
-                dirListe = erg.split("[;]");
-
-                erg = this.vServer.browseFiles(pfad);
-                fileListe = erg.split("[;]");
-            }
-            catch(IOException e11)
-            {
-                System.out.println("Fehler: " + e11.getMessage());
-            }
-
-            /**Nur lokal?*/
-            //                File wurzel = this.vServer.getFile(pfad);
-//                client.append(String.valueOf(wurzel));
-            // Create a TreeModel object to represent our tree of files
-            //FileTreeModel model2 = this.vServer.getFile(pfad);
-            //File wurzel = new File("\\");
-            //FileTreeModel model2 = new FileTreeModel(wurzel);
-            //FileTreeModel model2 = this.vServer.getFileTreeModel(wurzel);
-            //FileTreeModel model2 = this.vServer.getFileTreeModel();
-            //tree1.setModel(model2);
-
-            /**Baum wird aus den Inhalten dirListe und fileListe zusammengebaut*/
-            DefaultTreeModel model = (DefaultTreeModel)tree1.getModel();
-            tree1.setModel(model);
-            DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
-            root.removeAllChildren();
-            root.setUserObject(pfad + " " + new SimpleDateFormat("HH:mm:ss").format(new Date()));
-
-            for (int i = 0; i < dirListe.length; i++)
-            {
-                if(!dirListe[i].equals(""))
-                {
-                    root.add(new DefaultMutableTreeNode(dirListe[i]));
-                }
-            }
-
-            for (int i = 0; i < fileListe.length; i++)
-            {
-                if(!fileListe[i].equals(""))
-                {
-                    root.add(new DefaultMutableTreeNode(fileListe[i]));
-                }
-            }
-            model.reload(root);
-//            System.out.print(model.getChildCount(root));
-//            DefaultMutableTreeNode newRoot = (DefaultMutableTreeNode) model.getChild(root, 25);
-//            newRoot.add(new DefaultMutableTreeNode("test"));
-            
+            System.out.println("Fehler: " + eRename.getMessage());
         }
+    }
 
-        if(o == seachButton)
+    /**
+     * Funktion fuehrt die Aktion beim WechselButton aus
+     * */
+    private void wechselButton()
+    {
+        int serverPort;
+        Object[] selectionValues = { "10.9.41.43", "10.9.40.171", "10.9.40.174" };
+        String initialSelection = "10.9.41.43";
+        Object selection = JOptionPane.showInputDialog(null, "Zu welchen Server wechseln?",
+                "Server Wechsel", JOptionPane.QUESTION_MESSAGE, null, selectionValues, initialSelection);
+
+        try
         {
-            String erg;
-            String [] fileListe2;
-            //Erste Eingabe: Was suchen Sie?
-            //Text im Label ist die Bedingung
-            if (ersteEingabe == true)
-            {
-                searchPfad = searchFeld.getText();
-                searchLabel.setText("Wo suchen?");
-                searchFeld.setText("");
-                ersteEingabe = false;
-            }
-            else if (ersteEingabe == false)
-            {
-                String startDir = searchFeld.getText();
-                try
-                {
-                    erg = this.vServer.search(searchPfad, startDir);
-                    fileListe2 = erg.split("[;]");
-                    client.append("Found-Files: \n");
-                    client.append("---------------------------------------------------------------\n");
-                    for (int i = 0; i < fileListe2.length; i++)
-                    {
-                        client.append(fileListe2[i] + "\n");
-                    }
-                } catch (IOException eSeach) {
-                    System.out.println("Fehler: " + eSeach.getMessage());
-                }
-                searchLabel.setText("Was suchen?");
-                searchFeld.setText("");
-                ersteEingabe = true;
-            }
-        }
-
-        if(o == deleteButton)
+            serverPort = Integer.parseInt(portTextFeld.getText().trim());
+        } catch(Exception er)
         {
-            String wahl = clientTextArea.getText().trim();
-            String [] parts = wahl.split(":");
-            String loeschPfad = parts[parts.length - 1].trim();
-
-            int jaNein = JOptionPane.showConfirmDialog(null, "Soll  " +loeschPfad+ "  wirklich geloescht werden?", "Delete", JOptionPane.YES_NO_OPTION);
-
-            if(jaNein == JOptionPane.YES_OPTION)
-            {
-                try
-                {
-                    if( this.vServer.delete(loeschPfad) )
-                    {
-                        JOptionPane.showMessageDialog(null, loeschPfad+ "  wurde geloescht!", "Delete", JOptionPane.INFORMATION_MESSAGE);
-                    }
-                    else
-                    {
-                        JOptionPane.showMessageDialog(null, "Ordner oder Datei konnte NICHT geloescht werden!", "Delete", JOptionPane.ERROR_MESSAGE);
-                    }
-                }
-                catch(IOException eDelete)
-                {
-                    client.append("Fehler: " + eDelete.getMessage());
-                }
-            }
+            JOptionPane.showMessageDialog(null, "Fehler bei der Port-Eingabe", "Port-Nr", JOptionPane.ERROR_MESSAGE);
+            return;
         }
-
-        if(o == renameButton)
+        try
         {
-            JFrame eingabe = new JFrame();
-            String oldName = JOptionPane.showInputDialog(eingabe, "Was soll umbeannt werden?", "Rename", JOptionPane.PLAIN_MESSAGE);
-            String newName = JOptionPane.showInputDialog(eingabe, "Wie lautet die neue Bezeichnung?", "Rename", JOptionPane.PLAIN_MESSAGE);
-            try
-            {
-                if( this.vServer.rename(oldName, newName) )
-                {
-                    System.out.println("Ordner oder Datei wurde umbenannt!");
-                    client.append("Ordner oder Datei wurde umbenannt!\n");
-                    JOptionPane.showMessageDialog(null, "Ordner oder Datei wurde umbenannt!", "Rename", JOptionPane.INFORMATION_MESSAGE);
-                }
-                else
-                {
-                    JOptionPane.showMessageDialog(null, "Ordner oder Datei konnte NICHT umbenannt werden!", "Rename", JOptionPane.ERROR_MESSAGE);
-                    System.out.println("Ordner oder Datei konnte NICHT umbenannt werden!");
-                }
-            }
-            catch(IOException eRename)
-            {
-                System.out.println("Fehler: " + eRename.getMessage());
-            }
+            Registry registry = LocateRegistry.getRegistry(String.valueOf(selection), serverPort+1);
+            this.vServer = (VerwalterInterface) registry.lookup("VerwalterServer");
+            client.append("Server gewechselt...\n");
+            client.append((String) selection);
         }
-
-        if(o == sWechselButton)
+        catch(Exception eOS)
         {
-            int serverPort;
-            Object[] selectionValues = { "10.9.41.43", "10.9.40.171", "10.9.40.174" };
-            String initialSelection = "10.9.41.43";
-            Object selection = JOptionPane.showInputDialog(null, "Zu welchen Server wechseln?",
-                    "Server Wechsel", JOptionPane.QUESTION_MESSAGE, null, selectionValues, initialSelection);
-
-            try
-            {
-                serverPort = Integer.parseInt(portTextFeld.getText().trim());
-            } catch(Exception er)
-            {
-                JOptionPane.showMessageDialog(null, "Fehler bei der Port-Eingabe", "Port-Nr", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            try
-            {
-                Registry registry = LocateRegistry.getRegistry(String.valueOf(selection), serverPort+1);
-                this.vServer = (VerwalterInterface) registry.lookup("VerwalterServer");
-                client.append("Server gewechselt...\n");
-                client.append((String) selection);
-            }
-            catch(Exception eOS)
-            {
-                System.out.println("Fehler_serverWechsel: " + eOS.getMessage());
-            }
+            System.out.println("Fehler_serverWechsel: " + eOS.getMessage());
         }
+    }
 
+    /**
+     * deaktiviert die Steuer-Elemente
+     * */
+    private void deaktiviereButtons()
+    {
+        browseButton.setEnabled(false);
+        seachButton.setEnabled(false);
+        createDirButton.setEnabled(false);
+        createFileButton.setEnabled(false);
+        deleteButton.setEnabled(false);
+        renameButton.setEnabled(false);
+        OSInfoButton.setEnabled(false);
+        searchFeld.setEnabled(false);
+        sWechselButton.setEnabled(false);
+        tree1.setEnabled(false);
+    }
+
+    /**
+     * aktiviert alle Steuer-Elemente
+     * */
+    private void aktiviereButtons()
+    {
+        //Buttons aktivieren
+        browseButton.setEnabled(true);
+        seachButton.setEnabled(true);
+        createDirButton.setEnabled(true);
+        createFileButton.setEnabled(true);
+        deleteButton.setEnabled(true);
+        renameButton.setEnabled(true);
+        OSInfoButton.setEnabled(true);
+        searchFeld.setEnabled(true);
+        sWechselButton.setEnabled(true);
+        tree1.setEnabled(true);
+    }
+
+    /**
+     *  fuegt die Listener zu den Steuer-Elementen
+     * */
+    private void addListener()
+    {
+        startClientButton.addActionListener(this);
+        browseButton.addActionListener(this);
+        seachButton.addActionListener(this);
+        createDirButton.addActionListener(this);
+        createFileButton.addActionListener(this);
+        deleteButton.addActionListener(this);
+        renameButton.addActionListener(this);
+        OSInfoButton.addActionListener(this);
+        sWechselButton.addActionListener(this);
+        /** listener fuer den tree*/
+        tree1.addTreeSelectionListener(new GUITreeSelectionListener(vServer));
     }
 
     public static void main(String[] args) throws IOException
@@ -559,5 +493,62 @@ public class ClientGUI extends JFrame implements ActionListener//, TreeModel, Cl
         //Propertys aus Datei laden
         System.setProperty("java.security.policy", "java.policy");
         client = new ClientGUI();
+    }
+}
+
+/**
+ * Klasse dient fuer den Listener der GUI-Klasse
+ * */
+class GUITreeSelectionListener implements TreeSelectionListener
+{
+    private VerwalterInterface vServer;
+    /**
+     * Konstruktor der Tree-Klasse
+     * @param vServer Verwalter-Server zum abfragen des Inhaltes enes Ordners
+     * */
+    public GUITreeSelectionListener(VerwalterInterface vServer)
+    {
+        this.vServer = vServer;
+    }
+
+    /**
+     * Event tritt auf wen auf den Tree geklickt wurde
+     * @param ae ausgeloester Event-Handler
+     * */
+    @Override public void valueChanged(TreeSelectionEvent ae)
+    {
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) ae.getPath().getLastPathComponent();
+        DefaultMutableTreeNode dirNode;
+        String pfad = node.toString();
+        node.removeAllChildren();
+        try
+        {
+            String dirs = vServer.browseDirs(pfad);
+            String[] dirList = dirs.split("[;]");
+            String files = vServer.browseFiles(pfad);
+            String[] fileList = files.split("[;]");
+            //verarbeiten der gefunden Ordner
+            for (int i = 0; i < dirList.length; i++)
+            {
+                if (!dirList[i].equals(""))
+                {
+                    dirNode = new DefaultMutableTreeNode(dirList[i]);
+                    node.add(dirNode);
+                    //Dummy node anhängen um Ordnerbild zu erzeuegen
+                    dirNode.add(new DefaultMutableTreeNode(""));
+                }
+            }
+            //verarbeite der gefundenen dateien
+            for (int j = 0; j < fileList.length; j++)
+            {
+                if (!fileList[j].equals(""))
+                {
+                    node.add(new DefaultMutableTreeNode(fileList[j]));
+                }
+            }
+        } catch (RemoteException re)
+        {
+            re.printStackTrace();
+        }
     }
 }
