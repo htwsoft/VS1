@@ -43,10 +43,10 @@
         <properties>
           <borderPainted value="false"/>
           <contentAreaFilled value="false"/>
-          <icon value="info.png"/>
-          <inheritsPopupMenu value="true"/>
+          <icon value="Icons/info.png"/>
+          <inheritsPopupMenu value="false"/>
           <label value=""/>
-          <rolloverIcon value="infoHell.png"/>
+          <rolloverIcon value="Icons/infoHell.png"/>
           <text value=""/>
           <toolTipText value="OS-Info"/>
         </properties>
@@ -93,9 +93,9 @@
         <properties>
           <borderPainted value="false"/>
           <contentAreaFilled value="false"/>
-          <icon value="rename.png"/>
+          <icon value="Icons/rename.png"/>
           <opaque value="false"/>
-          <rolloverIcon value="renameHell.png"/>
+          <rolloverIcon value="Icons/renameHell.png"/>
           <text value=""/>
           <toolTipText value="Rename"/>
         </properties>
@@ -110,8 +110,8 @@
         <properties>
           <borderPainted value="false"/>
           <contentAreaFilled value="false"/>
-          <icon value="garbage.png"/>
-          <rolloverIcon value="garbageHell.png"/>
+          <icon value="Icons/garbage.png"/>
+          <rolloverIcon value="Icons/garbageHell.png"/>
           <text value=""/>
           <toolTipText value="Delete"/>
         </properties>
@@ -128,9 +128,9 @@
           <borderPainted value="false"/>
           <contentAreaFilled value="false"/>
           <enabled value="true"/>
-          <icon value="search.png"/>
+          <icon value="Icons/search.png"/>
           <opaque value="false"/>
-          <rolloverIcon value="searchHell.png"/>
+          <rolloverIcon value="Icons/searchHell.png"/>
           <text value=""/>
           <toolTipText value="Search"/>
         </properties>
@@ -180,9 +180,9 @@
           <borderPainted value="false"/>
           <contentAreaFilled value="false"/>
           <horizontalTextPosition value="2"/>
-          <icon value="start.png"/>
+          <icon value="Icons/start.png"/>
           <iconTextGap value="1"/>
-          <rolloverIcon value="startHell.png"/>
+          <rolloverIcon value="Icons/startHell.png"/>
           <text value="Start"/>
           <toolTipText value="Start Client"/>
         </properties>
@@ -217,8 +217,8 @@
         <properties>
           <borderPainted value="false"/>
           <contentAreaFilled value="false"/>
-          <icon value="browse.png"/>
-          <rolloverIcon value="browseHell.png"/>
+          <icon value="Icons/browse.png"/>
+          <rolloverIcon value="Icons/browseHell.png"/>
           <text value=""/>
           <toolTipText value="Browse"/>
         </properties>
@@ -233,8 +233,8 @@
         <properties>
           <borderPainted value="false"/>
           <contentAreaFilled value="false"/>
-          <icon value="folder.png"/>
-          <rolloverIcon value="folderHell.png"/>
+          <icon value="Icons/folder.png"/>
+          <rolloverIcon value="Icons/folderHell.png"/>
           <text value=""/>
           <toolTipText value="Create Dir"/>
         </properties>
@@ -249,8 +249,8 @@
         <properties>
           <borderPainted value="false"/>
           <contentAreaFilled value="false"/>
-          <icon value="file.png"/>
-          <rolloverIcon value="fileHell.png"/>
+          <icon value="Icons/file.png"/>
+          <rolloverIcon value="Icons/fileHell.png"/>
           <text value=""/>
           <toolTipText value="Create File"/>
         </properties>
@@ -266,9 +266,9 @@
           <actionCommand value=""/>
           <borderPainted value="false"/>
           <contentAreaFilled value="false"/>
-          <icon value="change.png"/>
+          <icon value="Icons/change.png"/>
           <rolloverEnabled value="true"/>
-          <rolloverIcon value="changeHell.png"/>
+          <rolloverIcon value="Icons/changeHell.png"/>
           <text value=""/>
           <toolTipText value="Server Wechsel"/>
         </properties>
@@ -284,7 +284,7 @@
           <focusable value="false"/>
           <horizontalAlignment value="2"/>
           <horizontalTextPosition value="0"/>
-          <icon value="banane.png"/>
+          <icon value="Icons/banane.png"/>
           <iconTextGap value="0"/>
           <inheritsPopupMenu value="false"/>
           <opaque value="false"/>

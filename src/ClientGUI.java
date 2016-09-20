@@ -3,6 +3,7 @@ import javax.swing.event.EventListenerList;
 import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.plaf.basic.BasicTreeUI;
 import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -86,6 +87,67 @@ public class ClientGUI extends JFrame implements ActionListener
 
         frame.pack();
         frame.setLocation(50, 50);
+
+
+//        /**Die Handles unsichtbar machen, bringt leider nicht viel da immernoch anklickbar*/
+//        tree1.setUI(new BasicTreeUI()
+//        {
+//            @Override
+//            protected boolean shouldPaintExpandControl(final TreePath path, final int row, final boolean isExpanded, final boolean hasBeenExpanded, final boolean isLeaf)
+//            {
+//                boolean shouldDisplayExpandControl = false;
+//                return shouldDisplayExpandControl;
+//            }
+//        });
+
+
+        /** listener fuer den tree*/
+        tree1.addTreeSelectionListener(new TreeSelectionListener()
+        {
+            @Override public void valueChanged(TreeSelectionEvent ae)
+            {
+                //tree1.setToggleClickCount(0);
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) ae.getPath().getLastPathComponent();
+                //event verlassen wenn keine Node ausgewaehlt wurde
+                if (node == null)
+                    return;
+                DefaultMutableTreeNode dirNode;
+                String pfad = node.toString();
+                client.append("You selected: " + pfad + "\n");
+                node.removeAllChildren();
+                try
+                {
+                    String dirs = vServer.browseDirs(pfad);
+                    String[] dirList = dirs.split("[;]");
+                    String files = vServer.browseFiles(pfad);
+                    String[] fileList = files.split("[;]");
+                    //verarbeiten der gefunden Ordner
+                    for (int i = 0; i < dirList.length; i++)
+                    {
+                        if (!dirList[i].equals(""))
+                        {
+                            dirNode = new DefaultMutableTreeNode(dirList[i]);
+
+                            node.add(dirNode);
+                            //Dummy node anhängen um Ordnerbild zu erzeuegen
+                            dirNode.add(new DefaultMutableTreeNode(""));
+                        }
+                    }
+                    //verarbeite der gefundenen dateien
+                    for (int j = 0; j < fileList.length; j++)
+                    {
+                        if (!fileList[j].equals(""))
+                        {
+                            node.add(new DefaultMutableTreeNode(fileList[j]));
+                        }
+                    }
+                } catch (RemoteException re)
+                {
+                    re.printStackTrace();
+                }
+            }
+        });
+
     }
 
     void append(String text)
@@ -185,7 +247,6 @@ public class ClientGUI extends JFrame implements ActionListener
         }
         catch(Exception e2)
         {
-            System.out.println( "Fehler_startButton: " + e2.toString() );
             client.append( "Fehler: " + e2.toString() );
         }
     }
@@ -202,7 +263,7 @@ public class ClientGUI extends JFrame implements ActionListener
         }
         catch(Exception eOS)
         {
-            System.out.println("Fehler: " + eOS.getMessage());
+            client.append("Fehler: " + eOS.getMessage()+"\n");
         }
     }
 
@@ -227,7 +288,7 @@ public class ClientGUI extends JFrame implements ActionListener
         }
         catch(IOException eDir)
         {
-            System.out.println("Fehler: " + eDir.getMessage());
+            client.append("Fehler: " + eDir.getMessage()+"\n");
         }
     }
 
@@ -252,7 +313,7 @@ public class ClientGUI extends JFrame implements ActionListener
         }
         catch(IOException eFile)
         {
-            System.out.println("Fehler: " + eFile.getMessage());
+            client.append("Fehler: " + eFile.getMessage() + "\n");
         }
     }
 
@@ -286,7 +347,7 @@ public class ClientGUI extends JFrame implements ActionListener
                     client.append(fileListe2[i] + "\n");
                 }
             } catch (IOException eSeach) {
-                System.out.println("Fehler: " + eSeach.getMessage());
+                client.append("Fehler: " + eSeach.getMessage() + "\n");
             }
             searchLabel.setText("Was suchen?");
             searchFeld.setText("");
@@ -316,7 +377,7 @@ public class ClientGUI extends JFrame implements ActionListener
         }
         catch(IOException e11)
         {
-            System.out.println("Fehler: " + e11.getMessage());
+            client.append("Fehler: " + e11.getMessage() + "\n");
         }
 
         /**Baum wird aus den Inhalten dirListe und fileListe zusammengebaut*/
@@ -326,11 +387,19 @@ public class ClientGUI extends JFrame implements ActionListener
         root.removeAllChildren();
         root.setUserObject(pfad + " " + new SimpleDateFormat("HH:mm:ss").format(new Date()));
 
+        if (root == null)
+            return;
+        DefaultMutableTreeNode dirNode;
+        root.removeAllChildren();
         for (int i = 0; i < dirListe.length; i++)
         {
             if(!dirListe[i].equals(""))
             {
-                root.add(new DefaultMutableTreeNode(dirListe[i]));
+                //root.add(new DefaultMutableTreeNode(dirListe[i]));
+                dirNode = new DefaultMutableTreeNode(dirListe[i]);
+                root.add(dirNode);
+                //Dummy node anhängen um Ordnerbild zu erzeuegen
+                dirNode.add(new DefaultMutableTreeNode(""));
             }
         }
 
@@ -387,19 +456,16 @@ public class ClientGUI extends JFrame implements ActionListener
         {
             if( this.vServer.rename(oldName, newName) )
             {
-                System.out.println("Ordner oder Datei wurde umbenannt!");
-                client.append("Ordner oder Datei wurde umbenannt!\n");
                 JOptionPane.showMessageDialog(null, "Ordner oder Datei wurde umbenannt!", "Rename", JOptionPane.INFORMATION_MESSAGE);
             }
             else
             {
                 JOptionPane.showMessageDialog(null, "Ordner oder Datei konnte NICHT umbenannt werden!", "Rename", JOptionPane.ERROR_MESSAGE);
-                System.out.println("Ordner oder Datei konnte NICHT umbenannt werden!");
             }
         }
         catch(IOException eRename)
         {
-            System.out.println("Fehler: " + eRename.getMessage());
+            client.append("Fehler: " + eRename.getMessage() + "\n");
         }
     }
 
@@ -485,7 +551,7 @@ public class ClientGUI extends JFrame implements ActionListener
         OSInfoButton.addActionListener(this);
         sWechselButton.addActionListener(this);
         /** listener fuer den tree*/
-        tree1.addTreeSelectionListener(new GUITreeSelectionListener(vServer));
+        //tree1.addTreeSelectionListener(new GUITreeSelectionListener(vServer));
     }
 
     public static void main(String[] args) throws IOException
@@ -493,64 +559,5 @@ public class ClientGUI extends JFrame implements ActionListener
         //Propertys aus Datei laden
         System.setProperty("java.security.policy", "java.policy");
         client = new ClientGUI();
-    }
-}
-
-/**
- * Klasse dient fuer den Listener der GUI-Klasse
- * */
-class GUITreeSelectionListener implements TreeSelectionListener
-{
-    private VerwalterInterface vServer;
-    /**
-     * Konstruktor der Tree-Klasse
-     * @param vServer Verwalter-Server zum abfragen des Inhaltes enes Ordners
-     * */
-    public GUITreeSelectionListener(VerwalterInterface vServer)
-    {
-        this.vServer = vServer;
-    }
-
-    /**
-     * Event tritt auf wen auf den Tree geklickt wurde
-     * @param ae ausgeloester Event-Handler
-     * */
-    @Override public void valueChanged(TreeSelectionEvent ae)
-    {
-        DefaultMutableTreeNode node = (DefaultMutableTreeNode) ae.getPath().getLastPathComponent();
-        //event verlassen wenn keine Node ausgewaehlt wurde
-        if(node == null) return;
-        DefaultMutableTreeNode dirNode;
-        String pfad = node.toString();
-        node.removeAllChildren();
-        try
-        {
-            String dirs = vServer.browseDirs(pfad);
-            String[] dirList = dirs.split("[;]");
-            String files = vServer.browseFiles(pfad);
-            String[] fileList = files.split("[;]");
-            //verarbeiten der gefunden Ordner
-            for (int i = 0; i < dirList.length; i++)
-            {
-                if (!dirList[i].equals(""))
-                {
-                    dirNode = new DefaultMutableTreeNode(dirList[i]);
-                    node.add(dirNode);
-                    //Dummy node anhängen um Ordnerbild zu erzeuegen
-                    dirNode.add(new DefaultMutableTreeNode(""));
-                }
-            }
-            //verarbeite der gefundenen dateien
-            for (int j = 0; j < fileList.length; j++)
-            {
-                if (!fileList[j].equals(""))
-                {
-                    node.add(new DefaultMutableTreeNode(fileList[j]));
-                }
-            }
-        } catch (RemoteException re)
-        {
-            re.printStackTrace();
-        }
     }
 }
