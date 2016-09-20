@@ -1,3 +1,6 @@
+import rmifs.*;
+import rmifs.FileSystem;
+
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.TreeModelListener;
@@ -57,6 +60,22 @@ public class ClientGUI extends JFrame implements ActionListener
      */
     public ClientGUI() throws IOException
     {
+        //Betriebssystem ermitteln fuer richtige Darstellung der Nodes im Tree
+        boolean isWindows;
+        String rootDir;
+        isWindows = testeAufWindows();
+        //Startordner fuer richtiges OS Setzen
+        if(!isWindows)
+        {
+            //Rootdir fuer alle Linux/Unix-Systeme
+            rootDir="/";
+        }
+        else
+        {
+            //Root-Dir fuer windows-Systeme
+            rootDir="C:\\";
+        }
+
         frame.setContentPane(clientPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -64,10 +83,13 @@ public class ClientGUI extends JFrame implements ActionListener
         DefaultTreeModel model = (DefaultTreeModel)tree1.getModel();
         DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
         root.removeAllChildren();
-        root.setUserObject(new SimpleDateFormat("HH:mm:ss").format(new Date()));
+        root.setUserObject(new GUITreeFile(rootDir,true, true, isWindows));
         model.nodeChanged(root);
 
         model.reload(root);
+
+        /** listener fuer den tree*/
+        tree1.addTreeSelectionListener(new GUITreeSelectionListener(vServer, isWindows));
 
         frame.pack();
         frame.setVisible(true);
@@ -484,8 +506,27 @@ public class ClientGUI extends JFrame implements ActionListener
         renameButton.addActionListener(this);
         OSInfoButton.addActionListener(this);
         sWechselButton.addActionListener(this);
-        /** listener fuer den tree*/
-        tree1.addTreeSelectionListener(new GUITreeSelectionListener(vServer));
+    }
+
+    /**
+     * Funktion prueft ob es sich um ein Windows OS handelt
+     * @return true wenn es ein Win OS ist
+     */
+    private boolean testeAufWindows()
+    {
+        String osName;
+        int position = 0;
+        try
+        {
+            osName = System.getProperty("os.name");
+            position = osName.indexOf("Windows");
+            return (position >= 0);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        return (position >= 0);
     }
 
     public static void main(String[] args) throws IOException
@@ -496,19 +537,25 @@ public class ClientGUI extends JFrame implements ActionListener
     }
 }
 
+
 /**
  * Klasse dient fuer den Listener der GUI-Klasse
  * */
 class GUITreeSelectionListener implements TreeSelectionListener
 {
     private VerwalterInterface vServer;
+    private boolean isWindows;
+
     /**
      * Konstruktor der Tree-Klasse
      * @param vServer Verwalter-Server zum abfragen des Inhaltes enes Ordners
+     * @param isWindows ist true wenn es ein Windows OS ist
      * */
-    public GUITreeSelectionListener(VerwalterInterface vServer)
+    public GUITreeSelectionListener(VerwalterInterface vServer, boolean isWindows)
     {
+
         this.vServer = vServer;
+        this.isWindows = isWindows;
     }
 
     /**
@@ -517,27 +564,56 @@ class GUITreeSelectionListener implements TreeSelectionListener
      * */
     @Override public void valueChanged(TreeSelectionEvent ae)
     {
-        DefaultMutableTreeNode node = (DefaultMutableTreeNode) ae.getPath().getLastPathComponent();
-        //event verlassen wenn keine Node ausgewaehlt wurde
-        if(node == null) return;
-        DefaultMutableTreeNode dirNode;
-        String pfad = node.toString();
-        node.removeAllChildren();
+        //ausgewählte Node ermitteln
+        String pfad = "";
+        //ausgewaehlte Node ermitteln
+        DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) ae.getPath().getLastPathComponent();;
+        //wenn keine Node ausgewählt wurde event verlassen
+        if(selectedNode == null) return;
+        //Node-Infos in ein GUITreeFile-Objekt umwandeln
+        Object nodeInfo = selectedNode.getUserObject();
+        GUITreeFile tnf = (GUITreeFile)nodeInfo;
+        //ermitteln ob es das Root directorie ist um
+        //es richtig im Tree anzuzeigen
+        if( tnf.getIsRootDir() )
+        {
+            pfad = tnf.toString();
+        }
+        else
+        {
+            pfad = tnf.getPathName() + tnf.getFileName();
+        }
+        //Prüfen ob es sich um einen Ordner oder eine Datei handelt
+        //Dateie ignoriere da nichts angehaengt wird
+        if(tnf.getIsDir())
+        {
+            //ordner durchsuchen und inhalt anhaengen
+            selectedNode.removeAllChildren();
+            browseDir(pfad, selectedNode);
+        }
+    }
+
+    /**
+     * Durchsucht den Ordner nach seinem Inhalt und haengt diese dann an
+     * @dir Ordner der durchsucht werden soll
+     * @node node TreeNode an der die neuen Ordner und Dateien agehaengt werden sollen
+     * */
+    private void browseDir(String dir, DefaultMutableTreeNode node)
+    {
         try
         {
-            String dirs = vServer.browseDirs(pfad);
+            String dirs = vServer.browseDirs(dir);
             String[] dirList = dirs.split("[;]");
-            String files = vServer.browseFiles(pfad);
+            String files = vServer.browseFiles(dir);
             String[] fileList = files.split("[;]");
             //verarbeiten der gefunden Ordner
             for (int i = 0; i < dirList.length; i++)
             {
                 if (!dirList[i].equals(""))
                 {
-                    dirNode = new DefaultMutableTreeNode(dirList[i]);
-                    node.add(dirNode);
-                    //Dummy node anhängen um Ordnerbild zu erzeuegen
-                    dirNode.add(new DefaultMutableTreeNode(""));
+                    DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(new GUITreeFile(dirList[i], true, false, this.isWindows));
+                    node.add(newNode);
+                    newNode.add(new DefaultMutableTreeNode());
                 }
             }
             //verarbeite der gefundenen dateien
