@@ -12,7 +12,7 @@ import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-interface VerwalterInterface extends Remote{
+public interface VerwalterInterface extends Remote{
     public String getServerList() throws RemoteException;
     public String search(String file, String startDir) throws RemoteException;
     public String browseDirs(String dir) throws RemoteException;
