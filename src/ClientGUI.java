@@ -79,12 +79,8 @@ public class ClientGUI extends JFrame implements ActionListener
 
         /** JTree */
         DefaultTreeModel model = (DefaultTreeModel)tree1.getModel();
-        DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
-        root.removeAllChildren();
-        root.setUserObject(new GUITreeFile(rootDir,true, true, isWindows));
-        model.nodeChanged(root);
-
-        model.reload(root);
+        DefaultMutableTreeNode root = new DefaultMutableTreeNode(new GUITreeFile(rootDir,true, true, isWindows));//(DefaultMutableTreeNode)model.getRoot();
+        model.setRoot(root);
 
         /** listener fuer den tree*/
         tree1.addTreeSelectionListener(new GUITreeSelectionListener(vServer, isWindows));
@@ -565,7 +561,7 @@ class GUITreeSelectionListener implements TreeSelectionListener
         //ausgewählte Node ermitteln
         String pfad = "";
         //ausgewaehlte Node ermitteln
-        DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) ae.getPath().getLastPathComponent();;
+        DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) ae.getPath().getLastPathComponent();
         //wenn keine Node ausgewählt wurde event verlassen
         if(selectedNode == null) return;
         //Node-Infos in ein GUITreeFile-Objekt umwandeln
