@@ -75,6 +75,10 @@ public class FileSystemClient
 		{
 			e.printStackTrace();
 		}
+		catch(NotBoundException nex)
+		{
+			nex.printStackTrace();
+		}
 	}
 
     public void search() throws RemoteException
@@ -111,6 +115,10 @@ public class FileSystemClient
         {
             System.out.println("Fehler: " + e.getMessage());
         }
+		catch(NotBoundException nex)
+		{
+			nex.printStackTrace();
+		}
     }
 
 	public void createDir()
@@ -121,7 +129,7 @@ public class FileSystemClient
 		pfad = eingabe.nextLine();
 		try
 		{
-			if( this.vserver.createDir(pfad) )
+			if( this.vserver.createDir(pfad).contains("true") )
 			{
 				System.out.println("Ordner wurde erstellt!");	
 			}
@@ -133,7 +141,11 @@ public class FileSystemClient
 		catch(IOException ioe)
 		{
 			ioe.printStackTrace();
-		}			
+		}
+		catch(NotBoundException nex)
+		{
+			nex.printStackTrace();
+		}
 	}
 	
 	public void createFile()
@@ -144,7 +156,7 @@ public class FileSystemClient
 		pfad = eingabe.nextLine();
 		try
 		{
-			if( this.vserver.createFile(pfad) )
+			if( this.vserver.createFile(pfad).contains("true") )
 			{
 				System.out.println("Datei wurde erstellt!");	
 			}
@@ -156,7 +168,11 @@ public class FileSystemClient
 		catch(IOException e)
 		{
 			System.out.println("Fehler: " + e.getMessage());	
-		}			
+		}
+		catch(NotBoundException nex)
+		{
+			nex.printStackTrace();
+		}
 	}
 	
 	public void delete()
@@ -167,7 +183,7 @@ public class FileSystemClient
 		pfad = eingabe.nextLine();
 		try
 		{
-			if( this.vserver.delete(pfad) )
+			if( this.vserver.delete(pfad).contains("true") )
 			{
 				System.out.println("Ordner oder Datei wurde geloescht!");
 			}
@@ -179,7 +195,11 @@ public class FileSystemClient
 		catch(IOException e)
 		{
 			System.out.println("Fehler: " + e.getMessage());	
-		}	
+		}
+		catch(NotBoundException nex)
+		{
+			nex.printStackTrace();
+		}
 	}
 	
 	public void rename()
@@ -193,7 +213,7 @@ public class FileSystemClient
 		newName = eingabe.nextLine();
 		try
 		{
-			if( this.vserver.rename(oldName, newName) )
+			if( this.vserver.rename(oldName, newName).contains("true") )
 			{
 				System.out.println("Ordner oder Datei wurde umbenannt!");
 			}
@@ -205,7 +225,12 @@ public class FileSystemClient
 		catch(IOException e)
 		{
 			System.out.println("Fehler: " + e.getMessage());	
-		}	
+		}
+		catch(NotBoundException nex)
+		{
+			nex.printStackTrace();
+		}
+
 	}	
 	
 	public void osname()

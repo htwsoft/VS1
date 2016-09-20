@@ -57,9 +57,11 @@ public class HtwSoftVerwalter {
      * LocateRegistry.createRegistry macht Objekte ansprechbar
      * registry.rebind zum binden an Registry
      **/
-    private static void start(){
+    private static void start()
+    {
 
-        try {
+        try
+        {
             VerwalterServer verwalterServer = new VerwalterServer(PORT_NR, HOST);
 
             VerwalterInterface stub = (VerwalterInterface) UnicastRemoteObject.exportObject(verwalterServer, VPORT_NR);
