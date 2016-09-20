@@ -32,7 +32,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     private String clientIP = "*unknown*";
     private String timeStamp = "not set yet"; //ToDo
     private enum FUNKTIONALITAET{BROWSE_FILES, BROWSE_DIRS, SEARCH, CREATE_DIR, CREATE_FILE, DELETE,
-        RENAME, GET_OS_NAME };
+        RENAME, GET_OS_NAME };//ToDo
 
     /**
      * Konstruktor, baut Verbindung zum lokalen FileServer auf
@@ -55,7 +55,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         fileServers = new HashMap<Integer, String>();
         fileServers.put(startPort, startIp);
         fileServers.put(6666, "192.168.0.26");
-        fileServers.put(8888, "192.168.0.26");
+        fileServers.put(8888, "192.168.0.24");
     }
 
     /**
