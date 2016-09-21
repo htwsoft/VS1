@@ -263,7 +263,7 @@ public class ClientGUI extends JFrame implements ActionListener
     private void startClientButton()
     {
         int serverPort;
-        String host = "192.168.0.103";
+        String host = "10.9.41.43";
         try
         {
             serverPort = Integer.parseInt(portTextFeld.getText().trim());
@@ -370,11 +370,40 @@ public class ClientGUI extends JFrame implements ActionListener
      * */
     private void createDirButton()
     {
+        /*
+        String wahl = clientTextArea.getText().trim();
+        String [] parts = wahl.split(":");
+        String filePfad = parts[parts.length - 1].trim();
+
+        JFrame eingabe = new JFrame();
+        String pfad = JOptionPane.showInputDialog(eingabe, "Welche Datei soll erstellt werden?", "Create File", JOptionPane.PLAIN_MESSAGE);
+        try
+        {
+            if( this.vServer.createFile( filePfad + "//" + pfad ))
+            {
+                client.append("Datei wurde erstellt!\n");
+            }
+            else
+            {
+                client.append("Datei konnte NICHT erstellt werden!\n");
+                JOptionPane.showMessageDialog(null, "Datei konnte NICHT erstellt werden!n", "Create File", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        catch(IOException eFile)
+        {
+            client.append("Fehler: " + eFile.getMessage() + "\n");
+        }
+        */
+
+        String wahl = clientTextArea.getText().trim();
+        String [] parts = wahl.split(":");
+        String dirPfad = parts[parts.length - 1].trim();
+
         JFrame eingabe = new JFrame();
         String pfad = JOptionPane.showInputDialog(eingabe, "Welcher Ordner soll erstellt werden?", "Create Directory", JOptionPane.PLAIN_MESSAGE);
         try
         {
-            if( this.vServer.createDir(pfad) )
+            if( this.vServer.createDir(dirPfad + "//" + pfad) )
             {
                 client.append("Ordner wurde erstellt!\n");
             }
@@ -395,11 +424,15 @@ public class ClientGUI extends JFrame implements ActionListener
      * */
     private void createFileButton()
     {
+        String wahl = clientTextArea.getText().trim();
+        String [] parts = wahl.split(":");
+        String filePfad = parts[parts.length - 1].trim();
+
         JFrame eingabe = new JFrame();
         String pfad = JOptionPane.showInputDialog(eingabe, "Welche Datei soll erstellt werden?", "Create File", JOptionPane.PLAIN_MESSAGE);
         try
         {
-            if( this.vServer.createFile(pfad) )
+            if( this.vServer.createFile( filePfad + "//" + pfad ))
             {
                 client.append("Datei wurde erstellt!\n");
             }
@@ -548,12 +581,16 @@ public class ClientGUI extends JFrame implements ActionListener
      * */
     private void renameButton()
     {
+        String wahl = clientTextArea.getText().trim();
+        String [] parts = wahl.split(":");
+        String renamePfad = parts[parts.length - 1].trim();
+
         JFrame eingabe = new JFrame();
-        String oldName = JOptionPane.showInputDialog(eingabe, "Was soll umbeannt werden?", "Rename", JOptionPane.PLAIN_MESSAGE);
+        //String oldName = JOptionPane.showInputDialog(eingabe, "Was soll umbeannt werden?", "Rename", JOptionPane.PLAIN_MESSAGE);
         String newName = JOptionPane.showInputDialog(eingabe, "Wie lautet die neue Bezeichnung?", "Rename", JOptionPane.PLAIN_MESSAGE);
         try
         {
-            if( this.vServer.rename(oldName, newName) )
+            if( this.vServer.rename(renamePfad, newName) )
             {
                 JOptionPane.showMessageDialog(null, "Ordner oder Datei wurde umbenannt!", "Rename", JOptionPane.INFORMATION_MESSAGE);
             }
