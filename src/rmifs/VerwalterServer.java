@@ -27,15 +27,24 @@ import java.util.Map;
 
 public class VerwalterServer implements VerwalterInterface, RMIClientSocketFactory {
 
+    public static final String[] FILE_SERVER_NAMES = new String[]{"Server1", "Server2", "Server3"};
+    private static final String[] FILE_SERVER_IP = new String[]{"192.168.0.26","192.168.0.26", "192.168.0.26"};
+    private static final HashMap<String, Integer> FILE_SERVER_MAP = new HashMap<>();
+    static
+    {
+        FILE_SERVER_MAP.put(FILE_SERVER_NAMES[0], 4711);
+        FILE_SERVER_MAP.put(FILE_SERVER_NAMES[1], 6666);
+        FILE_SERVER_MAP.put(FILE_SERVER_NAMES[2], 8888);
+    }
     private HashMap<Integer, String> fileServers;
     private FSInterface fsserver;
     private String clientIP = "*unknown*";
-    private String timeStamp = "not set yet"; //ToDo
+    private String timeStamp = "not set yet"; //ToDo String server
     private enum FUNKTIONALITAET{BROWSE_FILES, BROWSE_DIRS, SEARCH, CREATE_DIR, CREATE_FILE, DELETE,
-        RENAME, GET_OS_NAME };//ToDo
+        RENAME, GET_OS_NAME, GET_HOST_NAME, GET_HOST_ADDRESS}
 
     /**
-     * Konstruktor, baut Verbindung zum lokalen FileServer auf
+     * Konstruktor, baut Verbindung zum lokalen(bzw. remote) FileServer auf
      * @throws RemoteException
      * @throws NotBoundException
      */
@@ -52,10 +61,10 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
      */
     private void fileServersInit(int startPort, String startIp)
     {
-        fileServers = new HashMap<Integer, String>();
+        fileServers = new HashMap<>();
         fileServers.put(startPort, startIp);
         fileServers.put(6666, "192.168.0.26");
-        fileServers.put(8888, "192.168.0.24");
+        fileServers.put(8888, "192.168.0.26");
     }
 
     /**
@@ -92,61 +101,66 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     public String search(String file, String startDir) throws RemoteException, NotBoundException
     {
         log(" - Client [" + clientIP + "] request search");
-        return iterateFileSystems(4, startDir, file);
+        return iterateFileSystems(FUNKTIONALITAET.SEARCH, startDir, file);
     }
 
     public String browseFiles(String dir) throws RemoteException, NotBoundException
     {
         log(" - Client [" + clientIP + "] request browse");
-        return iterateFileSystems(2, dir, null);
+        return iterateFileSystems(FUNKTIONALITAET.BROWSE_FILES, dir, null);
     }
 
     public String browseDirs(String dir) throws RemoteException, NotBoundException
     {
         log(" - Client [" + clientIP + "] request browseDir");
-        return iterateFileSystems(3, dir, null);
+        return iterateFileSystems(FUNKTIONALITAET.BROWSE_DIRS, dir, null);
     }
 
-    public String delete(String file) throws RemoteException, NotBoundException
+    public boolean delete(String file, String server) throws RemoteException, NotBoundException
     {
         log(" - Client [" + clientIP + "] request delete");
-        return iterateFileSystems(7, null,  file);
+        connectServer(server);
+        return performOperation(FUNKTIONALITAET.DELETE, null, file).contains("true");
     }
 
-    public String createFile(String file) throws RemoteException, NotBoundException
+    public boolean createFile(String file, String server) throws RemoteException, NotBoundException
     {
         log(" - Client [" + clientIP + "] request createFile");
-        return iterateFileSystems(6, null, file);
+        connectServer(server);
+        return performOperation(FUNKTIONALITAET.CREATE_FILE, null, file).contains("true");
     }
 
-    public String createDir(String dir) throws RemoteException, NotBoundException
+    public boolean createDir(String dir, String server) throws RemoteException, NotBoundException
     {
         log(" - Client [" + clientIP + "] request createDir");
-        return iterateFileSystems(5, dir, null);
+        connectServer(server);
+        return performOperation(FUNKTIONALITAET.CREATE_DIR, dir, null).contains("true");
     }
 
-    public String rename(String oldName, String newName) throws RemoteException, NotBoundException
+    public boolean rename(String oldName, String newName, String server) throws RemoteException, NotBoundException
     {
         log(" - Client [" + clientIP + "] request rename");
-        return iterateFileSystems(8, oldName, newName);
+        connectServer(server);
+        return performOperation(FUNKTIONALITAET.RENAME, oldName, newName).contains("true");
     }
 
-    public String getOSName()throws RemoteException, NotBoundException
+    public String getOSName(String server)throws RemoteException, NotBoundException
     {
         log(" - Client [" + clientIP + "] request serverOSname");
-        return iterateFileSystems(9, null, null);
+        connectServer(server);
+        return performOperation(FUNKTIONALITAET.GET_OS_NAME, null, null);
     }
 
-    public String getHostName() throws RemoteException, NotBoundException
+    public String getHostName(String server) throws RemoteException, NotBoundException
     {
         log(" - Client [" + clientIP + "] request hostname");
-        return this.fsserver.getHostName();
+        return performOperation(FUNKTIONALITAET.GET_HOST_NAME, null, null);
     }
 
-    public String getHostAddress() throws RemoteException, NotBoundException
+    public String getHostAddress(String server) throws RemoteException, NotBoundException
     {
         log(" - Client [" + clientIP + "] request hostaddress");
-        return this.fsserver.getHostAddress();
+        return performOperation(FUNKTIONALITAET.GET_HOST_ADDRESS, null, null);
     }
 
     public String getClientAddress() throws RemoteException {
@@ -199,15 +213,16 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     /**
      * <br> Verbindet abwechselnd zu jedem FileServer und fordert die benoetigten Informationen an</br>
      * @param n gibt an welche Funktion der FileServer aufgerufen wird
-     * @param dir Parameter fuer dirName/startDirName/oldName, abhaengig von n
-     * @param file Parameter fuer fileName/newName, abhaengig von n
+     * @param dir Parameter fuer dirName/startDirName, abhaengig von n
+     * @param file Parameter fuer fileName, abhaengig von n
      * @return gibt den Ergebnis String fuer den Methoden Aufruf n zurueck(alle Informationen aller Server sind hier enthalten!)
      * @throws RemoteException
      * @throws NotBoundException
      */
-    private String iterateFileSystems(int n, String dir, String file)throws RemoteException, NotBoundException
+    private String iterateFileSystems(FUNKTIONALITAET n, String dir, String file)throws RemoteException, NotBoundException
     {
 
+        int i = 0;
         String ergebnis="";
         Set set = fileServers.entrySet();
         Iterator iterator = set.iterator();
@@ -219,26 +234,78 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         {
             Map.Entry mentry = (Map.Entry)iterator.next();
             Registry registry = LocateRegistry.getRegistry((String)mentry.getValue(), (Integer)mentry.getKey());
-            this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
+            fsserver = (FSInterface) registry.lookup("FileSystemServer");
             switch(n)
             {
-                case 2:
-                    ergebnis += this.fsserver.browseFiles(dir);break;
-                case 3:
-                    ergebnis += this.fsserver.browseDirs(dir);break;
-                case 4:
-                    ergebnis += this.fsserver.search(file, dir);break;
-                case 5:
-                    ergebnis += this.fsserver.createDir(dir);break;
-                case 6:
-                    ergebnis += this.fsserver.createFile(file);break;
-                case 7:
-                    ergebnis += this.fsserver.delete(file);break;
-                case 8:
-                    ergebnis += this.fsserver.rename(dir, file);break;
-                case 9:
-                    ergebnis += this.fsserver.getOSName()+" ";break;
+                case BROWSE_FILES:
+                    ergebnis += "\n"+FILE_SERVER_NAMES[i]+":\n"+fsserver.browseFiles(dir);break;
+                case BROWSE_DIRS:
+                    ergebnis += "\n"+FILE_SERVER_NAMES[i]+":\n"+fsserver.browseDirs(dir);break;
+                case SEARCH:
+                    ergebnis += "\n"+FILE_SERVER_NAMES[i]+":\n"+fsserver.search(file, dir);break;
             }
+            i++;
+        }
+        return ergebnis;
+    }
+
+    /**
+     * Verbindet den Verwalter zum geforderten FileServer, um anschließend dort eine Operation
+     * durchzufuehren
+     * @param server der Name des Servers auf dem die Operation durchgefuehrt werden soll
+     */
+    private void connectServer(String server) throws RemoteException, NotBoundException
+    {
+        if (System.getSecurityManager() == null)
+        {
+            System.setSecurityManager(new SecurityManager());
+        }
+        Registry registry;
+        Set set = FILE_SERVER_MAP.entrySet();
+        Iterator iterator = set.iterator();
+        Map.Entry mentry = (Map.Entry)iterator.next();
+        switch(server)
+        {
+            case "Server1":
+                registry = LocateRegistry.getRegistry(FILE_SERVER_IP[0],(Integer)mentry.getValue());
+                fsserver = (FSInterface) registry.lookup("FileSystemServer");break;
+            case "Server2":
+                iterator.next();
+                registry = LocateRegistry.getRegistry(FILE_SERVER_IP[1],(Integer)mentry.getValue());
+                fsserver = (FSInterface) registry.lookup("FileSystemServer");break;
+            case "Server3":
+                iterator.next();iterator.next();
+                registry = LocateRegistry.getRegistry(FILE_SERVER_IP[2],(Integer)mentry.getValue());
+                fsserver = (FSInterface) registry.lookup("FileSystemServer");break;
+        }
+    }
+
+    /**
+     * Fuehrt die angegebene Operation auf dem derzeit verbundenen FileServer durch
+     * @param n gibt an welche Funktion der FileServer aufgerufen wird
+     * @param dir Parameter fuer dirName/startDirName/oldName, abhaengig von n
+     * @param file Parameter fuer fileName/newName, abhaengig von n
+     * @return gibt den Ergebnis String fuer den Methoden Aufruf n zurueck
+     */
+    private String performOperation(FUNKTIONALITAET n, String dir, String file)throws RemoteException, NotBoundException
+    {
+        String ergebnis = "";
+        switch(n)
+        {
+            case CREATE_DIR:
+                    ergebnis += "\n"+":\n"+fsserver.createDir(dir);break;
+                case CREATE_FILE:
+                    ergebnis += "\n"+":\n"+fsserver.createFile(file);break;
+                case DELETE:
+                    ergebnis += "\n"+":\n"+fsserver.delete(file);break;
+                case RENAME:
+                    ergebnis += "\n"+":\n"+fsserver.rename(dir, file);break;
+                case GET_OS_NAME:
+                    ergebnis += "\n\t\t"+": "+fsserver.getOSName()+" ";break;
+                case GET_HOST_ADDRESS:
+                    ergebnis += "\n\t\t"+": "+fsserver.getHostAddress()+" ";break;
+                case GET_HOST_NAME:
+                    ergebnis += "\n\t\t"+": "+fsserver.getHostName()+" ";break;
         }
         return ergebnis;
     }

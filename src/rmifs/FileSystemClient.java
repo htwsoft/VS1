@@ -1,6 +1,8 @@
 package rmifs;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -15,6 +17,7 @@ import java.util.Scanner;
 
 public class FileSystemClient
 {
+	private static String aktuellerServer = "Server1";
 	private VerwalterInterface vserver;  //Attribute zum Zugriff auf Verwalter Server Funktionen
 	private String clientAddress = "not set!";
 	private String clientName = "not set!";
@@ -129,7 +132,7 @@ public class FileSystemClient
 		pfad = eingabe.nextLine();
 		try
 		{
-			if( this.vserver.createDir(pfad).contains("true") )
+			if( this.vserver.createDir(pfad, aktuellerServer))
 			{
 				System.out.println("Ordner wurde erstellt!");	
 			}
@@ -156,7 +159,7 @@ public class FileSystemClient
 		pfad = eingabe.nextLine();
 		try
 		{
-			if( this.vserver.createFile(pfad).contains("true") )
+			if( this.vserver.createFile(pfad, aktuellerServer ))
 			{
 				System.out.println("Datei wurde erstellt!");	
 			}
@@ -183,7 +186,7 @@ public class FileSystemClient
 		pfad = eingabe.nextLine();
 		try
 		{
-			if( this.vserver.delete(pfad).contains("true") )
+			if( this.vserver.delete(pfad, aktuellerServer ))
 			{
 				System.out.println("Ordner oder Datei wurde geloescht!");
 			}
@@ -213,7 +216,7 @@ public class FileSystemClient
 		newName = eingabe.nextLine();
 		try
 		{
-			if( this.vserver.rename(oldName, newName).contains("true") )
+			if( this.vserver.rename(oldName, newName, aktuellerServer ))
 			{
 				System.out.println("Ordner oder Datei wurde umbenannt!");
 			}
@@ -238,9 +241,9 @@ public class FileSystemClient
 		try
 		{
 			System.out.println("|-------------------------------------------------");
-			System.out.println("| Verwendetes OS:  " + this.vserver.getOSName());
-			System.out.println("| Name des Hosts:  " + this.vserver.getHostName());//ToDo
-			System.out.println("| IP des Hosts	:  " + this.vserver.getHostAddress());//ToDo
+			System.out.println("| Verwendetes OS:  " + this.vserver.getOSName(aktuellerServer));
+			System.out.println("| Name des Hosts:  " + this.vserver.getHostName(aktuellerServer));//ToDo
+			System.out.println("| IP des Hosts	:  " + this.vserver.getHostAddress(aktuellerServer));//ToDo
 			System.out.println("|-------------------------------------------------");
 		}
 		catch(Exception e)
@@ -309,6 +312,23 @@ public class FileSystemClient
 
 		return " ";  //sb.toString();
 
+	}
+
+	public void setServer(int server)
+	{
+		switch(server)
+		{
+			case 0: System.out.println("Vorgang abgebrochen");
+				break;
+			case 1: aktuellerServer = VerwalterServer.FILE_SERVER_NAMES[0];
+				break;
+			case 2: aktuellerServer = VerwalterServer.FILE_SERVER_NAMES[1];
+				break;
+			case 3: aktuellerServer = VerwalterServer.FILE_SERVER_NAMES[2];
+				break;
+			default:
+				System.out.println("Fehlerhafte Eingabe!");
+		}
 	}
 }
 

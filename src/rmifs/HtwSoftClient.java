@@ -14,8 +14,8 @@ import java.rmi.RemoteException;
  */
 public class HtwSoftClient {
 
-    private enum MENUE { CLOSE, LIST, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE, RENAME, OS_NAME, FALSE }
-
+    private enum MENUE { CLOSE, LIST, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE,
+                         RENAME, OS_NAME, SERVER_WAHL, FALSE }
     private final static String SERVER_HOST_IP = "192.168.0.26";
     private final static int VERWALTER_PORT_NR = 4712;
 
@@ -72,6 +72,7 @@ public class HtwSoftClient {
             case 6: menue_eingabe = MENUE.DELETE; break;
             case 7: menue_eingabe = MENUE.RENAME; break;
             case 8: menue_eingabe = MENUE.OS_NAME; break;
+            case 9: menue_eingabe = MENUE.SERVER_WAHL; break;
             default: menue_eingabe = MENUE.FALSE; break;
         }
         return menue_eingabe;
@@ -99,6 +100,7 @@ public class HtwSoftClient {
                         case DELETE: client.delete(); break;
                         case RENAME: client.rename(); break;
                         case OS_NAME: client.osname(); break;
+                        case SERVER_WAHL: client.setServer(serverWahl()); break;
                         default: System.out.println("Falsche Eingabe!"); break;
                     }
                 }
@@ -146,6 +148,31 @@ public class HtwSoftClient {
             }
         }
         System.out.println("");
+        return eingabe;
+    }
+
+    private static int serverWahl()
+    {
+        String server="";
+        InputStreamReader isr = new InputStreamReader(System.in);
+        BufferedReader br = new BufferedReader(isr);
+        int eingabe = -1;
+        System.out.println("Auf welchem Server wollen Sie arbeiten?");
+        while(eingabe < 0 || eingabe > 3)
+        { //Auswahlmenue zeigen bis eingabe richtig
+            try
+            {
+                System.out.println("---------------------------------------");
+                System.out.println("        Verfuegbare Server");
+                System.out.println("0: Cancel\n1: Server1\n2: Server2\n3: Server3");
+                System.out.println("---------------------------------------");
+                eingabe = Integer.parseInt(br.readLine());
+            }
+            catch(IOException ioe)
+            {
+                ioe.printStackTrace();
+            }
+        }
         return eingabe;
     }
 }//ENDE

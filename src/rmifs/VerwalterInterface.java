@@ -18,13 +18,13 @@ interface VerwalterInterface extends Remote{
     public String browseDirs(String dir) throws RemoteException, NotBoundException;
     public String browseFiles(String dir) throws RemoteException, NotBoundException;
     //public boolean search(String file, String startDir) throws RemoteException;
-    public String createFile(String file) throws RemoteException, NotBoundException;
-    public String createDir(String dir) throws RemoteException, NotBoundException;
-    public String delete(String file) throws RemoteException, NotBoundException;
-    public String rename(String oldName, String newName) throws RemoteException, NotBoundException;
-    public String getOSName()throws RemoteException, NotBoundException;
-    public String getHostName() throws RemoteException, NotBoundException;
-    public String getHostAddress() throws RemoteException, NotBoundException;
+    public boolean createFile(String file, String server) throws RemoteException, NotBoundException;
+    public boolean createDir(String dir, String server) throws RemoteException, NotBoundException;
+    public boolean delete(String file, String server) throws RemoteException, NotBoundException;
+    public boolean rename(String oldName, String newName, String server) throws RemoteException, NotBoundException;
+    public String getOSName(String server)throws RemoteException, NotBoundException;
+    public String getHostName(String server) throws RemoteException, NotBoundException;
+    public String getHostAddress(String server) throws RemoteException, NotBoundException;
     public void sendClientAddress(String clientAddress) throws RemoteException;
     public Path [] getFileList() throws RemoteException, NotBoundException;
     //public String sendClientName(String clientName) throws RemoteException;//ToDo
