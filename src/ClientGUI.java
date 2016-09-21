@@ -1,14 +1,8 @@
 import javax.swing.*;
-import javax.swing.event.EventListenerList;
-import javax.swing.event.TreeModelListener;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.plaf.basic.BasicTreeUI;
+import javax.swing.event.*;
 import javax.swing.tree.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -86,31 +80,75 @@ public class ClientGUI extends JFrame implements ActionListener
         deaktiviereButtons();
 
         frame.pack();
-        frame.setLocation(50, 50);
+        frame.setSize(1000, 1000);
+        frame.setLocation(50, 0);
 
 
-//        /**Die Handles unsichtbar machen, bringt leider nicht viel da immernoch anklickbar*/
-//        tree1.setUI(new BasicTreeUI()
+        /** listener fuer den tree*/
+//        tree1.addTreeSelectionListener(new TreeSelectionListener()
 //        {
-//            @Override
-//            protected boolean shouldPaintExpandControl(final TreePath path, final int row, final boolean isExpanded, final boolean hasBeenExpanded, final boolean isLeaf)
+//            @Override public void valueChanged(TreeSelectionEvent ae)
 //            {
-//                boolean shouldDisplayExpandControl = false;
-//                return shouldDisplayExpandControl;
+//                TreePath path = ae.getNewLeadSelectionPath();
+//                System.out.println( path );
+//
+//                DefaultMutableTreeNode node = (DefaultMutableTreeNode) ae.getPath().getLastPathComponent();
+//                //event verlassen wenn keine Node ausgewaehlt wurde
+//                if (node == null)
+//                {
+//                    return;
+//                }
+//                DefaultMutableTreeNode dirNode;
+//                String pfad = node.toString();
+//                client.append("You selected: " + pfad + "\n");
+//                node.removeAllChildren();
+//                try
+//                {
+//                    String dirs = vServer.browseDirs(pfad);
+//                    String[] dirList = dirs.split("[;]");
+//                    String files = vServer.browseFiles(pfad);
+//                    String[] fileList = files.split("[;]");
+//                    //verarbeiten der gefunden Ordner
+//                    for (int i = 0; i < dirList.length; i++)
+//                    {
+//                        if (!dirList[i].equals(""))
+//                        {
+//                            dirNode = new DefaultMutableTreeNode(dirList[i]);
+//                            node.add(dirNode);
+//                            //Dummy node anhängen um Ordnerbild zu erzeuegen
+//                            dirNode.add(new DefaultMutableTreeNode(""));
+//                        }
+//                    }
+//                    //verarbeite der gefundenen dateien
+//                    for (int j = 0; j < fileList.length; j++)
+//                    {
+//                        if (!fileList[j].equals(""))
+//                        {
+//                            node.add(new DefaultMutableTreeNode(fileList[j]));
+//                        }
+//                    }
+//                } catch (RemoteException re)
+//                {
+//                    re.printStackTrace();
+//                }
 //            }
 //        });
 
 
-        /** listener fuer den tree*/
-        tree1.addTreeSelectionListener(new TreeSelectionListener()
+
+
+        /** besserer listener fuer den tree*/
+        tree1.addTreeWillExpandListener(new TreeWillExpandListener()
         {
-            @Override public void valueChanged(TreeSelectionEvent ae)
+            @Override
+            public void treeWillExpand(TreeExpansionEvent event) throws ExpandVetoException
             {
-                //tree1.setToggleClickCount(0);
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode) ae.getPath().getLastPathComponent();
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) event.getPath().getLastPathComponent();
                 //event verlassen wenn keine Node ausgewaehlt wurde
                 if (node == null)
+                {
                     return;
+                }
                 DefaultMutableTreeNode dirNode;
                 String pfad = node.toString();
                 client.append("You selected: " + pfad + "\n");
@@ -127,7 +165,6 @@ public class ClientGUI extends JFrame implements ActionListener
                         if (!dirList[i].equals(""))
                         {
                             dirNode = new DefaultMutableTreeNode(dirList[i]);
-
                             node.add(dirNode);
                             //Dummy node anhängen um Ordnerbild zu erzeuegen
                             dirNode.add(new DefaultMutableTreeNode(""));
@@ -145,10 +182,17 @@ public class ClientGUI extends JFrame implements ActionListener
                 {
                     re.printStackTrace();
                 }
+
+            }
+            @Override
+            public void treeWillCollapse(TreeExpansionEvent event) throws ExpandVetoException
+            {
+
             }
         });
-
     }
+
+
 
     void append(String text)
     {
@@ -249,6 +293,60 @@ public class ClientGUI extends JFrame implements ActionListener
         {
             client.append( "Fehler: " + e2.toString() );
         }
+
+
+
+        String pfad = "\\";
+        String erg;
+        String [] dirListe = new String[0];
+        String [] fileListe = new String[0];
+
+        try
+        {
+            erg = this.vServer.browseDirs(pfad);
+            dirListe = erg.split("[;]");
+
+            erg = this.vServer.browseFiles(pfad);
+            fileListe = erg.split("[;]");
+        }
+        catch(IOException e11)
+        {
+            client.append("Fehler: " + e11.getMessage() + "\n");
+        }
+
+        /**Baum wird aus den Inhalten dirListe und fileListe zusammengebaut*/
+        DefaultTreeModel model = (DefaultTreeModel)tree1.getModel();
+        tree1.setModel(model);
+        DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
+        root.removeAllChildren();
+
+        //root.setUserObject(pfad + " " + new SimpleDateFormat("HH:mm:ss").format(new Date()));
+        root.setUserObject(pfad);
+
+        if (root == null)
+            return;
+        DefaultMutableTreeNode dirNode;
+        root.removeAllChildren();
+
+        for (int i = 0; i < dirListe.length; i++)
+        {
+            if(!dirListe[i].equals(""))
+            {
+                dirNode = new DefaultMutableTreeNode(dirListe[i]);
+                root.add(dirNode);
+                //Dummy node anhängen um Ordnerbild zu erzeuegen
+                dirNode.add(new DefaultMutableTreeNode(""));
+            }
+        }
+
+        for (int i = 0; i < fileListe.length; i++)
+        {
+            if(!fileListe[i].equals(""))
+            {
+                root.add(new DefaultMutableTreeNode(fileListe[i]));
+            }
+        }
+        model.reload(root);
     }
 
     /**
@@ -391,11 +489,11 @@ public class ClientGUI extends JFrame implements ActionListener
             return;
         DefaultMutableTreeNode dirNode;
         root.removeAllChildren();
+
         for (int i = 0; i < dirListe.length; i++)
         {
             if(!dirListe[i].equals(""))
             {
-                //root.add(new DefaultMutableTreeNode(dirListe[i]));
                 dirNode = new DefaultMutableTreeNode(dirListe[i]);
                 root.add(dirNode);
                 //Dummy node anhängen um Ordnerbild zu erzeuegen
@@ -412,6 +510,7 @@ public class ClientGUI extends JFrame implements ActionListener
         }
         model.reload(root);
     }
+
 
     /**
      *  Funktion fuehrt die AKtion des delete Buttons aus
