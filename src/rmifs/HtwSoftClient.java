@@ -122,7 +122,7 @@ public class HtwSoftClient {
         InputStreamReader isr = new InputStreamReader(System.in);
         BufferedReader br = new BufferedReader(isr);
         int eingabe = -1;
-        while(eingabe < 0 || eingabe > 8)
+        while(eingabe < 0 || eingabe > 9)
         { //Auswahlmenue zeigen bis eingabe richtig
           try
             {
@@ -138,6 +138,7 @@ public class HtwSoftClient {
                 System.out.println("6: Delete");
                 System.out.println("7: Rename");
                 System.out.println("8: OS-Name");
+                System.out.println("9: Server waehlen");
                 System.out.println("------------------------------------------------------------");
                 System.out.print("Was moechten Sie tun?: ");
                 eingabe = Integer.parseInt(br.readLine());

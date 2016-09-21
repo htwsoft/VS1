@@ -17,7 +17,7 @@ import java.util.Scanner;
 
 public class FileSystemClient
 {
-	private static String aktuellerServer = "Server1";
+	private  String aktuellerServer = "Server1";
 	private VerwalterInterface vserver;  //Attribute zum Zugriff auf Verwalter Server Funktionen
 	private String clientAddress = "not set!";
 	private String clientName = "not set!";
