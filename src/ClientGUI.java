@@ -10,7 +10,13 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-
+import java.awt.Component;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.UIManager;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 
 /**
  * Created by Eugen Eberle on 20.08.2016.
@@ -85,54 +91,54 @@ public class ClientGUI extends JFrame implements ActionListener
 
 
         /** listener fuer den tree*/
-//        tree1.addTreeSelectionListener(new TreeSelectionListener()
-//        {
-//            @Override public void valueChanged(TreeSelectionEvent ae)
-//            {
-//                TreePath path = ae.getNewLeadSelectionPath();
-//                System.out.println( path );
-//
-//                DefaultMutableTreeNode node = (DefaultMutableTreeNode) ae.getPath().getLastPathComponent();
-//                //event verlassen wenn keine Node ausgewaehlt wurde
-//                if (node == null)
-//                {
-//                    return;
-//                }
-//                DefaultMutableTreeNode dirNode;
-//                String pfad = node.toString();
-//                client.append("You selected: " + pfad + "\n");
-//                node.removeAllChildren();
-//                try
-//                {
-//                    String dirs = vServer.browseDirs(pfad);
-//                    String[] dirList = dirs.split("[;]");
-//                    String files = vServer.browseFiles(pfad);
-//                    String[] fileList = files.split("[;]");
-//                    //verarbeiten der gefunden Ordner
-//                    for (int i = 0; i < dirList.length; i++)
-//                    {
-//                        if (!dirList[i].equals(""))
-//                        {
-//                            dirNode = new DefaultMutableTreeNode(dirList[i]);
-//                            node.add(dirNode);
-//                            //Dummy node anhängen um Ordnerbild zu erzeuegen
-//                            dirNode.add(new DefaultMutableTreeNode(""));
-//                        }
-//                    }
-//                    //verarbeite der gefundenen dateien
-//                    for (int j = 0; j < fileList.length; j++)
-//                    {
-//                        if (!fileList[j].equals(""))
-//                        {
-//                            node.add(new DefaultMutableTreeNode(fileList[j]));
-//                        }
-//                    }
-//                } catch (RemoteException re)
-//                {
-//                    re.printStackTrace();
-//                }
-//            }
-//        });
+        tree1.addTreeSelectionListener(new TreeSelectionListener()
+        {
+            @Override public void valueChanged(TreeSelectionEvent ae)
+            {
+                //TreePath path = ae.getNewLeadSelectionPath();
+                //System.out.println( path );
+
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) ae.getPath().getLastPathComponent();
+                //event verlassen wenn keine Node ausgewaehlt wurde
+                if (node == null)
+                {
+                    return;
+                }
+                DefaultMutableTreeNode dirNode;
+                String pfad = node.toString();
+                client.append("You selected: " + pfad + "\n");
+                node.removeAllChildren();
+                try
+                {
+                    String dirs = vServer.browseDirs(pfad);
+                    String[] dirList = dirs.split("[;]");
+                    String files = vServer.browseFiles(pfad);
+                    String[] fileList = files.split("[;]");
+                    //verarbeiten der gefunden Ordner
+                    for (int i = 0; i < dirList.length; i++)
+                    {
+                        if (!dirList[i].equals(""))
+                        {
+                            dirNode = new DefaultMutableTreeNode(dirList[i]);
+                            node.add(dirNode);
+                            //Dummy node anhängen um Ordnerbild zu erzeuegen
+                            dirNode.add(new DefaultMutableTreeNode(""));
+                        }
+                    }
+                    //verarbeite der gefundenen dateien
+                    for (int j = 0; j < fileList.length; j++)
+                    {
+                        if (!fileList[j].equals(""))
+                        {
+                            node.add(new DefaultMutableTreeNode(fileList[j]));
+                        }
+                    }
+                } catch (RemoteException re)
+                {
+                    re.printStackTrace();
+                }
+            }
+        });
 
 
 
@@ -263,7 +269,7 @@ public class ClientGUI extends JFrame implements ActionListener
     private void startClientButton()
     {
         int serverPort;
-        String host = "192.168.0.103";
+        String host = "10.9.41.43";
         try
         {
             serverPort = Integer.parseInt(portTextFeld.getText().trim());
@@ -295,7 +301,6 @@ public class ClientGUI extends JFrame implements ActionListener
         }
 
 
-
         String pfad = "\\";
         String erg;
         String [] dirListe = new String[0];
@@ -317,6 +322,7 @@ public class ClientGUI extends JFrame implements ActionListener
         /**Baum wird aus den Inhalten dirListe und fileListe zusammengebaut*/
         DefaultTreeModel model = (DefaultTreeModel)tree1.getModel();
         tree1.setModel(model);
+        tree1.setCellRenderer(new MyTreeCellRenderer());
         DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
         root.removeAllChildren();
 
@@ -370,11 +376,15 @@ public class ClientGUI extends JFrame implements ActionListener
      * */
     private void createDirButton()
     {
+        String wahl = clientTextArea.getText().trim();
+        String [] parts = wahl.split(":");
+        String dirPfad = parts[parts.length - 1].trim();
+
         JFrame eingabe = new JFrame();
         String pfad = JOptionPane.showInputDialog(eingabe, "Welcher Ordner soll erstellt werden?", "Create Directory", JOptionPane.PLAIN_MESSAGE);
         try
         {
-            if( this.vServer.createDir(pfad) )
+            if( this.vServer.createDir(dirPfad + "//" + pfad) )
             {
                 client.append("Ordner wurde erstellt!\n");
             }
@@ -395,11 +405,15 @@ public class ClientGUI extends JFrame implements ActionListener
      * */
     private void createFileButton()
     {
+        String wahl = clientTextArea.getText().trim();
+        String [] parts = wahl.split(":");
+        String filePfad = parts[parts.length - 1].trim();
+
         JFrame eingabe = new JFrame();
         String pfad = JOptionPane.showInputDialog(eingabe, "Welche Datei soll erstellt werden?", "Create File", JOptionPane.PLAIN_MESSAGE);
         try
         {
-            if( this.vServer.createFile(pfad) )
+            if( this.vServer.createFile( filePfad + "//" + pfad ))
             {
                 client.append("Datei wurde erstellt!\n");
             }
@@ -413,6 +427,9 @@ public class ClientGUI extends JFrame implements ActionListener
         {
             client.append("Fehler: " + eFile.getMessage() + "\n");
         }
+
+        //new TreeState(tree1);
+        //tree1.expandPath(baumPfad);
     }
 
     /**
@@ -483,7 +500,8 @@ public class ClientGUI extends JFrame implements ActionListener
         tree1.setModel(model);
         DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
         root.removeAllChildren();
-        root.setUserObject(pfad + " " + new SimpleDateFormat("HH:mm:ss").format(new Date()));
+        //root.setUserObject(pfad + " " + new SimpleDateFormat("HH:mm:ss").format(new Date()));
+        root.setUserObject(pfad);
 
         if (root == null)
             return;
@@ -548,12 +566,16 @@ public class ClientGUI extends JFrame implements ActionListener
      * */
     private void renameButton()
     {
+        String wahl = clientTextArea.getText().trim();
+        String [] parts = wahl.split(":");
+        String renamePfad = parts[parts.length - 1].trim();
+
         JFrame eingabe = new JFrame();
-        String oldName = JOptionPane.showInputDialog(eingabe, "Was soll umbeannt werden?", "Rename", JOptionPane.PLAIN_MESSAGE);
+        //String oldName = JOptionPane.showInputDialog(eingabe, "Was soll umbeannt werden?", "Rename", JOptionPane.PLAIN_MESSAGE);
         String newName = JOptionPane.showInputDialog(eingabe, "Wie lautet die neue Bezeichnung?", "Rename", JOptionPane.PLAIN_MESSAGE);
         try
         {
-            if( this.vServer.rename(oldName, newName) )
+            if( this.vServer.rename(renamePfad, newName) )
             {
                 JOptionPane.showMessageDialog(null, "Ordner oder Datei wurde umbenannt!", "Rename", JOptionPane.INFORMATION_MESSAGE);
             }
@@ -659,4 +681,115 @@ public class ClientGUI extends JFrame implements ActionListener
         System.setProperty("java.security.policy", "java.policy");
         client = new ClientGUI();
     }
+
+//    private String refresh()
+//    {
+//        //private final JTree tree;
+//        StringBuilder sb;
+//
+////        public TreeState(JTree tree)
+////        {
+////            this.tree = tree;
+////        }
+//
+//        public String getExpansionState()
+//        {
+//            sb = new StringBuilder();
+//
+//            for(int i = 0 ; i < tree1.getRowCount(); i++)
+//            {
+//                TreePath tp = tree1.getPathForRow(i);
+//                if(tree1.isExpanded(i))
+//                {
+//                    sb.append(tp.toString());
+//                    sb.append(",");
+//                }
+//            }
+//            return sb.toString();
+//        }
+//
+//        public void setExpansionState(String s)
+//        {
+//            for(int i = 0 ; i < tree1.getRowCount(); i++)
+//            {
+//                TreePath tp = tree1.getPathForRow(i);
+//                if(s.contains(tp.toString() ))
+//                {
+//                    tree1.expandRow(i);
+//                }
+//            }
+//        }
+//
+//    }
+
+
+
+
+    private class MyTreeCellRenderer extends DefaultTreeCellRenderer
+    {
+        @Override
+        public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+            super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+
+            // decide what icons you want by examining the node
+            if (value instanceof DefaultMutableTreeNode)
+            {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+                if (node.getUserObject() instanceof String)
+                {
+                    // your root node, since you just put a String as a user obj
+                    setIcon(UIManager.getIcon("FileView.computerIcon"));
+                }// else if (node.getUserObject() instanceof Contact) {
+                // decide based on some property of your Contact obj
+                //  Contact contact = (Contact)  node.getUserObject();
+                //  if (contact.isSomeProperty()) {
+                //      setIcon(UIManager.getIcon("FileView.hardDriveIcon"));
+                // } else {
+                //    setIcon(UIManager.getIcon("FileChooser.homeFolderIcon"));
+                //}
+                //}
+            }
+            return this;
+        }
+    }
 }
+
+
+//class TreeState
+//{
+//    private final JTree tree;
+//    private StringBuilder sb;
+//
+//    public TreeState(JTree tree)
+//    {
+//        this.tree = tree;
+//    }
+//
+//    public String getExpansionState()
+//    {
+//        sb = new StringBuilder();
+//
+//        for(int i = 0 ; i < tree.getRowCount(); i++)
+//        {
+//            TreePath tp = tree.getPathForRow(i);
+//            if(tree.isExpanded(i))
+//            {
+//                sb.append(tp.toString());
+//                sb.append(",");
+//            }
+//        }
+//        return sb.toString();
+//    }
+//
+//    public void setExpansionState(String s)
+//    {
+//        for(int i = 0 ; i<tree.getRowCount(); i++)
+//        {
+//            TreePath tp = tree.getPathForRow(i);
+//            if(s.contains(tp.toString() ))
+//            {
+//                tree.expandRow(i);
+//            }
+//        }
+//    }
+//}
