@@ -269,7 +269,7 @@ public class ClientGUI extends JFrame implements ActionListener
     private void startClientButton()
     {
         int serverPort;
-        String host = "10.9.41.43";
+        String host = "192.168.0.103";
         try
         {
             serverPort = Integer.parseInt(portTextFeld.getText().trim());
@@ -322,7 +322,7 @@ public class ClientGUI extends JFrame implements ActionListener
         /**Baum wird aus den Inhalten dirListe und fileListe zusammengebaut*/
         DefaultTreeModel model = (DefaultTreeModel)tree1.getModel();
         tree1.setModel(model);
-        tree1.setCellRenderer(new MyTreeCellRenderer());
+        //tree1.setCellRenderer(new MyTreeCellRenderer());
         DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
         root.removeAllChildren();
 
@@ -428,9 +428,44 @@ public class ClientGUI extends JFrame implements ActionListener
             client.append("Fehler: " + eFile.getMessage() + "\n");
         }
 
-        //new TreeState(tree1);
-        //tree1.expandPath(baumPfad);
+        //TreeState a = new TreeState(tree1);
+        //a.setExpansionState(pfad);
+        //TreePath b = a.getExpansionState();
+        TreePath c = tree1.getSelectionPath();
+
+        //c.getLastPathComponent();
+
+        System.out.println(c);
+
+
+        DefaultTreeModel model = (DefaultTreeModel)tree1.getModel();
+        tree1.setModel(model);
+        DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
+        model.reload(root);
+
+
+//        DefaultMutableTreeNode currentNode = root.getNextNode();
+//        do {
+//            if (currentNode.getLevel()==1)
+//                tree1.expandPath(new TreePath(currentNode.getPath()));
+//            currentNode = currentNode.getNextNode();
+//        }
+//        while (currentNode != null);
+
+
+//        for (int i = 0; i < tree1.getRowCount(); i++)
+//        {
+//            System.out.println(i);
+//            tree1.expandRow(i);
+//        }
+
+        //System.out.println(tree1.getRowCount());
+
+        //tree1.expandRow(3);
+        tree1.expandPath(c);
+
     }
+
 
     /**
      * fuehrt die Aktion des search-button aus
@@ -682,114 +717,73 @@ public class ClientGUI extends JFrame implements ActionListener
         client = new ClientGUI();
     }
 
-//    private String refresh()
+
+//    private class MyTreeCellRenderer extends DefaultTreeCellRenderer
 //    {
-//        //private final JTree tree;
-//        StringBuilder sb;
+//        @Override
+//        public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+//            super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
 //
-////        public TreeState(JTree tree)
-////        {
-////            this.tree = tree;
-////        }
-//
-//        public String getExpansionState()
-//        {
-//            sb = new StringBuilder();
-//
-//            for(int i = 0 ; i < tree1.getRowCount(); i++)
+//            // decide what icons you want by examining the node
+//            if (value instanceof DefaultMutableTreeNode)
 //            {
-//                TreePath tp = tree1.getPathForRow(i);
-//                if(tree1.isExpanded(i))
+//                DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+//                if (node.getUserObject() instanceof String)
 //                {
-//                    sb.append(tp.toString());
-//                    sb.append(",");
-//                }
+//                    // your root node, since you just put a String as a user obj
+//                    setIcon(UIManager.getIcon("FileView.computerIcon"));
+//                }// else if (node.getUserObject() instanceof Contact) {
+//                // decide based on some property of your Contact obj
+//                //  Contact contact = (Contact)  node.getUserObject();
+//                //  if (contact.isSomeProperty()) {
+//                //      setIcon(UIManager.getIcon("FileView.hardDriveIcon"));
+//                // } else {
+//                //    setIcon(UIManager.getIcon("FileChooser.homeFolderIcon"));
+//                //}
+//                //}
 //            }
-//            return sb.toString();
+//            return this;
 //        }
-//
-//        public void setExpansionState(String s)
-//        {
-//            for(int i = 0 ; i < tree1.getRowCount(); i++)
-//            {
-//                TreePath tp = tree1.getPathForRow(i);
-//                if(s.contains(tp.toString() ))
-//                {
-//                    tree1.expandRow(i);
-//                }
-//            }
-//        }
-//
 //    }
 
-
-
-
-    private class MyTreeCellRenderer extends DefaultTreeCellRenderer
-    {
-        @Override
-        public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
-            super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
-
-            // decide what icons you want by examining the node
-            if (value instanceof DefaultMutableTreeNode)
-            {
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-                if (node.getUserObject() instanceof String)
-                {
-                    // your root node, since you just put a String as a user obj
-                    setIcon(UIManager.getIcon("FileView.computerIcon"));
-                }// else if (node.getUserObject() instanceof Contact) {
-                // decide based on some property of your Contact obj
-                //  Contact contact = (Contact)  node.getUserObject();
-                //  if (contact.isSomeProperty()) {
-                //      setIcon(UIManager.getIcon("FileView.hardDriveIcon"));
-                // } else {
-                //    setIcon(UIManager.getIcon("FileChooser.homeFolderIcon"));
-                //}
-                //}
-            }
-            return this;
-        }
-    }
 }
 
 
-//class TreeState
-//{
-//    private final JTree tree;
-//    private StringBuilder sb;
-//
-//    public TreeState(JTree tree)
-//    {
-//        this.tree = tree;
-//    }
-//
-//    public String getExpansionState()
-//    {
-//        sb = new StringBuilder();
-//
-//        for(int i = 0 ; i < tree.getRowCount(); i++)
-//        {
-//            TreePath tp = tree.getPathForRow(i);
-//            if(tree.isExpanded(i))
-//            {
-//                sb.append(tp.toString());
-//                sb.append(",");
-//            }
-//        }
-//        return sb.toString();
-//    }
-//
-//    public void setExpansionState(String s)
-//    {
-//        for(int i = 0 ; i<tree.getRowCount(); i++)
-//        {
-//            TreePath tp = tree.getPathForRow(i);
-//            if(s.contains(tp.toString() ))
-//            {
-//                tree.expandRow(i);
-//            }
-//        }
-//    }
-//}
+class TreeState
+{
+    private final JTree tree;
+    private StringBuilder sb;
+
+    public TreeState(JTree tree)
+    {
+        this.tree = tree;
+    }
+
+    public String getExpansionState()
+    {
+        sb = new StringBuilder();
+
+        for(int i = 0 ; i < tree.getRowCount(); i++)
+        {
+            TreePath tp = tree.getPathForRow(i);
+            if(tree.isExpanded(i))
+            {
+                sb.append(tp.toString());
+                sb.append(",");
+            }
+        }
+        return sb.toString();
+    }
+
+    public void setExpansionState(String s)
+    {
+        for(int i = 0 ; i<tree.getRowCount(); i++)
+        {
+            TreePath tp = tree.getPathForRow(i);
+            if(s.contains(tp.toString() ))
+            {
+                tree.expandRow(i);
+            }
+        }
+    }
+}
