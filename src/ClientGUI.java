@@ -85,6 +85,7 @@ public class ClientGUI extends JFrame implements ActionListener
 
 
         /** listener fuer den tree*/
+
 //        tree1.addTreeSelectionListener(new TreeSelectionListener()
 //        {
 //            @Override public void valueChanged(TreeSelectionEvent ae)
