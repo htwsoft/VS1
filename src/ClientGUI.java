@@ -565,7 +565,8 @@ public class ClientGUI extends JFrame implements ActionListener
         {
             if(!dirListe[i].equals(""))
             {
-                root.add(new DefaultMutableTreeNode(dirListe[i]));
+                //root.add(new DefaultMutableTreeNode(dirListe[i]));
+                root.add(new Contact(dirListe[i]));
 //                dirNode = new DefaultMutableTreeNode(dirListe[i]);
 //                root.add(dirNode);
 //                //Dummy node anhängen um Ordnerbild zu erzeuegen
@@ -577,8 +578,8 @@ public class ClientGUI extends JFrame implements ActionListener
         {
             if(!fileListe[i].equals(""))
             {
-                root.add(new Contact(fileListe[i], true));
-                //root.add(new DefaultMutableTreeNode(fileListe[i]));
+                //root.add(new Contact(fileListe[i], true));
+                root.add(new DefaultMutableTreeNode(fileListe[i]));
             }
         }
         model.reload(root);
