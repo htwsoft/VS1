@@ -105,13 +105,11 @@ public class ClientGUI extends JFrame implements ActionListener
                 {
                     return;
                 }
-                //DefaultMutableTreeNode dirNode;
 
                 String pfad = node.toString();
-                client.append("You selected: " + pfad + "\n");
+                client.append("Ausgewaehlt: " + pfad + "\n");
 
-                //node.removeAllChildren();
-
+                node.removeAllChildren();
                 try
                 {
                     String dirs = vServer.browseDirs(pfad);
@@ -123,29 +121,17 @@ public class ClientGUI extends JFrame implements ActionListener
                     {
                         if (!dirList[i].equals(""))
                         {
-                            //node.add(new Contact(dirList[i]));
                             node.add(new DefaultMutableTreeNode(dirList[i]));
-
-//                            dirNode = new DefaultMutableTreeNode(dirList[i]);
-//                            node.add(dirNode);
-//                            //Dummy node anhängen um Ordnerbild zu erzeuegen
-//                            dirNode.add(new DefaultMutableTreeNode(""));
                         }
                     }
+
                     //verarbeite der gefundenen dateien
                     for (int j = 0; j < fileList.length; j++)
                     {
                         if (!fileList[j].equals(""))
                         {
                             Contact temp = new Contact(fileList[j]);
-                            System.out.println(temp.getName());
                             node.add(new DefaultMutableTreeNode(temp));
-
-
-                            //node.add(new DefaultMutableTreeNode(fileList[j]));
-//                            Contact b = new Contact(fileList[j]);
-//                            System.out.println(b.getName());
-                            //node.add(new Contact(fileList[j]));
                         }
                     }
                 } catch (RemoteException re)
@@ -213,6 +199,7 @@ public class ClientGUI extends JFrame implements ActionListener
 //
 //            }
 //        });
+
     }
 
 
@@ -340,7 +327,6 @@ public class ClientGUI extends JFrame implements ActionListener
         tree1.setCellRenderer(new MyTreeCellRenderer()); /**CellRender classe*/
         DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
         root.removeAllChildren();
-
         root.setUserObject(pfad);
 
         if (root == null)
@@ -361,7 +347,6 @@ public class ClientGUI extends JFrame implements ActionListener
             if(!fileListe[i].equals(""))
             {
                 Contact temp = new Contact(fileListe[i]);
-                System.out.println(temp.getName());
                 root.add(new DefaultMutableTreeNode(temp));
             }
         }
@@ -395,22 +380,28 @@ public class ClientGUI extends JFrame implements ActionListener
 
         JFrame eingabe = new JFrame();
         String pfad = JOptionPane.showInputDialog(eingabe, "Welcher Ordner soll erstellt werden?", "Create Directory", JOptionPane.PLAIN_MESSAGE);
-        try
+        if(pfad != null)
         {
-            if( this.vServer.createDir(dirPfad + "//" + pfad) )
+            try
             {
-                client.append("Ordner wurde erstellt!\n");
+                if( this.vServer.createDir(dirPfad + "//" + pfad) )
+                {
+                    JOptionPane.showMessageDialog(null, pfad + "  wurde erstellt!", "Create Directory", JOptionPane.INFORMATION_MESSAGE);
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(null, pfad + "   konnte NICHT erstellt werden", "Create Directory", JOptionPane.ERROR_MESSAGE);
+                }
             }
-            else
+            catch(IOException eDir)
             {
-                client.append("Ordner konnte NICHT erstellt werden!\n");
-                JOptionPane.showMessageDialog(null, "Ordner konnte NICHT erstellt werden", "Create Directory", JOptionPane.ERROR_MESSAGE);
+                client.append("Fehler: " + eDir.getMessage()+"\n");
             }
         }
-        catch(IOException eDir)
-        {
-            client.append("Fehler: " + eDir.getMessage()+"\n");
-        }
+        TreePath aktuellerBaumPfad = tree1.getSelectionPath();
+        System.out.println(aktuellerBaumPfad);
+        refreshBaum();
+        tree1.expandPath(aktuellerBaumPfad);
     }
 
     /**
@@ -424,44 +415,29 @@ public class ClientGUI extends JFrame implements ActionListener
 
         JFrame eingabe = new JFrame();
         String pfad = JOptionPane.showInputDialog(eingabe, "Welche Datei soll erstellt werden?", "Create File", JOptionPane.PLAIN_MESSAGE);
-        try
+        System.out.println(pfad+"\n");
+        if(pfad != null)
         {
-            if( this.vServer.createFile( filePfad + "//" + pfad ))
+            try
             {
-                client.append("Datei wurde erstellt!\n");
+                if( this.vServer.createFile( filePfad + "//" + pfad ))
+                {
+                    JOptionPane.showMessageDialog(null, pfad + "  wurde erstellt!", "Create File", JOptionPane.INFORMATION_MESSAGE);
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(null, pfad + "   konnte NICHT erstellt werden!", "Create File", JOptionPane.ERROR_MESSAGE);
+                }
             }
-            else
+            catch(IOException eFile)
             {
-                client.append("Datei konnte NICHT erstellt werden!\n");
-                JOptionPane.showMessageDialog(null, "Datei konnte NICHT erstellt werden!n", "Create File", JOptionPane.ERROR_MESSAGE);
+                client.append("Fehler: " + eFile.getMessage() + "\n");
             }
         }
-        catch(IOException eFile)
-        {
-            client.append("Fehler: " + eFile.getMessage() + "\n");
-        }
 
-        //TreeState a = new TreeState(tree1);
-        //a.setExpansionState(pfad);
-        //TreePath b = a.getExpansionState();
-        TreePath c = tree1.getSelectionPath();
-
-
-        //c.getLastPathComponent();
-
-        System.out.println(c);
-
-
-        DefaultTreeModel model = (DefaultTreeModel)tree1.getModel();
-        tree1.setModel(model);
-        DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
-        model.reload(root);
-
-
-        tree1.expandPath(c);
-
-
-
+        TreePath aktuellerBaumPfad = tree1.getSelectionPath();
+        refreshBaum();
+        tree1.expandPath(aktuellerBaumPfad);
     }
 
 
@@ -580,7 +556,7 @@ public class ClientGUI extends JFrame implements ActionListener
         String [] parts = wahl.split(":");
         String loeschPfad = parts[parts.length - 1].trim();
 
-        int jaNein = JOptionPane.showConfirmDialog(null, "Soll  " +loeschPfad+ "  wirklich geloescht werden?", "Delete", JOptionPane.YES_NO_OPTION);
+        int jaNein = JOptionPane.showConfirmDialog(null, "Soll  " + loeschPfad + "  wirklich geloescht werden?", "Delete", JOptionPane.YES_NO_OPTION);
 
         if(jaNein == JOptionPane.YES_OPTION)
         {
@@ -588,7 +564,7 @@ public class ClientGUI extends JFrame implements ActionListener
             {
                 if( this.vServer.delete(loeschPfad) )
                 {
-                    JOptionPane.showMessageDialog(null, loeschPfad+ "  wurde geloescht!", "Delete", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null, loeschPfad + "  wurde geloescht!", "Delete", JOptionPane.INFORMATION_MESSAGE);
                 }
                 else
                 {
@@ -719,6 +695,15 @@ public class ClientGUI extends JFrame implements ActionListener
         //Propertys aus Datei laden
         System.setProperty("java.security.policy", "java.policy");
         client = new ClientGUI();
+    }
+
+
+    private void refreshBaum()
+    {
+        DefaultTreeModel model = (DefaultTreeModel)tree1.getModel();
+        tree1.setModel(model);
+        DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
+        model.reload(root);
     }
 
 
