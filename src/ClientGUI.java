@@ -133,7 +133,8 @@ public class ClientGUI extends JFrame implements ActionListener
                     {
                         if (!fileList[j].equals(""))
                         {
-                            node.add(new DefaultMutableTreeNode(fileList[j]));
+                            //node.add(new DefaultMutableTreeNode(fileList[j]));
+                            node.add(new Contact(fileList[j]));
                         }
                     }
                 } catch (RemoteException re)
@@ -327,7 +328,7 @@ public class ClientGUI extends JFrame implements ActionListener
         /**Baum wird aus den Inhalten dirListe und fileListe zusammengebaut*/
         DefaultTreeModel model = (DefaultTreeModel)tree1.getModel();
         tree1.setModel(model);
-        //tree1.setCellRenderer(new MyTreeCellRenderer());
+        tree1.setCellRenderer(new MyTreeCellRenderer()); /**CellRender classe*/
         DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
         root.removeAllChildren();
 
@@ -354,7 +355,8 @@ public class ClientGUI extends JFrame implements ActionListener
         {
             if(!fileListe[i].equals(""))
             {
-                root.add(new DefaultMutableTreeNode(fileListe[i]));
+                //root.add(new DefaultMutableTreeNode(fileListe[i]));
+                root.add(new Contact(fileListe[i]));
             }
         }
         model.reload(root);
@@ -575,7 +577,8 @@ public class ClientGUI extends JFrame implements ActionListener
         {
             if(!fileListe[i].equals(""))
             {
-                root.add(new DefaultMutableTreeNode(fileListe[i]));
+                root.add(new Contact(fileListe[i], true));
+                //root.add(new DefaultMutableTreeNode(fileListe[i]));
             }
         }
         model.reload(root);
@@ -735,33 +738,134 @@ public class ClientGUI extends JFrame implements ActionListener
     }
 
 /**Logo Render Tests*/
-//    private class MyTreeCellRenderer extends DefaultTreeCellRenderer
-//    {
-//        @Override
-//        public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
-//            super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
-//
-//            // decide what icons you want by examining the node
-//            if (value instanceof DefaultMutableTreeNode)
-//            {
-//                DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-//                if (node.getUserObject() instanceof String)
-//                {
-//                    // your root node, since you just put a String as a user obj
-//                    setIcon(UIManager.getIcon("FileView.computerIcon"));
-//                }// else if (node.getUserObject() instanceof Contact) {
-//                // decide based on some property of your Contact obj
-//                //  Contact contact = (Contact)  node.getUserObject();
-//                //  if (contact.isSomeProperty()) {
-//                //      setIcon(UIManager.getIcon("FileView.hardDriveIcon"));
-//                // } else {
-//                //    setIcon(UIManager.getIcon("FileChooser.homeFolderIcon"));
-//                //}
-//                //}
-//            }
-//            return this;
-//        }
-//    }
-
+    private class MyTreeCellRenderer extends DefaultTreeCellRenderer
+    {
+        @Override
+        public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus)
+        {
+            super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+            // decide what icons you want by examining the node
+            if (value instanceof DefaultMutableTreeNode)
+            {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+                if (node.getUserObject() instanceof String)
+                {
+                    // your root node, since you just put a String as a user obj
+                    setIcon(UIManager.getIcon("FileView.computerIcon"));
+                }
+                else if (node.getUserObject() instanceof Contact)
+                {
+                    // decide based on some property of your Contact obj
+                    Contact contact = (Contact)node.getUserObject();
+                    if (contact.isSomeProperty())
+                    {
+                        setIcon(UIManager.getIcon("FileView.hardDriveIcon"));
+                    }
+                    else
+                    {
+                        setIcon(UIManager.getIcon("FileChooser.homeFolderIcon"));
+                    }
+                }
+            }
+            return this;
+        }
+    }
 }
 
+class Contact implements MutableTreeNode
+{
+    private boolean someProperty;
+    private String name;
+
+    public Contact(String name)
+    {
+        this(name, false);
+    }
+
+    public Contact(String name, boolean property)
+    {
+        this.someProperty = property;
+        this.name = name;
+    }
+
+    public boolean isSomeProperty()
+    {
+        return someProperty;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    @Override
+    public String toString()
+    {
+        return name;
+    }
+
+    @Override
+    public void insert(MutableTreeNode child, int index) {
+
+    }
+
+    @Override
+    public void remove(int index) {
+
+    }
+
+    @Override
+    public void remove(MutableTreeNode node) {
+
+    }
+
+    @Override
+    public void setUserObject(Object object) {
+
+    }
+
+    @Override
+    public void removeFromParent() {
+
+    }
+
+    @Override
+    public void setParent(MutableTreeNode newParent) {
+
+    }
+
+    @Override
+    public TreeNode getChildAt(int childIndex) {
+        return null;
+    }
+
+    @Override
+    public int getChildCount() {
+        return 0;
+    }
+
+    @Override
+    public TreeNode getParent() {
+        return null;
+    }
+
+    @Override
+    public int getIndex(TreeNode node) {
+        return 0;
+    }
+
+    @Override
+    public boolean getAllowsChildren() {
+        return false;
+    }
+
+    @Override
+    public boolean isLeaf() {
+        return false;
+    }
+
+    @Override
+    public Enumeration children() {
+        return null;
+    }
+}
