@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="ClientGUI">
-  <grid id="27dc6" binding="clientPanel" layout-manager="GridLayoutManager" row-count="4" column-count="12" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="27dc6" binding="clientPanel" layout-manager="GridLayoutManager" row-count="4" column-count="13" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="5" bottom="5" right="5"/>
     <constraints>
       <xy x="20" y="20" width="1755" height="600"/>
@@ -15,7 +15,7 @@
     <children>
       <scrollpane id="7d372">
         <constraints>
-          <grid row="2" column="8" row-span="1" col-span="4" vsize-policy="7" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="2" column="9" row-span="1" col-span="4" vsize-policy="7" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <foreground color="-16069377"/>
@@ -35,7 +35,7 @@
       </scrollpane>
       <component id="eaf03" class="javax.swing.JButton" binding="OSInfoButton" default-binding="true">
         <constraints>
-          <grid row="1" column="11" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false">
+          <grid row="1" column="12" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false">
             <minimum-size width="30" height="30"/>
             <preferred-size width="30" height="30"/>
           </grid>
@@ -53,7 +53,7 @@
       </component>
       <scrollpane id="70358" binding="baumScroll">
         <constraints>
-          <grid row="2" column="0" row-span="1" col-span="8" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
+          <grid row="2" column="0" row-span="1" col-span="9" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
             <preferred-size width="303" height="362"/>
           </grid>
         </constraints>
@@ -85,7 +85,7 @@
       </scrollpane>
       <component id="89126" class="javax.swing.JButton" binding="renameButton" default-binding="true">
         <constraints>
-          <grid row="3" column="10" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false">
+          <grid row="3" column="11" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false">
             <minimum-size width="30" height="30"/>
             <preferred-size width="30" height="30"/>
           </grid>
@@ -102,7 +102,7 @@
       </component>
       <component id="3afe1" class="javax.swing.JButton" binding="deleteButton" default-binding="true">
         <constraints>
-          <grid row="3" column="11" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false">
+          <grid row="3" column="12" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false">
             <minimum-size width="30" height="30"/>
             <preferred-size width="30" height="30"/>
           </grid>
@@ -118,7 +118,7 @@
       </component>
       <component id="80911" class="javax.swing.JButton" binding="seachButton" default-binding="true">
         <constraints>
-          <grid row="1" column="10" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false">
+          <grid row="1" column="11" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false">
             <minimum-size width="30" height="30"/>
             <preferred-size width="30" height="30"/>
           </grid>
@@ -137,7 +137,7 @@
       </component>
       <component id="d3886" class="javax.swing.JLabel" binding="ip">
         <constraints>
-          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="Aktueller Server: "/>
@@ -145,7 +145,7 @@
       </component>
       <component id="fe4c3" class="javax.swing.JLabel" binding="ipLabel">
         <constraints>
-          <grid row="1" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <background color="-199937"/>
@@ -154,23 +154,15 @@
       </component>
       <component id="5460c" class="javax.swing.JLabel" binding="searchLabel">
         <constraints>
-          <grid row="1" column="8" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="9" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="Was suchen?"/>
         </properties>
       </component>
-      <component id="2c5ad" class="javax.swing.JTextField" binding="searchFeld">
-        <constraints>
-          <grid row="1" column="9" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="-1"/>
-          </grid>
-        </constraints>
-        <properties/>
-      </component>
       <component id="881c4" class="javax.swing.JButton" binding="startClientButton" default-binding="true">
         <constraints>
-          <grid row="1" column="7" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="2" indent="0" use-parent-layout="false">
+          <grid row="1" column="8" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="2" indent="0" use-parent-layout="false">
             <minimum-size width="100" height="30"/>
             <preferred-size width="100" height="30"/>
             <maximum-size width="100" height="30"/>
@@ -189,7 +181,7 @@
       </component>
       <component id="80444" class="javax.swing.JTextField" binding="portTextFeld">
         <constraints>
-          <grid row="1" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="0" indent="0" use-parent-layout="false">
+          <grid row="1" column="7" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="0" indent="0" use-parent-layout="false">
             <preferred-size width="100" height="22"/>
           </grid>
         </constraints>
@@ -200,7 +192,7 @@
       </component>
       <component id="d35a7" class="javax.swing.JLabel" binding="port">
         <constraints>
-          <grid row="1" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <labelFor value="80444"/>
@@ -223,41 +215,9 @@
           <toolTipText value="Browse"/>
         </properties>
       </component>
-      <component id="6b7ff" class="javax.swing.JButton" binding="createDirButton" default-binding="true">
-        <constraints>
-          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false">
-            <minimum-size width="30" height="30"/>
-            <preferred-size width="30" height="30"/>
-          </grid>
-        </constraints>
-        <properties>
-          <borderPainted value="false"/>
-          <contentAreaFilled value="false"/>
-          <icon value="Icons/folder.png"/>
-          <rolloverIcon value="Icons/folderHell.png"/>
-          <text value=""/>
-          <toolTipText value="Create Dir"/>
-        </properties>
-      </component>
-      <component id="9a11f" class="javax.swing.JButton" binding="createFileButton" default-binding="true">
-        <constraints>
-          <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false">
-            <minimum-size width="30" height="30"/>
-            <preferred-size width="30" height="30"/>
-          </grid>
-        </constraints>
-        <properties>
-          <borderPainted value="false"/>
-          <contentAreaFilled value="false"/>
-          <icon value="Icons/file.png"/>
-          <rolloverIcon value="Icons/fileHell.png"/>
-          <text value=""/>
-          <toolTipText value="Create File"/>
-        </properties>
-      </component>
       <component id="624f3" class="javax.swing.JButton" binding="sWechselButton">
         <constraints>
-          <grid row="3" column="7" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false">
+          <grid row="3" column="8" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false">
             <minimum-size width="30" height="30"/>
             <preferred-size width="30" height="30"/>
           </grid>
@@ -275,7 +235,7 @@
       </component>
       <component id="de6fc" class="javax.swing.JLabel" binding="banner">
         <constraints>
-          <grid row="0" column="0" row-span="1" col-span="12" vsize-policy="0" hsize-policy="0" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="0" row-span="1" col-span="13" vsize-policy="0" hsize-policy="0" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <alignmentY value="0.0"/>
@@ -293,6 +253,62 @@
           <verifyInputWhenFocusTarget value="false"/>
           <verticalAlignment value="1"/>
           <verticalTextPosition value="1"/>
+        </properties>
+      </component>
+      <component id="980ae" class="javax.swing.JButton" binding="anzeigenButton">
+        <constraints>
+          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Anzeigen"/>
+        </properties>
+      </component>
+      <component id="2c5ad" class="javax.swing.JTextField" binding="searchFeld">
+        <constraints>
+          <grid row="1" column="10" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="9a11f" class="javax.swing.JButton" binding="createFileButton" default-binding="true">
+        <constraints>
+          <grid row="3" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false">
+            <minimum-size width="30" height="30"/>
+            <preferred-size width="30" height="30"/>
+          </grid>
+        </constraints>
+        <properties>
+          <borderPainted value="false"/>
+          <contentAreaFilled value="false"/>
+          <icon value="Icons/file.png"/>
+          <rolloverIcon value="Icons/fileHell.png"/>
+          <text value=""/>
+          <toolTipText value="Create File"/>
+        </properties>
+      </component>
+      <component id="6b7ff" class="javax.swing.JButton" binding="createDirButton" default-binding="true">
+        <constraints>
+          <grid row="3" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false">
+            <minimum-size width="30" height="30"/>
+            <preferred-size width="30" height="30"/>
+          </grid>
+        </constraints>
+        <properties>
+          <borderPainted value="false"/>
+          <contentAreaFilled value="false"/>
+          <icon value="Icons/folder.png"/>
+          <rolloverIcon value="Icons/folderHell.png"/>
+          <text value=""/>
+          <toolTipText value="Create Dir"/>
+        </properties>
+      </component>
+      <component id="61f45" class="javax.swing.JButton" binding="backButton">
+        <constraints>
+          <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Zurück"/>
         </properties>
       </component>
     </children>
