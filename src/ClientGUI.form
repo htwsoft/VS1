@@ -41,7 +41,7 @@
       </scrollpane>
       <component id="eaf03" class="javax.swing.JButton" binding="OSInfoButton" default-binding="true">
         <constraints>
-          <grid row="1" column="12" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false">
+          <grid row="1" column="12" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false">
             <minimum-size width="30" height="30"/>
             <preferred-size width="30" height="30"/>
           </grid>
@@ -89,7 +89,7 @@
       </scrollpane>
       <component id="89126" class="javax.swing.JButton" binding="renameButton" default-binding="true">
         <constraints>
-          <grid row="3" column="11" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false">
+          <grid row="3" column="11" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
             <minimum-size width="30" height="30"/>
             <preferred-size width="30" height="30"/>
           </grid>
@@ -106,7 +106,7 @@
       </component>
       <component id="3afe1" class="javax.swing.JButton" binding="deleteButton" default-binding="true">
         <constraints>
-          <grid row="3" column="12" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false">
+          <grid row="3" column="12" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false">
             <minimum-size width="30" height="30"/>
             <preferred-size width="30" height="30"/>
           </grid>
@@ -122,7 +122,7 @@
       </component>
       <component id="80911" class="javax.swing.JButton" binding="seachButton" default-binding="true">
         <constraints>
-          <grid row="1" column="11" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false">
+          <grid row="1" column="11" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
             <minimum-size width="30" height="30"/>
             <preferred-size width="30" height="30"/>
           </grid>
@@ -156,17 +156,6 @@
           <text value="xxx.xxx.xxx.xxx"/>
         </properties>
       </component>
-      <component id="80444" class="javax.swing.JTextField" binding="portTextFeld">
-        <constraints>
-          <grid row="1" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="0" indent="0" use-parent-layout="false">
-            <preferred-size width="100" height="22"/>
-          </grid>
-        </constraints>
-        <properties>
-          <text value="1500"/>
-          <toolTipText value="Port" noi18n="true"/>
-        </properties>
-      </component>
       <component id="d35a7" class="javax.swing.JLabel" binding="port">
         <constraints>
           <grid row="1" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
@@ -174,24 +163,6 @@
         <properties>
           <labelFor value="80444"/>
           <text value="Port-Nr:"/>
-        </properties>
-      </component>
-      <component id="624f3" class="javax.swing.JButton" binding="sWechselButton">
-        <constraints>
-          <grid row="3" column="8" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false">
-            <minimum-size width="30" height="30"/>
-            <preferred-size width="34" height="30"/>
-          </grid>
-        </constraints>
-        <properties>
-          <actionCommand value=""/>
-          <borderPainted value="false"/>
-          <contentAreaFilled value="false"/>
-          <icon value="Icons/change.png"/>
-          <rolloverEnabled value="true"/>
-          <rolloverIcon value="Icons/changeHell.png"/>
-          <text value=""/>
-          <toolTipText value="Server Wechsel"/>
         </properties>
       </component>
       <component id="de6fc" class="javax.swing.JLabel" binding="banner">
@@ -242,7 +213,7 @@
       </component>
       <component id="61f45" class="javax.swing.JButton" binding="backButton">
         <constraints>
-          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false">
             <minimum-size width="30" height="30"/>
             <preferred-size width="30" height="30"/>
             <maximum-size width="30" height="30"/>
@@ -260,7 +231,7 @@
       </component>
       <component id="6b7ff" class="javax.swing.JButton" binding="createDirButton" default-binding="true">
         <constraints>
-          <grid row="3" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false">
+          <grid row="3" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
             <minimum-size width="30" height="30"/>
             <preferred-size width="30" height="30"/>
           </grid>
@@ -276,7 +247,7 @@
       </component>
       <component id="9a11f" class="javax.swing.JButton" binding="createFileButton" default-binding="true">
         <constraints>
-          <grid row="3" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false">
+          <grid row="3" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
             <minimum-size width="30" height="30"/>
             <preferred-size width="30" height="30"/>
           </grid>
@@ -292,7 +263,7 @@
       </component>
       <component id="881c4" class="javax.swing.JButton" binding="startClientButton" default-binding="true">
         <constraints>
-          <grid row="1" column="7" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="2" indent="0" use-parent-layout="false">
+          <grid row="1" column="7" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="2" indent="0" use-parent-layout="false">
             <minimum-size width="100" height="30"/>
             <preferred-size width="100" height="30"/>
             <maximum-size width="100" height="30"/>
@@ -317,6 +288,35 @@
         </constraints>
         <properties>
           <text value="Was suchen?"/>
+        </properties>
+      </component>
+      <component id="624f3" class="javax.swing.JButton" binding="sWechselButton">
+        <constraints>
+          <grid row="3" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false">
+            <minimum-size width="30" height="30"/>
+            <preferred-size width="34" height="30"/>
+          </grid>
+        </constraints>
+        <properties>
+          <actionCommand value=""/>
+          <borderPainted value="false"/>
+          <contentAreaFilled value="false"/>
+          <icon value="Icons/change.png"/>
+          <rolloverEnabled value="true"/>
+          <rolloverIcon value="Icons/changeHell.png"/>
+          <text value=""/>
+          <toolTipText value="Server Wechsel"/>
+        </properties>
+      </component>
+      <component id="80444" class="javax.swing.JTextField" binding="portTextFeld">
+        <constraints>
+          <grid row="1" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="4" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="100" height="22"/>
+          </grid>
+        </constraints>
+        <properties>
+          <text value="1500"/>
+          <toolTipText value="Port" noi18n="true"/>
         </properties>
       </component>
     </children>

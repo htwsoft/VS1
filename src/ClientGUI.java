@@ -86,7 +86,7 @@ public class ClientGUI extends JFrame implements ActionListener {
         //frame.setSize(1000, 1000);
         frame.setLocation(50, 0);
         frame.pack();
-        //frame.setSize(1000, 1000);
+        frame.setSize(1100, 900);
 
 
         /** listener fuer den tree*/
