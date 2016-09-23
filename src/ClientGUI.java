@@ -236,16 +236,23 @@ public class ClientGUI extends JFrame implements ActionListener {
      * */
     private void createDirButton()
     {
-        String wahl = clientTextArea.getText().trim();
-        String [] parts = wahl.split(":");
-        String dirPfad = parts[parts.length - 1].trim();
+        /** Pruefe ob eine Datei markiert ist. */
+        if (tree1.getSelectionPath() == null)
+        {
+            JOptionPane.showMessageDialog(null, "Bitte Pfad/Datei waehlen!", "Create File", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        /**Markierte Datei/Order auswaehlen */
+        TreePath aktuellerBaumPfad = tree1.getSelectionPath();
+        String dirPfad = aktuellerBaumPfad.getLastPathComponent().toString();
 
         if (tree1.getSelectionPath() == null)
         {
             JOptionPane.showMessageDialog(null, "Bitte Pfad/Datei waehlen!", "Create Directory", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        TreePath aktuellerBaumPfad = tree1.getSelectionPath();
+
         JFrame eingabe = new JFrame();
         String pfad = JOptionPane.showInputDialog(eingabe, "Welcher Ordner soll erstellt werden?", "Create Directory", JOptionPane.PLAIN_MESSAGE);
         if(pfad != null)
@@ -261,6 +268,10 @@ public class ClientGUI extends JFrame implements ActionListener {
                 else
                 {
                     JOptionPane.showMessageDialog(null, pfad + "   konnte NICHT erstellt werden", "Create Directory", JOptionPane.ERROR_MESSAGE);
+                    DefaultMutableTreeNode node;
+                    DefaultTreeModel model = (DefaultTreeModel) (tree1.getModel());
+                    node = (DefaultMutableTreeNode) (aktuellerBaumPfad.getLastPathComponent());
+                    model.reload(node);
                 }
             }
             catch(IOException eDir)
@@ -275,24 +286,30 @@ public class ClientGUI extends JFrame implements ActionListener {
      * */
     private void createFileButton()
     {
-        String wahl = clientTextArea.getText().trim();
-        String [] parts = wahl.split(":");
-        String filePfad = parts[parts.length - 1].trim();
-
+        /** Pruefe ob eine Datei markiert ist. */
         if (tree1.getSelectionPath() == null)
         {
             JOptionPane.showMessageDialog(null, "Bitte Pfad/Datei waehlen!", "Create File", JOptionPane.ERROR_MESSAGE);
             return;
         }
+
+        /**Markierte Datei/Order auswaehlen */
+        TreePath aktuellerBaumPfad = tree1.getSelectionPath();
+        String filePfad = aktuellerBaumPfad.getLastPathComponent().toString();
+
         JFrame eingabe = new JFrame();
         String pfad = JOptionPane.showInputDialog(eingabe, "Welche Datei soll erstellt werden?", "Create File", JOptionPane.PLAIN_MESSAGE);
-        TreePath aktuellerBaumPfad = tree1.getSelectionPath();
+
         if(pfad != null)
         {
             try
             {
                 if( this.vServer.createFile( filePfad + "//" + pfad ))
                 {
+                    DefaultMutableTreeNode node;
+                    node = (DefaultMutableTreeNode) (aktuellerBaumPfad.getLastPathComponent());
+                    node.add(new DefaultMutableTreeNode(pfad));
+
                     JOptionPane.showMessageDialog(null, pfad + "   wurde erstellt!", "Create File", JOptionPane.INFORMATION_MESSAGE);
                     refreshBaum();
                     tree1.expandPath(aktuellerBaumPfad);
@@ -300,6 +317,10 @@ public class ClientGUI extends JFrame implements ActionListener {
                 else
                 {
                     JOptionPane.showMessageDialog(null, pfad + "   konnte NICHT erstellt werden!", "Create File", JOptionPane.ERROR_MESSAGE);
+                    DefaultMutableTreeNode node;
+                    DefaultTreeModel model = (DefaultTreeModel) (tree1.getModel());
+                    node = (DefaultMutableTreeNode) (aktuellerBaumPfad.getLastPathComponent());
+                    model.reload(node);
                 }
             }
             catch(IOException eFile)
@@ -347,13 +368,20 @@ public class ClientGUI extends JFrame implements ActionListener {
      */
     private void deleteButton()
     {
+        /** Pruefe ob eine Datei markiert ist. */
+        if (tree1.getSelectionPath() == null)
+        {
+            JOptionPane.showMessageDialog(null, "Bitte Pfad/Datei waehlen!", "Create File", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         if (tree1.getSelectionPath() == null)
         {
             JOptionPane.showMessageDialog(null, "Bitte Pfad/Datei waehlen!", "Delete", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        /**Markierte Datei/Order aufwaehlen */
+        /**Markierte Datei/Order auswaehlen */
         TreePath aktuellerBaumPfad = tree1.getSelectionPath();
         String loeschPfad = aktuellerBaumPfad.getLastPathComponent().toString();
 
@@ -363,13 +391,22 @@ public class ClientGUI extends JFrame implements ActionListener {
         {
             try
             {
+                DefaultMutableTreeNode node;
+                DefaultTreeModel model = (DefaultTreeModel) (tree1.getModel());
+                node = (DefaultMutableTreeNode) (aktuellerBaumPfad.getLastPathComponent());
+                model.reload(node);
+
+                /** Schauen ob Knoten Kinder hat, muss null sein sonst kann man Ordner mit Inhalt entfernen*/
+                int anzahlKinder = node.getChildCount();
+                if(anzahlKinder == 0)
+                {
+                    model.removeNodeFromParent(node);
+                }
+
                 if (this.vServer.delete(loeschPfad))
                 {
-                    DefaultMutableTreeNode node;
-                    DefaultTreeModel model = (DefaultTreeModel) (tree1.getModel());
-                    node = (DefaultMutableTreeNode) (aktuellerBaumPfad.getLastPathComponent());
-                    model.removeNodeFromParent(node);
                     JOptionPane.showMessageDialog(null, loeschPfad + "  wurde geloescht!", "Delete", JOptionPane.INFORMATION_MESSAGE);
+
                 }
                 else
                 {
