@@ -98,7 +98,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     public String search(String file, String startDir) throws RemoteException, NotBoundException
     {
         log(" - Client [" + clientIP + "] request search");
-        return iterateFileSystems(FUNKTIONALITAET.SEARCH, startDir, file);
+        return iterateFileSystems(FUNKTIONALITAET.SEARCH, file, startDir);
     }
     public String initialBrowseDirs(String dir) throws RemoteException, NotBoundException
     {
