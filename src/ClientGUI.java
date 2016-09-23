@@ -92,10 +92,8 @@ public class ClientGUI extends JFrame implements ActionListener {
         /** listener fuer den tree*/
         tree1.addTreeSelectionListener(new TreeSelectionListener() {
             @Override
-            public void valueChanged(TreeSelectionEvent ae) {
-                //TreePath path = ae.getNewLeadSelectionPath();
-                //System.out.println( path );
-
+            public void valueChanged(TreeSelectionEvent ae)
+            {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) ae.getPath().getLastPathComponent();
 
                 //event verlassen wenn keine Node ausgewaehlt wurde
@@ -375,12 +373,6 @@ public class ClientGUI extends JFrame implements ActionListener {
             return;
         }
 
-        if (tree1.getSelectionPath() == null)
-        {
-            JOptionPane.showMessageDialog(null, "Bitte Pfad/Datei waehlen!", "Delete", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
         /**Markierte Datei/Order auswaehlen */
         TreePath aktuellerBaumPfad = tree1.getSelectionPath();
         String loeschPfad = aktuellerBaumPfad.getLastPathComponent().toString();
@@ -423,47 +415,56 @@ public class ClientGUI extends JFrame implements ActionListener {
      */
     private void renameButton()
     {
-        String wahl = clientTextArea.getText().trim();
-        String[] parts = wahl.split(":");
-        String renamePfad = parts[parts.length - 1].trim();
-        String oldPath = "";
-        String newName = "";
+        /** Pruefe ob eine Datei markiert ist. */
+        if (tree1.getSelectionPath() == null)
+        {
+            JOptionPane.showMessageDialog(null, "Bitte Datei zum umbennenen markieren!", " Rename", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        /**Markierte Datei/Order auswaehlen */
+        TreePath aktuellerBaumPfad = tree1.getSelectionPath();
+        String alterName = aktuellerBaumPfad.getLastPathComponent().toString();
+
+        String neueNameBeginn = aktuellerBaumPfad.getParentPath().getLastPathComponent().toString();
 
         JFrame eingabe = new JFrame();
-        //String oldName = JOptionPane.showInputDialog(eingabe, "Was soll umbeannt werden?", "Rename", JOptionPane.PLAIN_MESSAGE);
-        String name = JOptionPane.showInputDialog(eingabe, "Wie lautet die neue Bezeichnung?", "Rename", JOptionPane.PLAIN_MESSAGE);
+        String neuerNameEnde = JOptionPane.showInputDialog(eingabe, "Wie lautet die neue Bezeichnung?", "Rename", JOptionPane.PLAIN_MESSAGE);
 
-        String array[] = renamePfad.split("\\\\");
-        for (int i=0; i<array.length; i++)
+        String neuerName = neueNameBeginn +"\\"+ neuerNameEnde;
+
+        if(neuerNameEnde != null)
         {
-            array[i].trim();
-        }
-        for (int i=1; i<array.length-1; i++)
-        {
-
-            System.out.println("ARRAY " + i + ": " + array[i]);
-            oldPath = oldPath + "\\" + array[i];
-            System.out.println("NEWNAME " + oldPath);
-        }
-
-        newName = oldPath + "\\" + name; // newName ist der ganze alte Pfad(oldPath) + der neue Name. z.B. \test\NeuerName
-
-        TreePath aktuellerBaumPfad = tree1.getSelectionPath().getParentPath().getParentPath();
-        try
-        {
-            if (this.vServer.rename(renamePfad, newName))
+            try
             {
-                JOptionPane.showMessageDialog(null, "Ordner oder Datei wurde umbenannt!", "Rename", JOptionPane.INFORMATION_MESSAGE);
-            } else
+                if (this.vServer.rename(alterName, neuerName))
+                {
+
+                    JOptionPane.showMessageDialog(null, "Ordner oder Datei wurde umbenannt!", "Rename", JOptionPane.INFORMATION_MESSAGE);
+                    browse("\\");
+//                    DefaultMutableTreeNode node;
+//                    DefaultTreeModel model = (DefaultTreeModel) (tree1.getModel());
+//                    node = (DefaultMutableTreeNode) (aktuellerBaumPfad.getLastPathComponent());
+//                    model.reload(node);
+//                    model.nodeChanged(node);
+//                    model.reload(node);
+//                    refreshBaum();
+//                    tree1.expandPath(aktuellerBaumPfad);
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(null, "Ordner oder Datei konnte NICHT umbenannt werden!", "Rename", JOptionPane.ERROR_MESSAGE);
+                    DefaultMutableTreeNode node;
+                    DefaultTreeModel model = (DefaultTreeModel) (tree1.getModel());
+                    node = (DefaultMutableTreeNode) (aktuellerBaumPfad.getLastPathComponent());
+                    model.reload(node);
+                }
+            } catch (IOException eRename)
             {
-                JOptionPane.showMessageDialog(null, "Ordner oder Datei konnte NICHT umbenannt werden!", "Rename", JOptionPane.ERROR_MESSAGE);
+                client.append("Fehler: " + eRename.getMessage() + "\n");
             }
-        } catch (IOException eRename)
-        {
-            client.append("Fehler: " + eRename.getMessage() + "\n");
         }
-        refreshBaum();
-        tree1.expandPath(aktuellerBaumPfad);
+
     }
 
     /**
