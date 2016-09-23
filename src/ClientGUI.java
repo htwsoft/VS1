@@ -29,7 +29,6 @@ public class ClientGUI extends JFrame implements ActionListener
     private JTextField portTextFeld;
     private JButton startClientButton;
     private JTextArea clientTextArea;
-    private JButton browseButton;
     private JButton seachButton;
     private JButton createDirButton;
     private JButton createFileButton;
@@ -180,11 +179,6 @@ public class ClientGUI extends JFrame implements ActionListener
         if(aeSource == createFileButton)
         {
             createFileButton();
-        }
-        else
-        if(aeSource == browseButton)
-        {
-            browseButton();
         }
         else
         if(aeSource == seachButton)
@@ -447,74 +441,6 @@ public class ClientGUI extends JFrame implements ActionListener
     }
 
     /**
-     * fuehrt die Aktion des browse-Button aus
-     * */
-    private void browseButton()
-    {
-        JFrame eingabe = new JFrame();
-        String pfad = JOptionPane.showInputDialog(eingabe, "Welcher Ordner soll untersucht werden?", "Browse", JOptionPane.PLAIN_MESSAGE);
-
-        String erg = null;
-        String [] dirListe = new String[0];
-        String [] fileListe = new String[0];
-
-        try
-        {
-            erg = this.vServer.browseDirs(pfad);
-            dirListe = erg.split("[;]");
-
-            erg = this.vServer.browseFiles(pfad);
-            fileListe = erg.split("[;]");
-        }
-        catch(IOException e11)
-        {
-            client.append("Fehler: " + e11.getMessage() + "\n");
-        }
-
-        /**Baum wird aus den Inhalten dirListe und fileListe zusammengebaut*/
-        DefaultTreeModel model = (DefaultTreeModel)tree1.getModel();
-        tree1.setModel(model);
-        DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
-        root.removeAllChildren();
-
-        root.setUserObject(pfad);
-
-        if (root == null)
-        {
-            return;
-        }
-
-        DefaultMutableTreeNode dirNode;
-        //root.removeAllChildren();
-
-        for (int i = 0; i < dirListe.length; i++)
-        {
-            if(!dirListe[i].equals(""))
-            {
-                root.add(new DefaultMutableTreeNode(dirListe[i]));
-                //root.add(new Contact(dirListe[i]));
-//                dirNode = new DefaultMutableTreeNode(dirListe[i]);
-//                root.add(dirNode);
-//                //Dummy node anhängen um Ordnerbild zu erzeuegen
-//                dirNode.add(new DefaultMutableTreeNode(""));
-            }
-        }
-
-        for (int i = 0; i < fileListe.length; i++)
-        {
-            if(!fileListe[i].equals(""))
-            {
-                Contact b = new Contact(fileListe[i], true);
-                System.out.println(b.getName());
-                //root.add(new Contact(fileListe[i]));
-                root.add(new DefaultMutableTreeNode(b));
-            }
-        }
-        model.reload(root);
-    }
-
-
-    /**
      *  Funktion fuehrt die AKtion des delete Buttons aus
      * */
     private void deleteButton()
@@ -637,7 +563,6 @@ public class ClientGUI extends JFrame implements ActionListener
      * */
     private void deaktiviereButtons()
     {
-        browseButton.setEnabled(false);
         seachButton.setEnabled(false);
         createDirButton.setEnabled(false);
         createFileButton.setEnabled(false);
@@ -657,7 +582,6 @@ public class ClientGUI extends JFrame implements ActionListener
     private void aktiviereButtons()
     {
         //Buttons aktivieren
-        browseButton.setEnabled(true);
         seachButton.setEnabled(true);
         createDirButton.setEnabled(true);
         createFileButton.setEnabled(true);
@@ -677,7 +601,6 @@ public class ClientGUI extends JFrame implements ActionListener
     private void addListener()
     {
         startClientButton.addActionListener(this);
-        browseButton.addActionListener(this);
         seachButton.addActionListener(this);
         createDirButton.addActionListener(this);
         createFileButton.addActionListener(this);
