@@ -27,9 +27,10 @@ import java.util.Map;
 
 public class VerwalterServer implements VerwalterInterface, RMIClientSocketFactory {
 
-    public static final String[] FILE_SERVER_NAMES = new String[]{"Server1", "Server2", "Server3"};
+
     private HashMap<Integer, String> fileServers;
     private FSInterface fsserver;
+    public String[] fileServerNames = new String[10];
     private String clientIP = "*unknown*";
     private String timeStamp = "not set yet"; //ToDo String server
     private enum FUNKTIONALITAET{BROWSE_FILES, BROWSE_DIRS, SEARCH, CREATE_DIR, CREATE_FILE, DELETE,
@@ -96,16 +97,25 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         return iterateFileSystems(FUNKTIONALITAET.SEARCH, startDir, file);
     }
 
-    public String browseFiles(String dir) throws RemoteException, NotBoundException
+    public String initialBrowseDirs(String dir) throws RemoteException, NotBoundException
     {
-        log(" - Client [" + clientIP + "] request browse");
+        log(" - Client [" + clientIP + "] request initial browse");
+        return iterateFileSystems(FUNKTIONALITAET.BROWSE_DIRS, dir, null);
+    }
+    public String initialBrowseFiles(String dir) throws RemoteException, NotBoundException
+    {
         return iterateFileSystems(FUNKTIONALITAET.BROWSE_FILES, dir, null);
     }
-
-    public String browseDirs(String dir) throws RemoteException, NotBoundException
+    public String browseFiles(String dir, String server) throws RemoteException, NotBoundException
     {
-        log(" - Client [" + clientIP + "] request browseDir");
-        return iterateFileSystems(FUNKTIONALITAET.BROWSE_DIRS, dir, null);
+        return performOperation(FUNKTIONALITAET.BROWSE_FILES, dir, null);
+    }
+
+    public String browseDirs(String dir, String server) throws RemoteException, NotBoundException
+    {
+        log(" - Client [" + clientIP + "] request browse");
+        connectServer(server);
+        return performOperation(FUNKTIONALITAET.BROWSE_DIRS, dir, null);
     }
 
     public boolean delete(String file, String server) throws RemoteException, NotBoundException
@@ -141,6 +151,33 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         log(" - Client [" + clientIP + "] request serverOSname");
         connectServer(server);
         return performOperation(FUNKTIONALITAET.GET_OS_NAME, null, null);
+    }
+
+    /**
+     * <br>Fragt nach allen Namen der FileServer, damit Client diese identifizieren kann</br>
+     * @return
+     * @throws RemoteException
+     * @throws NotBoundException
+     */
+    public String[] getAllHosts() throws RemoteException, NotBoundException
+    {
+        String[] serverNames = new String[10];
+        int i = 0;
+        Set set = fileServers.entrySet();
+        Iterator iterator = set.iterator();
+        if (System.getSecurityManager() == null)
+        {
+            System.setSecurityManager(new SecurityManager());
+        }
+        while(iterator.hasNext())
+        {
+            Map.Entry mentry = (Map.Entry)iterator.next();
+            Registry registry = LocateRegistry.getRegistry((String)mentry.getValue(), (Integer)mentry.getKey());
+            this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
+            serverNames[i] = fsserver.getHostName();
+            i++;
+        }
+        return serverNames;
     }
 
     public String getHostName(String server) throws RemoteException, NotBoundException
@@ -213,9 +250,9 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
      */
     private String iterateFileSystems(FUNKTIONALITAET n, String dir, String file)throws RemoteException, NotBoundException
     {
-
         int i = 0;
         String ergebnis="";
+        String serverName="";
         Set set = fileServers.entrySet();
         Iterator iterator = set.iterator();
         if (System.getSecurityManager() == null)
@@ -230,17 +267,18 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
             switch(n)
             {
                 case BROWSE_FILES:
-                    ergebnis += "\n"+FILE_SERVER_NAMES[i]+":\n"+fsserver.browseFiles(dir);break;
+                    ergebnis += "\n"+ fileServerNames[i]+":\n\t\t"+fsserver.browseFiles(dir);break;
                 case BROWSE_DIRS:
-                    ergebnis += "\n"+FILE_SERVER_NAMES[i]+":\n"+fsserver.browseDirs(dir);break;
+                    serverName = fsserver.getHostName();
+                    fileServerNames[i] = serverName;
+                    ergebnis += "\n"+ fileServerNames[i]+":\n\t\t"+fsserver.browseDirs(dir);break;
                 case SEARCH:
-                    ergebnis += "\n"+FILE_SERVER_NAMES[i]+":\n"+fsserver.search(file, dir);break;
+                    ergebnis += "\n"+ fileServerNames[i]+":\n\t\t"+fsserver.search(file, dir);break;
             }
             i++;
         }
         return ergebnis;
     }
-
     /**
      * Verbindet den Verwalter zum geforderten FileServer, um anschließend dort eine Operation
      * durchzufuehren
@@ -267,12 +305,11 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
                 registry = LocateRegistry.getRegistry((String)mentry.getValue(),(Integer)mentry.getKey());
                 this.fsserver = (FSInterface) registry.lookup("FileSystemServer");break;
             case "Server3":
-                mentry = (Map.Entry)iterator.next();mentry = (Map.Entry)iterator.next();
+                mentry = (Map.Entry)iterator.next(); mentry = (Map.Entry)iterator.next();
                 registry = LocateRegistry.getRegistry((String)mentry.getValue(),(Integer)mentry.getKey());
                 this.fsserver = (FSInterface) registry.lookup("FileSystemServer");break;
         }
     }
-
     /**
      * Fuehrt die angegebene Operation auf dem derzeit verbundenen FileServer durch
      * @param n gibt an welche Funktion der FileServer aufgerufen wird
@@ -285,20 +322,24 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         String ergebnis = "";
         switch(n)
         {
+            case BROWSE_DIRS:
+                ergebnis += "\n"+"\n"+fsserver.browseDirs(dir);break;
+            case BROWSE_FILES:
+                ergebnis += "\n"+"\n"+fsserver.browseFiles(dir);break;
             case CREATE_DIR:
-                    ergebnis += "\n"+":\n"+fsserver.createDir(dir);break;
-                case CREATE_FILE:
-                    ergebnis += "\n"+":\n"+fsserver.createFile(file);break;
-                case DELETE:
-                    ergebnis += "\n"+":\n"+fsserver.delete(file);break;
-                case RENAME:
-                    ergebnis += "\n"+":\n"+fsserver.rename(dir, file);break;
-                case GET_OS_NAME:
-                    ergebnis += "\n\t\t"+": "+fsserver.getOSName()+" ";break;
-                case GET_HOST_ADDRESS:
-                    ergebnis += "\n\t\t"+": "+fsserver.getHostAddress()+" ";break;
-                case GET_HOST_NAME:
-                    ergebnis += "\n\t\t"+": "+fsserver.getHostName()+" ";break;
+                ergebnis += "\n"+":\n"+fsserver.createDir(dir);break;
+            case CREATE_FILE:
+                ergebnis += "\n"+":\n"+fsserver.createFile(file);break;
+            case DELETE:
+                ergebnis += "\n"+":\n"+fsserver.delete(file);break;
+            case RENAME:
+                ergebnis += "\n"+":\n"+fsserver.rename(dir, file);break;
+            case GET_OS_NAME:
+                ergebnis += "\n\t\t"+": "+fsserver.getOSName()+" ";break;
+            case GET_HOST_ADDRESS:
+                ergebnis += "\n\t\t"+": "+fsserver.getHostAddress()+" ";break;
+            case GET_HOST_NAME:
+                ergebnis += "\n\t\t"+": "+fsserver.getHostName()+" ";break;
         }
         return ergebnis;
     }

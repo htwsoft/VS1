@@ -1,8 +1,6 @@
 package rmifs;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -17,12 +15,13 @@ import java.util.Scanner;
 
 public class FileSystemClient
 {
+	public String[] fileServerNames = new String[10];
 	private  String aktuellerServer = "Server1";
 	private VerwalterInterface vserver;  //Attribute zum Zugriff auf Verwalter Server Funktionen
 	private String clientAddress = "not set!";
 	private String clientName = "not set!";
 	private String clientOS = "not set!";
-
+	private boolean initialBrowse = false;
 	/**
 	* Konstruktor 
 	* erzeugt eine FileSystem-Klasse
@@ -40,7 +39,7 @@ public class FileSystemClient
 	}
 	
 	/**
-	* Führt die Browse-Methode der FileSystemServer-Klasse aus
+	* Führt die Browse-Methode der FileSystemServer-Klasse aus, bzw. initialBrowse
 	*/
 	public void browse()
 	{
@@ -48,31 +47,39 @@ public class FileSystemClient
 		String erg = "";
 		String [] dirListe;
 		String [] fileListe;	
-		
-		Scanner eingabe = new Scanner(System.in);
-		System.out.print("Welcher Ordner soll untersucht werden?: ");
-		pfad = eingabe.nextLine();
 		try
 		{
-			erg = this.vserver.browseDirs(pfad);
-			dirListe = erg.split("[;]");		
-			
-			erg = this.vserver.browseFiles(pfad);
- 			fileListe = erg.split("[;]");
- 			
-			System.out.println("File-Liste");
-			System.out.println("---------------------------------------------------------------");
-			for(int i=0; i<fileListe.length; i++)
+
+			if(initialBrowse)
 			{
-				System.out.println(fileListe[i]);
+				Scanner eingabe = new Scanner(System.in);
+				System.out.print("Welcher Ordner soll untersucht werden?: ");
+				pfad = eingabe.nextLine();
+
+				erg = this.vserver.browseDirs(pfad, aktuellerServer );
+				dirListe = erg.split("[;]");
+
+				erg = this.vserver.browseFiles(pfad, aktuellerServer);
+				fileListe = erg.split("[;]");
+
+				System.out.println("File-Liste");
+				System.out.println("---------------------------------------------------------------");
+				for(int i=0; i<fileListe.length; i++)
+				{
+					System.out.println(fileListe[i]);
+				}
+				System.out.println("");
+				System.out.println("Dir-Liste");
+				System.out.println("---------------------------------------------------------------");
+				for(int j=0; j<dirListe.length; j++)
+				{
+					System.out.println(dirListe[j]);
+				}
 			}
-			System.out.println("");
-			System.out.println("Dir-Liste");
-			System.out.println("---------------------------------------------------------------");
-			for(int j=0; j<dirListe.length; j++)
+			else
 			{
-				System.out.println(dirListe[j]);
-			}			
+				initialBrowse();
+			}
 		}
 		catch(IOException e)
 		{
@@ -82,6 +89,39 @@ public class FileSystemClient
 		{
 			nex.printStackTrace();
 		}
+	}
+
+	/**
+	 * <br>fuehrt den ersten Browse durch, bei Start des Clients</br>
+	 * @throws RemoteException
+	 * @throws NotBoundException
+	 */
+	private void initialBrowse() throws RemoteException, NotBoundException
+	{
+		String erg = "";
+		String pfad = "";
+		String[] fileListe;
+		String[] dirListe;
+		erg = this.vserver.initialBrowseDirs(pfad);
+		dirListe = erg.split("[;]");
+
+		erg = this.vserver.initialBrowseFiles(pfad);
+		fileListe = erg.split("[;]");
+
+		System.out.println("File-Liste");
+		System.out.println("---------------------------------------------------------------");
+		for(int i=0; i<fileListe.length; i++)
+		{
+			System.out.println(fileListe[i]);
+		}
+		System.out.println("");
+		System.out.println("Dir-Liste");
+		System.out.println("---------------------------------------------------------------");
+		for(int j=0; j<dirListe.length; j++)
+		{
+			System.out.println(dirListe[j]);
+		}
+		initialBrowse = true;
 	}
 
     public void search() throws RemoteException
@@ -314,21 +354,33 @@ public class FileSystemClient
 
 	}
 
+	/**
+	 * Bestimmt auf welchem Server ab jetzt gearbeitet werden soll
+	 * @param server Server der ausgewaehlt wurde
+	 */
 	public void setServer(int server)
 	{
 		switch(server)
 		{
 			case 0: System.out.println("Vorgang abgebrochen");
 				break;
-			case 1: aktuellerServer = VerwalterServer.FILE_SERVER_NAMES[0];
-				break;
-			case 2: aktuellerServer = VerwalterServer.FILE_SERVER_NAMES[1];
-				break;
-			case 3: aktuellerServer = VerwalterServer.FILE_SERVER_NAMES[2];
-				break;
+			case 1: aktuellerServer = fileServerNames[0];
+				System.out.println("Sie arbeiten nun auf: "+fileServerNames[0]);break;
+			case 2: aktuellerServer = fileServerNames[1];
+				System.out.println("Sie arbeiten nun auf: "+fileServerNames[1]);break;
+			case 3: aktuellerServer = fileServerNames[2];
+				System.out.println("Sie arbeiten nun auf: "+fileServerNames[2]);break;
 			default:
 				System.out.println("Fehlerhafte Eingabe!");
 		}
 	}
+	/**
+	 * Fordert die Namen der FileServer an und speichert sie in dem Attribut fileServerNames
+	 */
+	public void getServerNames() throws RemoteException, NotBoundException
+	{
+		fileServerNames = vserver.getAllHosts();
+	}
 }
+
 

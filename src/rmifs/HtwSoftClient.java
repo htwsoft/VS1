@@ -46,6 +46,8 @@ public class HtwSoftClient {
                 NetworkController nc = new NetworkController(client);
                 System.out.println(nc);
                 System.out.println(client);
+                client.getServerNames();
+                client.browse();
                 menue();
             }
             catch (RemoteException rex)
@@ -165,7 +167,9 @@ public class HtwSoftClient {
             {
                 System.out.println("---------------------------------------");
                 System.out.println("        Verfuegbare Server");
-                System.out.println("0: Cancel\n1: Server1\n2: Server2\n3: Server3");
+                System.out.println("0: Cancel\n1: "+client.fileServerNames[0]+"\n2: "
+                                    +client.fileServerNames[1]+"\n3: "
+                                    +client.fileServerNames[2]+"\n");
                 System.out.println("---------------------------------------");
                 eingabe = Integer.parseInt(br.readLine());
             }
