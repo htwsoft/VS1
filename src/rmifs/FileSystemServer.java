@@ -3,6 +3,7 @@ package rmifs;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.LinkedList;
 import java.util.List;
@@ -259,7 +260,7 @@ public class FileSystemServer implements FSInterface
 		String osName;
 		osName = fs.getOSName();
 		System.out.print("System runs on \"" + osName + "\"");
-		System.out.println("\t --> Function: getOSName");
+		System.out.println("\t\t--> Function: getOSName");
 		return osName;
 	}
 
@@ -275,7 +276,7 @@ public class FileSystemServer implements FSInterface
 		String hostName;
 		hostName = fs.getHostName();
 		System.out.print("Hostname is \"" + hostName + "\"");
-		System.out.println("\t--> Function: getHostName");
+		System.out.println("\t\t--> Function: getHostName");
 		return hostName;
 	}
 	public String getHostAddress() throws RemoteException

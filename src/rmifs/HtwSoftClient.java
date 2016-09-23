@@ -7,13 +7,15 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
 /**
- * HtwSoftClient-Klasse zum starten eines FileSystemClients
+ * <br>HtwSoftClient-Klasse zum starten eines FileSystemClients</br>
  * @author soezdemir
  * @version 1.02
  * @date 2016-09-16
  */
 public class HtwSoftClient {
 
+    private static final String FEHLER_VERBINDUNG_VERWALTER = "Die Verbindung zum Verwalter konnte nicht hergestellt" +
+                                                                " werden bzw. sie wurde unterbrochen!";
     private enum MENUE { CLOSE, LIST, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE,
                          RENAME, OS_NAME, SERVER_WAHL, FALSE }
     private final static String SERVER_HOST_IP = "192.168.0.26";
@@ -22,8 +24,8 @@ public class HtwSoftClient {
     private static FileSystemClient client;
 
     /**
-     * Main() Funktion
-     * initialisiert System Security Einstellungen und startet Anschließend den FileSystemClient
+     * <br>Main() Funktion
+     * initialisiert System Security Einstellungen und startet Anschließend den FileSystemClient</br>
      * @param args
      */
     public static void main(String args [])
@@ -38,27 +40,28 @@ public class HtwSoftClient {
         System.setProperty("java.rmi.server.hostname", SERVER_HOST_IP);
     }
 
-        private static void start()
+    private static void start()
+    {
+        try
         {
-            try{
 
-                client = new FileSystemClient(VERWALTER_PORT_NR, SERVER_HOST_IP);
-                NetworkController nc = new NetworkController(client);
-                System.out.println(nc);
-                System.out.println(client);
-                client.getServerNames();
-                client.browse();
-                menue();
-            }
-            catch (RemoteException rex)
-            {
-                rex.printStackTrace();
-            }
-            catch (NotBoundException nbe)
-            {
-                nbe.printStackTrace();
-            }
+            client = new FileSystemClient(VERWALTER_PORT_NR, SERVER_HOST_IP);
+            NetworkController nc = new NetworkController(client);
+            System.out.println(nc);
+            System.out.println(client);
+            client.getServerNames();
+            client.browse();
+            menue();
         }
+        catch (RemoteException rex)
+        {
+            System.out.println(FEHLER_VERBINDUNG_VERWALTER);rex.printStackTrace();
+        }
+        catch (NotBoundException nbe)
+        {
+            System.out.println(FEHLER_VERBINDUNG_VERWALTER);nbe.printStackTrace();
+        }
+    }
 
     public static MENUE intToMenue(int eingabe)
     {
@@ -80,45 +83,46 @@ public class HtwSoftClient {
         return menue_eingabe;
     }
 
-        private static void menue(){
+    private static void menue() throws RemoteException, NotBoundException
+    {
 
-            int eingabe = -1;
-            MENUE menue_eingabe = MENUE.FALSE;
-            try
+        int eingabe = -1;
+        MENUE menue_eingabe = MENUE.FALSE;
+        try
+        {
+
+            while(menue_eingabe != MENUE.CLOSE)
             {
-
-                while(menue_eingabe != MENUE.CLOSE)
+                eingabe = zeigeMenue();
+                menue_eingabe = intToMenue(eingabe);
+                switch(menue_eingabe)
                 {
-                    eingabe = zeigeMenue();
-                    menue_eingabe = intToMenue(eingabe);
-                    switch(menue_eingabe)
-                    {
-                        case CLOSE: System.out.println("Programm wurde beendet!"); break;
-                        case LIST: client.list(); break;
-                        case BROWSE: client.browse(); break;
-                        case SEARCH: client.search(); break;
-                        case CREATE_DIR: client.createDir(); break;
-                        case CREATE_FILE: client.createFile(); break;
-                        case DELETE: client.delete(); break;
-                        case RENAME: client.rename(); break;
-                        case OS_NAME: client.osname(); break;
-                        case SERVER_WAHL: client.setServer(serverWahl()); break;
-                        default: System.out.println("Falsche Eingabe!"); break;
-                    }
+                    case CLOSE: System.out.println("Programm wurde beendet!"); break;
+                    case LIST: client.list(); break;
+                    case BROWSE: client.browse(); break;
+                    case SEARCH: client.search(); break;
+                    case CREATE_DIR: client.createDir(); break;
+                    case CREATE_FILE: client.createFile(); break;
+                    case DELETE: client.delete(); break;
+                    case RENAME: client.rename(); break;
+                    case OS_NAME: client.osname(); break;
+                    case SERVER_WAHL: client.setServer(serverWahl()); break;
+                    default: System.out.println("Falsche Eingabe!"); break;
                 }
             }
-            catch (IOException ioe)
-            {
-                ioe.printStackTrace();
-            }
-            System.exit(0);
         }
+        catch (IOException ioe)
+        {
+            ioe.printStackTrace();
+        }
+        System.exit(0);
+    }
 
     /**
-     * Funktion zeigt ein Auswahlmenue und liefert
-     * die Auswahl des Benutzers zurück
+     * <br>Funktion zeigt ein Auswahlmenue und liefert
+     * die Auswahl des Benutzers zurück</br>
      */
-    private static int zeigeMenue ()
+    private static int zeigeMenue () throws RemoteException, NotBoundException
     {
         //Scanner liste eingabe des Benutzers ein
         InputStreamReader isr = new InputStreamReader(System.in);
@@ -154,7 +158,7 @@ public class HtwSoftClient {
         return eingabe;
     }
 
-    private static int serverWahl()
+    private static int serverWahl() throws RemoteException, NotBoundException
     {
         String server="";
         InputStreamReader isr = new InputStreamReader(System.in);

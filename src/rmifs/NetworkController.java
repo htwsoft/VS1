@@ -1,12 +1,13 @@
 package rmifs;
 
 import java.net.*;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.Collections;
 import java.util.Enumeration;
 
 /**
- * Ermittelt Netzwerkinformationen des Clients und stellt
+ * <br>Ermittelt Netzwerkinformationen des Clients und stellt</br>
  * diese dem FileSystemClient zur Verfügung
  * @author  soezdemir, cpatzek
  * @version 1.03
@@ -20,15 +21,16 @@ public class NetworkController {
 
     private FileSystemClient client;
 
-    /**Konstruktor initialisiert den Client
+    /**
+     * <br>Konstruktor initialisiert den Client</br>
      *
      * @param client
      */
-    public NetworkController(FileSystemClient client) {
+    public NetworkController(FileSystemClient client) throws RemoteException, NotBoundException {
         init(client);
     }
 
-    private void init(FileSystemClient client) {
+    private void init(FileSystemClient client) throws NotBoundException {
         try {
             setClient(client);
             getNetworkInformation();
@@ -43,8 +45,7 @@ public class NetworkController {
     }
 
     /**
-     * Setter für NetworkController
-     * um den Client zu setzen
+     * <br>Setter für NetworkController um den Client zu setzen </br>
      *
      * @param client
      */
@@ -56,7 +57,7 @@ public class NetworkController {
     }
 
     /**
-     * Getter um den aktuellen Client zu erhalten
+     * <br>Getter um den aktuellen Client zu erhalten </br>
      *
      * @return client   gibt den übergebenen Client zurück
      */
@@ -66,13 +67,13 @@ public class NetworkController {
 
 
     /**
-     * Methoder zur Einholung der Netzwerkschnittstellen eth0, wlan0, localhost
+     * <br>Methoder zur Einholung der Netzwerkschnittstellen eth0, wlan0, localhost</br>
      *
      * @throws SocketException
      * @throws UnknownHostException
      * @throws RemoteException
      */
-    private void getNetworkInformation() throws SocketException, UnknownHostException, RemoteException {
+    private void getNetworkInformation() throws SocketException, UnknownHostException, RemoteException, NotBoundException {
         Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
 
         for (NetworkInterface netint : Collections.list(nets))
@@ -81,13 +82,13 @@ public class NetworkController {
     }
 
     /**
-     * Methode um Daten der Netzwerkschnittstelle auszugeben (nur aktive Verbindungen IPv4)
+     * <br>Methode um Daten der Netzwerkschnittstelle auszugeben (nur aktive Verbindungen IPv4)</br>
      * @param netint networkInterface
      * @throws SocketException
      * @throws UnknownHostException
      * @throws RemoteException
      */
-    private void displayInterfaceInformation(NetworkInterface netint) throws SocketException, UnknownHostException, RemoteException {
+    private void displayInterfaceInformation(NetworkInterface netint) throws SocketException, UnknownHostException, RemoteException, NotBoundException {
         Enumeration<InetAddress> inetAddresses = netint.getInetAddresses();
         for (InetAddress inetAddress : Collections.list(inetAddresses))
             if(inetAddress.toString().length() <= 15 && inetAddress.toString().length() >= 7){
@@ -97,7 +98,7 @@ public class NetworkController {
     }
 
     /**
-     * Getter zur Ermittlung des Hostnamens
+     * <br>Getter zur Ermittlung des Hostnamens</br>
      * @return clientName   liefer Namen der Maschine
      */
     public String getClientName()
@@ -131,7 +132,7 @@ public class NetworkController {
     }
 
     /**
-     * Setter für den Client (Betriebssystem und Prozessorarchitektur)
+     * <br>Setter für den Client (Betriebssystem und Prozessorarchitektur)</br>
      */
     public void setClientOS()
     {

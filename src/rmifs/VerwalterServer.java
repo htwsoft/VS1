@@ -25,9 +25,13 @@ import java.util.Map;
 
 
 
-public class VerwalterServer implements VerwalterInterface, RMIClientSocketFactory {
-
-
+public class VerwalterServer implements VerwalterInterface, RMIClientSocketFactory
+{
+    private static final String FEHLER_VERBINDUNG_MESSAGE = "Fehler!\n\tDie Verbindung zu einem der File-Server ist unterbrochen!\n" +
+                                                            "Die angezeigten Informationen sind moeglicherweise lueckenhaft!\n" +
+                                                            "Bitte versuchen Sie es spaeter noch einmal!\n";
+    private static final String FEHLER_AKTUELLER_SERVER = "Fehler!\n\tDie Verbindung zu dem Server auf dem Sie arbeiten wollen ist " +
+                                                          "unterbrochen! Bitte versuchen Sie es spaeter noch einmal!\n";
     private HashMap<Integer, String> fileServers;
     private FSInterface fsserver;
     public String[] fileServerNames = new String[10];
@@ -77,7 +81,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
      * //ToDo Funktion soll die Anbindung zu anderen VerwalterServer liefern
      * @return Name und IP-Adressen aller VerwalterServer
      */
-    public String getServerList() throws RemoteException
+    public String getServerList() throws RemoteException, NotBoundException
     {
         log(" - Client [" + fsserver.getClientAddress() + "] request serverlist");
         return "\n VERWALTER_LISTE kommt";
@@ -96,7 +100,6 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         log(" - Client [" + clientIP + "] request search");
         return iterateFileSystems(FUNKTIONALITAET.SEARCH, startDir, file);
     }
-
     public String initialBrowseDirs(String dir) throws RemoteException, NotBoundException
     {
         log(" - Client [" + clientIP + "] request initial browse");
@@ -111,45 +114,59 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         return performOperation(FUNKTIONALITAET.BROWSE_FILES, dir, null);
     }
 
-    public String browseDirs(String dir, String server) throws RemoteException, NotBoundException
-    {
+    public String browseDirs(String dir, String server) throws RemoteException, NotBoundException {
         log(" - Client [" + clientIP + "] request browse");
-        connectServer(server);
+        if (!connectServer(server))
+        {
+            return FEHLER_AKTUELLER_SERVER;
+        }
         return performOperation(FUNKTIONALITAET.BROWSE_DIRS, dir, null);
     }
 
-    public boolean delete(String file, String server) throws RemoteException, NotBoundException
+    public String delete(String file, String server) throws RemoteException, NotBoundException
     {
         log(" - Client [" + clientIP + "] request delete");
-        connectServer(server);
-        return performOperation(FUNKTIONALITAET.DELETE, null, file).contains("true");
+        if (!connectServer(server))
+        {
+            return FEHLER_AKTUELLER_SERVER;
+        }
+        return performOperation(FUNKTIONALITAET.DELETE, null, file);
     }
 
-    public boolean createFile(String file, String server) throws RemoteException, NotBoundException
+    public String createFile(String file, String server) throws RemoteException, NotBoundException
     {
         log(" - Client [" + clientIP + "] request createFile");
         connectServer(server);
-        return performOperation(FUNKTIONALITAET.CREATE_FILE, null, file).contains("true");
+        return performOperation(FUNKTIONALITAET.CREATE_FILE, null, file);
     }
 
-    public boolean createDir(String dir, String server) throws RemoteException, NotBoundException
+    public String createDir(String dir, String server) throws RemoteException, NotBoundException
     {
         log(" - Client [" + clientIP + "] request createDir");
-        connectServer(server);
-        return performOperation(FUNKTIONALITAET.CREATE_DIR, dir, null).contains("true");
+        if (!connectServer(server))
+        {
+            return FEHLER_AKTUELLER_SERVER;
+        }
+        return performOperation(FUNKTIONALITAET.CREATE_DIR, dir, null);
     }
 
-    public boolean rename(String oldName, String newName, String server) throws RemoteException, NotBoundException
+    public String rename(String oldName, String newName, String server) throws RemoteException, NotBoundException
     {
         log(" - Client [" + clientIP + "] request rename");
-        connectServer(server);
-        return performOperation(FUNKTIONALITAET.RENAME, oldName, newName).contains("true");
+        if (!connectServer(server))
+        {
+            return FEHLER_AKTUELLER_SERVER;
+        }
+        return performOperation(FUNKTIONALITAET.RENAME, oldName, newName);
     }
 
-    public String getOSName(String server)throws RemoteException, NotBoundException
+    public String getOSName(String server) throws RemoteException, NotBoundException
     {
         log(" - Client [" + clientIP + "] request serverOSname");
-        connectServer(server);
+        if (!connectServer(server))
+        {
+            return FEHLER_AKTUELLER_SERVER;
+        }
         return performOperation(FUNKTIONALITAET.GET_OS_NAME, null, null);
     }
 
@@ -165,19 +182,31 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         int i = 0;
         Set set = fileServers.entrySet();
         Iterator iterator = set.iterator();
-        if (System.getSecurityManager() == null)
-        {
+        if (System.getSecurityManager() == null) {
             System.setSecurityManager(new SecurityManager());
         }
-        while(iterator.hasNext())
+        try
         {
-            Map.Entry mentry = (Map.Entry)iterator.next();
-            Registry registry = LocateRegistry.getRegistry((String)mentry.getValue(), (Integer)mentry.getKey());
-            this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
-            serverNames[i] = fsserver.getHostName();
-            i++;
+            while (iterator.hasNext())
+            {
+                Map.Entry mentry = (Map.Entry) iterator.next();
+                Registry registry = LocateRegistry.getRegistry((String) mentry.getValue(), (Integer) mentry.getKey());
+                this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
+                serverNames[i] = fsserver.getHostName();
+                i++;
+            }
+            return serverNames;
         }
-        return serverNames;
+        catch(RemoteException rex)
+        {
+            serverNames[i] += FEHLER_AKTUELLER_SERVER+rex.getMessage();
+            return serverNames;
+        }
+        catch(NotBoundException nex)
+        {
+            serverNames[i] += FEHLER_AKTUELLER_SERVER+nex.getMessage();
+            return serverNames;
+        }
     }
 
     public String getHostName(String server) throws RemoteException, NotBoundException
@@ -192,7 +221,8 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         return performOperation(FUNKTIONALITAET.GET_HOST_ADDRESS, null, null);
     }
 
-    public String getClientAddress() throws RemoteException {
+    public String getClientAddress() throws RemoteException
+    {
         return fsserver.getClientAddress();
     }
 
@@ -200,11 +230,19 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
      * holt sich die IPv4 Adresse des verbundenen Clients
      * @throws RemoteException
      */
-    public void sendClientAddress(String clientAddress) throws RemoteException
+    public String sendClientAddress(String clientAddress) throws RemoteException, NotBoundException
     {
         clientIP = clientAddress;
         log(" - Client [" + clientAddress + "] connected via RMI handshake");
-        fsserver.sendClientAddress(clientAddress);
+        try
+        {
+            fsserver.sendClientAddress(clientAddress);
+        }
+        catch(RemoteException rex)
+        {
+            return FEHLER_AKTUELLER_SERVER+rex.getMessage();
+        }
+        return "";
     }
 
 
@@ -221,13 +259,15 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         return this.timeStamp;
     }
 
-    public void log(String message) {
+    public void log(String message)
+    {
         setTime();
         System.out.println(getTime() + message);
     }
 
     private void connectFileSystem()throws RemoteException, NotBoundException
     {
+
         Set set = fileServers.entrySet();
         Iterator iterator = set.iterator();
         if (System.getSecurityManager() == null)
@@ -248,45 +288,60 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
      * @throws RemoteException
      * @throws NotBoundException
      */
-    private String iterateFileSystems(FUNKTIONALITAET n, String dir, String file)throws RemoteException, NotBoundException
+    private String iterateFileSystems(FUNKTIONALITAET n, String dir, String file)
     {
         int i = 0;
-        String ergebnis="";
-        String serverName="";
+        String ergebnis = "";
+        String serverName = "";
         Set set = fileServers.entrySet();
         Iterator iterator = set.iterator();
-        if (System.getSecurityManager() == null)
-        {
+        if (System.getSecurityManager() == null) {
             System.setSecurityManager(new SecurityManager());
         }
-        while(iterator.hasNext())
+        try
         {
-            Map.Entry mentry = (Map.Entry)iterator.next();
-            Registry registry = LocateRegistry.getRegistry((String)mentry.getValue(), (Integer)mentry.getKey());
-            this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
-            switch(n)
+            while (iterator.hasNext())
             {
-                case BROWSE_FILES:
-                    ergebnis += "\n"+ fileServerNames[i]+":\n\t\t"+fsserver.browseFiles(dir);break;
-                case BROWSE_DIRS:
-                    serverName = fsserver.getHostName();
-                    fileServerNames[i] = serverName;
-                    ergebnis += "\n"+ fileServerNames[i]+":\n\t\t"+fsserver.browseDirs(dir);break;
-                case SEARCH:
-                    ergebnis += "\n"+ fileServerNames[i]+":\n\t\t"+fsserver.search(file, dir);break;
+                Map.Entry mentry = (Map.Entry) iterator.next();
+                Registry registry = LocateRegistry.getRegistry((String) mentry.getValue(),
+                                                                (Integer) mentry.getKey());
+                this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
+                switch (n)
+                {
+                    case BROWSE_FILES:
+                        ergebnis += "\n" + fileServerNames[i] + ":\n\t\t" + fsserver.browseFiles(dir);
+                        break;
+                    case BROWSE_DIRS:
+                        serverName = fsserver.getHostName();
+                        fileServerNames[i] = serverName;
+                        ergebnis += "\n" + fileServerNames[i] + ":\n\t\t" + fsserver.browseDirs(dir);
+                        break;
+                    case SEARCH:
+                        ergebnis += "\n" + fileServerNames[i] + ":\n\t\t" + fsserver.search(file, dir);
+                        break;
+                }
+                i++;
             }
-            i++;
+            return ergebnis;
         }
-        return ergebnis;
+        catch(RemoteException rex)
+        {
+            return ergebnis+"\n"+FEHLER_VERBINDUNG_MESSAGE+rex.getMessage();
+        }
+        catch(NotBoundException nex)
+        {
+            return ergebnis+"\n"+FEHLER_VERBINDUNG_MESSAGE+nex.getMessage();
+        }
     }
     /**
      * Verbindet den Verwalter zum geforderten FileServer, um anschließend dort eine Operation
      * durchzufuehren
      * @param server der Name des Servers auf dem die Operation durchgefuehrt werden soll
      */
-    private void connectServer(String server) throws RemoteException, NotBoundException
+    private boolean connectServer(String server)
     {
         System.out.println("connectServer(), Server: "+server);
+        System.out.println(fileServerNames[1]);
         if (System.getSecurityManager() == null)
         {
             System.setSecurityManager(new SecurityManager());
@@ -295,20 +350,35 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         Set set = fileServers.entrySet();
         Iterator iterator = set.iterator();
         Map.Entry mentry = (Map.Entry)iterator.next();
-        switch(server)
+        try
         {
-            case "Server1":
-                registry = LocateRegistry.getRegistry((String)mentry.getValue(),(Integer)mentry.getKey());
-                this.fsserver = (FSInterface) registry.lookup("FileSystemServer");break;
-            case "Server2":
-                mentry = (Map.Entry)iterator.next();
-                registry = LocateRegistry.getRegistry((String)mentry.getValue(),(Integer)mentry.getKey());
-                this.fsserver = (FSInterface) registry.lookup("FileSystemServer");break;
-            case "Server3":
-                mentry = (Map.Entry)iterator.next(); mentry = (Map.Entry)iterator.next();
-                registry = LocateRegistry.getRegistry((String)mentry.getValue(),(Integer)mentry.getKey());
-                this.fsserver = (FSInterface) registry.lookup("FileSystemServer");break;
+            if (server.equals(fileServerNames[0]))
+            {
+                registry = LocateRegistry.getRegistry((String) mentry.getValue(), (Integer) mentry.getKey());
+                this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
+            }
+            else if (server.equals(fileServerNames[1]))
+            {
+                mentry = (Map.Entry) iterator.next();
+                registry = LocateRegistry.getRegistry((String) mentry.getValue(), (Integer) mentry.getKey());
+                this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
+            }
+            else if (server.equals(fileServerNames[2]))
+            {
+                mentry = (Map.Entry) iterator.next();mentry = (Map.Entry) iterator.next();
+                registry = LocateRegistry.getRegistry((String) mentry.getValue(), (Integer) mentry.getKey());
+                this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
+            }
         }
+        catch(RemoteException rex)
+        {
+            return false;
+        }
+        catch(NotBoundException nex)
+        {
+            return false;
+        }
+        return true;
     }
     /**
      * Fuehrt die angegebene Operation auf dem derzeit verbundenen FileServer durch
@@ -317,34 +387,51 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
      * @param file Parameter fuer fileName/newName, abhaengig von n
      * @return gibt den Ergebnis String fuer den Methoden Aufruf n zurueck
      */
-    private String performOperation(FUNKTIONALITAET n, String dir, String file)throws RemoteException, NotBoundException
+    private String performOperation(FUNKTIONALITAET n, String dir, String file)
     {
         String ergebnis = "";
-        switch(n)
+        try
         {
-            case BROWSE_DIRS:
-                ergebnis += "\n"+"\n"+fsserver.browseDirs(dir);break;
-            case BROWSE_FILES:
-                ergebnis += "\n"+"\n"+fsserver.browseFiles(dir);break;
-            case CREATE_DIR:
-                ergebnis += "\n"+":\n"+fsserver.createDir(dir);break;
-            case CREATE_FILE:
-                ergebnis += "\n"+":\n"+fsserver.createFile(file);break;
-            case DELETE:
-                ergebnis += "\n"+":\n"+fsserver.delete(file);break;
-            case RENAME:
-                ergebnis += "\n"+":\n"+fsserver.rename(dir, file);break;
-            case GET_OS_NAME:
-                ergebnis += "\n\t\t"+": "+fsserver.getOSName()+" ";break;
-            case GET_HOST_ADDRESS:
-                ergebnis += "\n\t\t"+": "+fsserver.getHostAddress()+" ";break;
-            case GET_HOST_NAME:
-                ergebnis += "\n\t\t"+": "+fsserver.getHostName()+" ";break;
+            switch (n)
+            {
+                case BROWSE_DIRS:
+                    ergebnis += "\n" + "\n" + fsserver.browseDirs(dir);
+                    break;
+                case BROWSE_FILES:
+                    ergebnis += "\n" + "\n" + fsserver.browseFiles(dir);
+                    break;
+                case CREATE_DIR:
+                    ergebnis += "\n" + ":\n" + fsserver.createDir(dir);
+                    break;
+                case CREATE_FILE:
+                    ergebnis += "\n" + ":\n" + fsserver.createFile(file);
+                    break;
+                case DELETE:
+                    ergebnis += "\n" + ":\n" + fsserver.delete(file);
+                    break;
+                case RENAME:
+                    ergebnis += "\n" + ":\n" + fsserver.rename(dir, file);
+                    break;
+                case GET_OS_NAME:
+                    ergebnis += "\n\t\t" + ": " + fsserver.getOSName() + " ";
+                    break;
+                case GET_HOST_ADDRESS:
+                    ergebnis += "\n\t\t" + ": " + fsserver.getHostAddress() + " ";
+                    break;
+                case GET_HOST_NAME:
+                    ergebnis += "\n\t\t" + ": " + fsserver.getHostName() + " ";
+                    break;
+            }
+        }
+        catch(RemoteException rex)
+        {
+            return ergebnis+FEHLER_AKTUELLER_SERVER+rex.getMessage();
         }
         return ergebnis;
     }
 
-    public Path [] getFileList() throws RemoteException{
+    public Path [] getFileList() throws RemoteException
+    {
         return fsserver.getFileList();
     }
 }

@@ -7,7 +7,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
 /**
- * HtwSoftVerwalter-Klasse zum starten eines VerwalterServers
+ * <br>HtwSoftVerwalter-Klasse zum starten eines VerwalterServers</br>
  * und zur Initialisierung einer RMI Verbindung fuer FileSystemClients
  * @author soezdemir
  * @version 1.03

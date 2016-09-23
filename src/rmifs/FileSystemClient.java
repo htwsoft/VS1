@@ -1,6 +1,5 @@
 package rmifs;
 
-import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -39,55 +38,58 @@ public class FileSystemClient
 	}
 	
 	/**
-	* Führt die Browse-Methode der FileSystemServer-Klasse aus, bzw. initialBrowse
+	* <br>Fuehrt die Browse-Methode der FileSystemServer-Klasse aus, bzw. initialBrowse</br>
 	*/
 	public void browse()
 	{
-		String pfad = "";
+		String pfad;
 		String erg = "";
 		String [] dirListe;
 		String [] fileListe;	
-		try
+
+
+
+		if(initialBrowse)
 		{
+			Scanner eingabe = new Scanner(System.in);
+			System.out.print("Welcher Ordner soll untersucht werden?: ");
+			pfad = eingabe.nextLine();
 
-			if(initialBrowse)
-			{
-				Scanner eingabe = new Scanner(System.in);
-				System.out.print("Welcher Ordner soll untersucht werden?: ");
-				pfad = eingabe.nextLine();
-
+			try {
 				erg = this.vserver.browseDirs(pfad, aktuellerServer );
-				dirListe = erg.split("[;]");
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			} catch (NotBoundException e) {
+				e.printStackTrace();
+			}
+			dirListe = erg.split("[;]");
 
+			try {
 				erg = this.vserver.browseFiles(pfad, aktuellerServer);
-				fileListe = erg.split("[;]");
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			} catch (NotBoundException e) {
+				e.printStackTrace();
+			}
+			fileListe = erg.split("[;]");
 
-				System.out.println("File-Liste");
-				System.out.println("---------------------------------------------------------------");
-				for(int i=0; i<fileListe.length; i++)
-				{
-					System.out.println(fileListe[i]);
-				}
-				System.out.println("");
-				System.out.println("Dir-Liste");
-				System.out.println("---------------------------------------------------------------");
-				for(int j=0; j<dirListe.length; j++)
-				{
-					System.out.println(dirListe[j]);
-				}
-			}
-			else
+			System.out.println("File-Liste");
+			System.out.println("---------------------------------------------------------------");
+			for(int i=0; i<fileListe.length; i++)
 			{
-				initialBrowse();
+				System.out.println(fileListe[i]);
+			}
+			System.out.println("");
+			System.out.println("Dir-Liste");
+			System.out.println("---------------------------------------------------------------");
+			for(int j=0; j<dirListe.length; j++)
+			{
+				System.out.println(dirListe[j]);
 			}
 		}
-		catch(IOException e)
+		else
 		{
-			e.printStackTrace();
-		}
-		catch(NotBoundException nex)
-		{
-			nex.printStackTrace();
+			initialBrowse();
 		}
 	}
 
@@ -96,16 +98,28 @@ public class FileSystemClient
 	 * @throws RemoteException
 	 * @throws NotBoundException
 	 */
-	private void initialBrowse() throws RemoteException, NotBoundException
+	private void initialBrowse()
 	{
 		String erg = "";
 		String pfad = "";
 		String[] fileListe;
 		String[] dirListe;
-		erg = this.vserver.initialBrowseDirs(pfad);
+		try {
+			erg = this.vserver.initialBrowseDirs(pfad);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+			e.printStackTrace();
+		}
 		dirListe = erg.split("[;]");
 
-		erg = this.vserver.initialBrowseFiles(pfad);
+		try {
+			erg = this.vserver.initialBrowseFiles(pfad);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+			e.printStackTrace();
+		}
 		fileListe = erg.split("[;]");
 
 		System.out.println("File-Liste");
@@ -124,10 +138,10 @@ public class FileSystemClient
 		initialBrowse = true;
 	}
 
-    public void search() throws RemoteException
+    public void search()
     {
-        String pfad = "";
-        String startDir = "";
+        String pfad;
+        String startDir;
         String erg = "";
         String [] fileListe;
         Scanner eingabe = new Scanner(System.in);
@@ -135,148 +149,134 @@ public class FileSystemClient
         pfad = eingabe.nextLine();
         System.out.print("Wo soll gesucht werden?: ");
         startDir = eingabe.nextLine();
-        try
-        {
-            erg = this.vserver.search(pfad, startDir);
-            if(erg.contains("Nicht gefunden,"))
-            {
-                System.out.println(erg);
-            }
-            else
-            {
-                fileListe = erg.split("[;]");
-                System.out.println("Found-Files");
-                System.out.println("---------------------------------------------------------------");
-
-                for(int i=0; i<fileListe.length; i++)
-                {
-                    System.out.println(fileListe[i]);
-                }
-            }
-        }
-        catch(IOException e)
-        {
-            System.out.println("Fehler: " + e.getMessage());
-        }
-		catch(NotBoundException nex)
-		{
-			nex.printStackTrace();
+		try {
+			erg = this.vserver.search(pfad, startDir);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+			e.printStackTrace();
 		}
-    }
+		if(erg.contains("Nicht gefunden,")||erg.contains("unterbrochen"))
+        {
+			fileListe = erg.split("[;]");
+			System.out.println("Found-Files");
+			System.out.println("---------------------------------------------------------------");
+
+			for(int i=0; i<fileListe.length; i++)
+			{
+				System.out.println(fileListe[i]);
+			}
+        }
+        else
+        {
+            fileListe = erg.split("[;]");
+            System.out.println("Found-Files");
+            System.out.println("---------------------------------------------------------------");
+
+            for(int i=0; i<fileListe.length; i++)
+            {
+                System.out.println(fileListe[i]);
+            }
+        }
+	}
 
 	public void createDir()
 	{
-		String pfad = "";
+		String erg = "";
+		String pfad;
 		Scanner eingabe = new Scanner(System.in);
 		System.out.print("Welcher Ordner soll erstellt werden?: ");
 		pfad = eingabe.nextLine();
-		try
-		{
-			if( this.vserver.createDir(pfad, aktuellerServer))
-			{
-				System.out.println("Ordner wurde erstellt!");	
-			}
-			else
-			{
-				System.out.println("Ordner konnte NICHT erstellt werden!");
-			}
+		try {
+			erg = this.vserver.createDir(pfad, aktuellerServer);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+			e.printStackTrace();
 		}
-		catch(IOException ioe)
-		{
-			ioe.printStackTrace();
-		}
-		catch(NotBoundException nex)
-		{
-			nex.printStackTrace();
-		}
+		if(erg.contains("true"))
+			System.out.println("Ordner wurde erstellt!");
+		else if(erg.contains("false"))
+			System.out.println("Ordner konnte NICHT erstellt werden!");
+		else
+			System.out.println(erg);
 	}
 	
-	public void createFile()
+	public void createFile() throws RemoteException, NotBoundException
 	{
-		String pfad = "";
+		String pfad;
+		String erg = "";
 		Scanner eingabe = new Scanner(System.in);
 		System.out.print("Welche Datei soll erstellt werden?: ");
 		pfad = eingabe.nextLine();
-		try
-		{
-			if( this.vserver.createFile(pfad, aktuellerServer ))
-			{
-				System.out.println("Datei wurde erstellt!");	
-			}
-			else
-			{
-				System.out.println("Datei konnte NICHT erstellt werden!");
-			}
+		try {
+			erg = this.vserver.createFile(pfad, aktuellerServer);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+			e.printStackTrace();
 		}
-		catch(IOException e)
-		{
-			System.out.println("Fehler: " + e.getMessage());	
-		}
-		catch(NotBoundException nex)
-		{
-			nex.printStackTrace();
-		}
+		if(erg.contains("true"))
+			System.out.println("Datei wurde erstellt!");
+		else if(erg.contains("false"))
+			System.out.println("Datei konnte NICHT erstellt werden!");
+		else
+			System.out.println(erg);
 	}
 	
-	public void delete()
+	public void delete() throws RemoteException, NotBoundException
 	{
-		String pfad = "";
+		String pfad;
+		String erg = "";
 		Scanner eingabe = new Scanner(System.in);
 		System.out.print("Welcher Ordner soll gelöscht werden?: ");
 		pfad = eingabe.nextLine();
-		try
-		{
-			if( this.vserver.delete(pfad, aktuellerServer ))
-			{
-				System.out.println("Ordner oder Datei wurde geloescht!");
-			}
-			else
-			{
-				System.out.println("Ordner oder Datei konnte NICHT geloescht werden!");
-			}
+		try {
+			erg = this.vserver.delete(pfad, aktuellerServer);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+			e.printStackTrace();
 		}
-		catch(IOException e)
-		{
-			System.out.println("Fehler: " + e.getMessage());	
-		}
-		catch(NotBoundException nex)
-		{
-			nex.printStackTrace();
-		}
+		if(erg.contains("true"))
+			System.out.println("Ordner oder Datei wurde geloescht");
+
+		else if(erg.contains("false"))
+			System.out.println("Ordner oder Datei konnte NICHT geloescht werden!");
+
+		else
+			System.out.println(erg);
+
 	}
 	
-	public void rename()
+	public void rename() throws RemoteException, NotBoundException
 	{
-		String oldName = "";
-		String newName = "";
+		String oldName;
+		String newName;
+		String erg = "";
 		Scanner eingabe = new Scanner(System.in);
 		System.out.print("Welcher Ordner soll umbenannt werden?: ");
 		oldName = eingabe.nextLine();
 		System.out.print("Welcher Zielname?: ");
 		newName = eingabe.nextLine();
-		try
-		{
-			if( this.vserver.rename(oldName, newName, aktuellerServer ))
-			{
-				System.out.println("Ordner oder Datei wurde umbenannt!");
-			}
-			else
-			{
-				System.out.println("Ordner oder Datei konnte NICHT umbenannt werden!");
-			}
+		try {
+			erg = this.vserver.rename(oldName,newName, aktuellerServer);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+			e.printStackTrace();
 		}
-		catch(IOException e)
-		{
-			System.out.println("Fehler: " + e.getMessage());	
-		}
-		catch(NotBoundException nex)
-		{
-			nex.printStackTrace();
-		}
+		if(erg.contains("true"))
+			System.out.println("Ordner oder Datei wurde umbenannt!");
+		else if(erg.contains("false"))
+			System.out.println("Ordner oder Datei konnte nicht umbenannt werden!");
+		else
+			System.out.println(erg);
 
-	}	
+
+	}
 	
-	public void osname()
+	public void osname() throws RemoteException, NotBoundException
 	{
 		try
 		{
@@ -294,40 +294,47 @@ public class FileSystemClient
 	
 
 	/**
-	 * Fragt die verfuegbaren VerwalterServer ab, also deren Name und IP
+	 * <br>Fragt die verfuegbaren VerwalterServer ab, also deren Name und IP</br>
      */
-	public void list() throws RemoteException
+	public void list() throws RemoteException, NotBoundException
 	{
-		String serverListe;
-		try
-		{
+		String serverListe = "";
+		try {
 			serverListe = vserver.getServerList();
-			System.out.println(serverListe);
+		} catch (NotBoundException e) {
+			e.printStackTrace();
 		}
-		catch(Exception e)
-		{
-			System.out.println("Fehler: "+ e.getMessage());
-		}
+		System.out.println(serverListe);
 	}
 
-	//ToDo --> noch in Bearbeitung durch soezdemir
 	/**
-	 * Folgende Methoden liefern den Namen, IP-Adresse
-	 * und den OS-Nammen eines Clients zurück
+	 * <br>Folgende Methoden liefern den Namen, IP-Adresse
+	 * und den OS-Nammen eines Clients zurück</br>
 	 * @return Host Name, IP-Adresse und OS des Clients
 	 * @throws RemoteException
 	 * @author soezdemir
 	 */
-	public void setClientAddress(String clientAddress)throws RemoteException
+	public void setClientAddress(String clientAddress) throws RemoteException, NotBoundException
     {
+
 		this.clientAddress = clientAddress;
 		sendClientAddress(clientAddress);
 	}
 
-	public void sendClientAddress(String clientAddress) throws RemoteException
+	public void sendClientAddress(String clientAddress) throws RemoteException, NotBoundException
     {
-		vserver.sendClientAddress(clientAddress);
-		System.out.println("\n***** Client: -> IP: [" + clientAddress + "] *****\n");
+		String erg = "";
+		try {
+			erg = vserver.sendClientAddress(clientAddress);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+			e.printStackTrace();
+		}
+		if(erg.contains(""))
+			System.out.println("\n***** Client: -> IP: [" + clientAddress + "] *****\n");
+		else
+			System.out.println(erg);
 	}
 
 	public String getClientAddress()
@@ -355,7 +362,7 @@ public class FileSystemClient
 	}
 
 	/**
-	 * Bestimmt auf welchem Server ab jetzt gearbeitet werden soll
+	 * <br>Bestimmt auf welchem Server ab jetzt gearbeitet werden soll</br>
 	 * @param server Server der ausgewaehlt wurde
 	 */
 	public void setServer(int server)
@@ -375,11 +382,17 @@ public class FileSystemClient
 		}
 	}
 	/**
-	 * Fordert die Namen der FileServer an und speichert sie in dem Attribut fileServerNames
+	 * <br>Fordert die Namen der FileServer an und speichert sie in dem Attribut fileServerNames</br>
 	 */
 	public void getServerNames() throws RemoteException, NotBoundException
 	{
-		fileServerNames = vserver.getAllHosts();
+		try {
+			fileServerNames = vserver.getAllHosts();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+			e.printStackTrace();
+		}
 	}
 }
 
