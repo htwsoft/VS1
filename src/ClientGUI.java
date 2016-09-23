@@ -506,6 +506,7 @@ public class ClientGUI extends JFrame implements ActionListener
         String wahl = clientTextArea.getText().trim();
         String [] parts = wahl.split(":");
         String loeschPfad = parts[parts.length - 1].trim();
+        TreePath aktuellerBaumPfad = tree1.getSelectionPath();
 
         int jaNein = JOptionPane.showConfirmDialog(null, "Soll  " + loeschPfad + "  wirklich geloescht werden?", "Delete", JOptionPane.YES_NO_OPTION);
 
@@ -515,6 +516,7 @@ public class ClientGUI extends JFrame implements ActionListener
             {
                 if( this.vServer.delete(loeschPfad) )
                 {
+                    aktuellerBaumPfad = tree1.getSelectionPath().getParentPath();
                     JOptionPane.showMessageDialog(null, loeschPfad + "  wurde geloescht!", "Delete", JOptionPane.INFORMATION_MESSAGE);
                 }
                 else
@@ -527,6 +529,11 @@ public class ClientGUI extends JFrame implements ActionListener
                 client.append("Fehler: " + eDelete.getMessage());
             }
         }
+        System.out.println(aktuellerBaumPfad);
+        refreshBaum();
+        //System.out.println("REFRESH\n");
+        //tree1.collapsePath(aktuellerBaumPfad);
+        tree1.expandPath(aktuellerBaumPfad);
     }
 
     /**
@@ -603,26 +610,7 @@ public class ClientGUI extends JFrame implements ActionListener
 
     private void backButton()
     {
-
-//        String wahl = clientTextArea.getText().trim();
-//        String [] parts = wahl.split(":");
-//        String backPfad = parts[parts.length - 1].trim();
-//        String pfad = null;
-//        String trenner = "\\";
-//
-//        String [] einzelnerPfad = backPfad.split(trenner);
-//        clientTextArea.append("LANGE:" + einzelnerPfad.length + "\n");
-//        for(int i=0; i<=einzelnerPfad.length; i++) {
-//            clientTextArea.append("EIN:" + einzelnerPfad);
-//            pfad = einzelnerPfad[i].trim();
-//        }
-//
-//
-//        clientTextArea.append("BACK1:" + backPfad + "\n");
-//        clientTextArea.append("BACK:2" + pfad + "\n");
-//
-//        browse(pfad);
-
+        browse("\\");
     }
 
     /**
