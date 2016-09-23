@@ -330,6 +330,14 @@ public class ClientGUI extends JFrame implements ActionListener
         String wahl = clientTextArea.getText().trim();
         String [] parts = wahl.split(":");
         String dirPfad = parts[parts.length - 1].trim();
+        TreePath path = tree1.getSelectionPath();
+
+
+        if (path == null)
+        {
+            JOptionPane.showMessageDialog(null, "  TEST konnte NICHT erstellt werden", "Create Directory", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         JFrame eingabe = new JFrame();
         String pfad = JOptionPane.showInputDialog(eingabe, "Welcher Ordner soll erstellt werden?", "Create Directory", JOptionPane.PLAIN_MESSAGE);
@@ -350,9 +358,10 @@ public class ClientGUI extends JFrame implements ActionListener
             {
                 client.append("Fehler: " + eDir.getMessage()+"\n");
             }
-            TreePath aktuellerBaumPfad = tree1.getSelectionPath();
+
+            System.out.println(path);
             refreshBaum();
-            tree1.expandPath(aktuellerBaumPfad);
+            tree1.expandPath(path);
         }
     }
 
@@ -364,6 +373,13 @@ public class ClientGUI extends JFrame implements ActionListener
         String wahl = clientTextArea.getText().trim();
         String [] parts = wahl.split(":");
         String filePfad = parts[parts.length - 1].trim();
+        TreePath path = tree1.getSelectionPath();
+
+        if (path == null)
+        {
+            JOptionPane.showMessageDialog(null, "  TEST konnte NICHT erstellt werden", "Create Directory", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         JFrame eingabe = new JFrame();
         String pfad = JOptionPane.showInputDialog(eingabe, "Welche Datei soll erstellt werden?", "Create File", JOptionPane.PLAIN_MESSAGE);
@@ -385,9 +401,9 @@ public class ClientGUI extends JFrame implements ActionListener
             {
                 client.append("Fehler: " + eFile.getMessage() + "\n");
             }
-            TreePath aktuellerBaumPfad = tree1.getSelectionPath();
+
             refreshBaum();
-            tree1.expandPath(aktuellerBaumPfad);
+            tree1.expandPath(path);
         }
     }
 
@@ -507,6 +523,7 @@ public class ClientGUI extends JFrame implements ActionListener
         String [] parts = wahl.split(":");
         String loeschPfad = parts[parts.length - 1].trim();
         TreePath aktuellerBaumPfad = tree1.getSelectionPath();
+        //aktuellerBaumPfad = tree1.getSelectionPath().getParentPath();
 
         int jaNein = JOptionPane.showConfirmDialog(null, "Soll  " + loeschPfad + "  wirklich geloescht werden?", "Delete", JOptionPane.YES_NO_OPTION);
 
@@ -530,10 +547,12 @@ public class ClientGUI extends JFrame implements ActionListener
             }
         }
         System.out.println(aktuellerBaumPfad);
+        System.out.println(loeschPfad);
         refreshBaum();
         //System.out.println("REFRESH\n");
         //tree1.collapsePath(aktuellerBaumPfad);
         tree1.expandPath(aktuellerBaumPfad);
+        //tree1.expandPath(aktuellerBaumPfad);
     }
 
     /**
