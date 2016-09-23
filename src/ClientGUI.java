@@ -181,7 +181,7 @@ public class ClientGUI extends JFrame implements ActionListener {
      **/
     private void startClientButton() {
         int serverPort;
-        String host = "10.9.40.137";
+        String host = "192.168.178.31";
         try {
             serverPort = Integer.parseInt(portTextFeld.getText().trim());
         } catch (Exception er) {
@@ -374,6 +374,7 @@ public class ClientGUI extends JFrame implements ActionListener {
         JFrame eingabe = new JFrame();
         //String oldName = JOptionPane.showInputDialog(eingabe, "Was soll umbeannt werden?", "Rename", JOptionPane.PLAIN_MESSAGE);
         String newName = JOptionPane.showInputDialog(eingabe, "Wie lautet die neue Bezeichnung?", "Rename", JOptionPane.PLAIN_MESSAGE);
+
         try {
             if (this.vServer.rename(renamePfad, newName)) {
                 JOptionPane.showMessageDialog(null, "Ordner oder Datei wurde umbenannt!", "Rename", JOptionPane.INFORMATION_MESSAGE);
