@@ -219,8 +219,9 @@ public class ClientGUI extends JFrame implements ActionListener
     }
 
     /**
+     * Zeigt ausgewählten Knoten als root
      * fuehrt die Aktion des startClientButton-button aus
-     * */
+     **/
     private void startClientButton()
     {
         int serverPort;
