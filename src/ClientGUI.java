@@ -370,11 +370,27 @@ public class ClientGUI extends JFrame implements ActionListener {
         String wahl = clientTextArea.getText().trim();
         String[] parts = wahl.split(":");
         String renamePfad = parts[parts.length - 1].trim();
+        String oldPath = "";
+        String newName = "";
 
         JFrame eingabe = new JFrame();
         //String oldName = JOptionPane.showInputDialog(eingabe, "Was soll umbeannt werden?", "Rename", JOptionPane.PLAIN_MESSAGE);
-        String newName = JOptionPane.showInputDialog(eingabe, "Wie lautet die neue Bezeichnung?", "Rename", JOptionPane.PLAIN_MESSAGE);
+        String name = JOptionPane.showInputDialog(eingabe, "Wie lautet die neue Bezeichnung?", "Rename", JOptionPane.PLAIN_MESSAGE);
 
+        String array[] = renamePfad.split("\\\\");
+        for (int i=0; i<array.length; i++) {
+            array[i].trim();
+        }
+        for (int i=1; i<array.length-1; i++) {
+
+            System.out.println("ARRAY " + i + ": " + array[i]);
+            oldPath = oldPath + "\\" + array[i];
+            System.out.println("NEWNAME " + oldPath);
+        }
+
+        newName = oldPath + "\\" + name; // newName ist der ganze alte Pfad(oldPath) + der neue Name. z.B. \test\NeuerName
+
+        TreePath aktuellerBaumPfad = tree1.getSelectionPath().getParentPath().getParentPath();
         try {
             if (this.vServer.rename(renamePfad, newName)) {
                 JOptionPane.showMessageDialog(null, "Ordner oder Datei wurde umbenannt!", "Rename", JOptionPane.INFORMATION_MESSAGE);
@@ -384,6 +400,8 @@ public class ClientGUI extends JFrame implements ActionListener {
         } catch (IOException eRename) {
             client.append("Fehler: " + eRename.getMessage() + "\n");
         }
+        refreshBaum();
+        tree1.expandPath(aktuellerBaumPfad);
     }
 
     /**
