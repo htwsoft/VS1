@@ -26,6 +26,7 @@
             <constraints/>
             <properties>
               <background color="-16069377"/>
+              <editable value="false"/>
               <foreground color="-12828863"/>
               <minimumSize width="0" height="0"/>
               <text value=""/>
