@@ -295,9 +295,8 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         String serverName = "";
         Set set = fileServers.entrySet();
         Iterator iterator = set.iterator();
-        if (System.getSecurityManager() == null) {
+        if (System.getSecurityManager() == null)
             System.setSecurityManager(new SecurityManager());
-        }
         try
         {
             while (iterator.hasNext())
@@ -317,7 +316,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
                         ergebnis += "\n" + fileServerNames[i] + ":\n\t\t" + fsserver.browseDirs(dir);
                         break;
                     case SEARCH:
-                        ergebnis += "\n" + fileServerNames[i] + ":\n\t\t" + fsserver.search(file, dir);
+                        ergebnis += "\n" + fileServerNames[i] + ":\n\t\t" + fsserver.search(dir, file);
                         break;
                 }
                 i++;

@@ -18,7 +18,7 @@ public class HtwSoftClient {
                                                                 " werden bzw. sie wurde unterbrochen!";
     private enum MENUE { CLOSE, LIST, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE,
                          RENAME, OS_NAME, SERVER_WAHL, FALSE }
-    private final static String SERVER_HOST_IP = "192.168.0.26";
+    private final static String SERVER_HOST_IP = "192.168.0.24";
     private final static int VERWALTER_PORT_NR = 4712;
 
     private static FileSystemClient client;
