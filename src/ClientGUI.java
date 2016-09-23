@@ -222,71 +222,81 @@ public class ClientGUI extends JFrame implements ActionListener {
 
     /**
      * fuehrt die Aktion des createDir-button aus
-     */
-    private void createDirButton() {
+     * */
+    private void createDirButton()
+    {
         String wahl = clientTextArea.getText().trim();
-        String[] parts = wahl.split(":");
+        String [] parts = wahl.split(":");
         String dirPfad = parts[parts.length - 1].trim();
-        TreePath path = tree1.getSelectionPath();
 
-
-        if (path == null) {
-            JOptionPane.showMessageDialog(null, "  TEST konnte NICHT erstellt werden", "Create Directory", JOptionPane.ERROR_MESSAGE);
+        if (tree1.getSelectionPath() == null)
+        {
+            JOptionPane.showMessageDialog(null, "Bitte Pfad/Datei waehlen!", "Create Directory", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
         JFrame eingabe = new JFrame();
         String pfad = JOptionPane.showInputDialog(eingabe, "Welcher Ordner soll erstellt werden?", "Create Directory", JOptionPane.PLAIN_MESSAGE);
-        if (pfad != null) {
-            try {
-                if (this.vServer.createDir(dirPfad + "//" + pfad)) {
-                    JOptionPane.showMessageDialog(null, pfad + "  wurde erstellt!", "Create Directory", JOptionPane.INFORMATION_MESSAGE);
-                } else {
+        if(pfad != null)
+        {
+            try
+            {
+                if( this.vServer.createDir(dirPfad + "//" + pfad) )
+                {
+                    JOptionPane.showMessageDialog(null, pfad + "   wurde erstellt!", "Create Directory", JOptionPane.INFORMATION_MESSAGE);
+                }
+                else
+                {
                     JOptionPane.showMessageDialog(null, pfad + "   konnte NICHT erstellt werden", "Create Directory", JOptionPane.ERROR_MESSAGE);
                 }
-            } catch (IOException eDir) {
-                client.append("Fehler: " + eDir.getMessage() + "\n");
             }
-
-            System.out.println(path);
+            catch(IOException eDir)
+            {
+                client.append("Fehler: " + eDir.getMessage()+"\n");
+            }
+            TreePath aktuellerBaumPfad = tree1.getSelectionPath();
             refreshBaum();
-            tree1.expandPath(path);
+            tree1.expandPath(aktuellerBaumPfad);
         }
     }
 
     /**
      * fuehrt die Aktion des createFile-button aus
-     */
-    private void createFileButton() {
+     * */
+    private void createFileButton()
+    {
         String wahl = clientTextArea.getText().trim();
-        String[] parts = wahl.split(":");
+        String [] parts = wahl.split(":");
         String filePfad = parts[parts.length - 1].trim();
-        TreePath path = tree1.getSelectionPath();
 
-        if (path == null) {
-            JOptionPane.showMessageDialog(null, "  TEST konnte NICHT erstellt werden", "Create Directory", JOptionPane.ERROR_MESSAGE);
+        if (tree1.getSelectionPath() == null)
+        {
+            JOptionPane.showMessageDialog(null, "Bitte Pfad/Datei waehlen!", "Create File", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
         JFrame eingabe = new JFrame();
         String pfad = JOptionPane.showInputDialog(eingabe, "Welche Datei soll erstellt werden?", "Create File", JOptionPane.PLAIN_MESSAGE);
-        System.out.println(pfad + "\n");
-        if (pfad != null) {
-            try {
-                if (this.vServer.createFile(filePfad + "//" + pfad)) {
-                    JOptionPane.showMessageDialog(null, pfad + "  wurde erstellt!", "Create File", JOptionPane.INFORMATION_MESSAGE);
-                } else {
+        if(pfad != null)
+        {
+            try
+            {
+                if( this.vServer.createFile( filePfad + "//" + pfad ))
+                {
+                    JOptionPane.showMessageDialog(null, pfad + "   wurde erstellt!", "Create File", JOptionPane.INFORMATION_MESSAGE);
+                }
+                else
+                {
                     JOptionPane.showMessageDialog(null, pfad + "   konnte NICHT erstellt werden!", "Create File", JOptionPane.ERROR_MESSAGE);
                 }
-            } catch (IOException eFile) {
+            }
+            catch(IOException eFile)
+            {
                 client.append("Fehler: " + eFile.getMessage() + "\n");
             }
-
+            TreePath aktuellerBaumPfad = tree1.getSelectionPath();
             refreshBaum();
-            tree1.expandPath(path);
+            tree1.expandPath(aktuellerBaumPfad);
         }
     }
-
 
     /**
      * fuehrt die Aktion des search-button aus
@@ -334,6 +344,12 @@ public class ClientGUI extends JFrame implements ActionListener {
         if (jaNein == JOptionPane.YES_OPTION) {
             try {
                 if (this.vServer.delete(loeschPfad)) {
+
+                    DefaultMutableTreeNode node;
+                    DefaultTreeModel model = (DefaultTreeModel) (tree1.getModel());
+                    node = (DefaultMutableTreeNode) (aktuellerBaumPfad.getLastPathComponent());
+                    model.removeNodeFromParent(node);
+
                     aktuellerBaumPfad = tree1.getSelectionPath().getParentPath();
                     JOptionPane.showMessageDialog(null, loeschPfad + "  wurde geloescht!", "Delete", JOptionPane.INFORMATION_MESSAGE);
                 } else {
