@@ -3,6 +3,8 @@ import javax.swing.event.*;
 import javax.swing.tree.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -133,6 +135,25 @@ public class ClientGUI extends JFrame implements ActionListener {
                     }
                 } catch (RemoteException re) {
                     re.printStackTrace();
+                }
+            }
+        });
+
+        searchFeld.addKeyListener(new KeyAdapter()
+        {
+        });
+        searchFeld.addKeyListener(new KeyAdapter()
+        {
+        });
+        searchFeld.addKeyListener(new KeyAdapter()
+        {
+            @Override
+            public void keyPressed(KeyEvent e)
+            {
+                super.keyPressed(e);
+                if (e.getKeyCode() == KeyEvent.VK_ENTER)
+                {
+                    searchButton();
                 }
             }
         });
@@ -337,23 +358,36 @@ public class ClientGUI extends JFrame implements ActionListener {
         String[] fileListe2;
         //Erste Eingabe: Was suchen Sie?
         //Text im Label ist die Bedingung
-        if (ersteEingabe == true) {
+        if (ersteEingabe == true)
+        {
             searchPfad = searchFeld.getText();
             searchLabel.setText("Wo suchen?");
             searchFeld.setText("");
             ersteEingabe = false;
-        } else if (ersteEingabe == false) {
-            String startDir = searchFeld.getText();
-            try {
-                erg = this.vServer.search(searchPfad, startDir);
-                fileListe2 = erg.split("[;]");
-                client.append("Found-Files: \n");
-                client.append("---------------------------------------------------------------\n");
-                for (int i = 0; i < fileListe2.length; i++) {
-                    client.append(fileListe2[i] + "\n");
+        }
+        else if (ersteEingabe == false)
+        {
+            String startDir = searchFeld.getText().trim();
+            if(startDir.equals("\\"))
+            {
+                client.append("\n Suche auf root ist aus Performancegruenden deaktiviert.\n Bitte anderen Pfad eingeben.\n");
+            }
+            else
+            {
+                try
+                {
+                    erg = this.vServer.search(searchPfad, startDir);
+                    fileListe2 = erg.split("[;]");
+                    client.append("\n Found-Files: \n");
+                    for (int i = 0; i < fileListe2.length; i++)
+                    {
+                        client.append("  " + fileListe2[i] + "\n");
+                    }
+                    client.append("---------------------------------------------------------------\n");
+                } catch (IOException eSeach)
+                {
+                    client.append("Fehler: " + eSeach.getMessage() + "\n");
                 }
-            } catch (IOException eSeach) {
-                client.append("Fehler: " + eSeach.getMessage() + "\n");
             }
             searchLabel.setText("Was suchen?");
             searchFeld.setText("");
@@ -571,6 +605,7 @@ public class ClientGUI extends JFrame implements ActionListener {
         sWechselButton.addActionListener(this);
         anzeigenButton.addActionListener(this);
         backButton.addActionListener(this);
+        //searchFeld.addKeyListener(this);
     }
 
     public static void main(String[] args) throws IOException
