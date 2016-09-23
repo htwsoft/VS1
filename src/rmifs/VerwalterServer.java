@@ -22,9 +22,9 @@ import java.util.*;
 
 public class VerwalterServer implements VerwalterInterface, RMIClientSocketFactory
 {
-    private static final String FEHLER_VERBINDUNG_MESSAGE = "Fehler!\n\tDie Verbindung zu einem der File-Server ist unterbrochen!\n" +
+    private static final String FEHLER_VERBINDUNG_MESSAGE = "\nFehler!\n\tDie Verbindung zu einem der File-Server ist unterbrochen!\n" +
             "Die angezeigten Informationen sind moeglicherweise lueckenhaft!\nBitte versuchen Sie es spaeter noch einmal!\n";
-    private static final String FEHLER_AKTUELLER_SERVER = "Fehler!\n\tDie Verbindung zu dem Server auf dem Sie arbeiten wollen ist " +
+    private static final String FEHLER_AKTUELLER_SERVER = "\nFehler!\n\tDie Verbindung zu dem Server auf dem Sie arbeiten wollen ist " +
             "unterbrochen! Bitte versuchen Sie es spaeter noch einmal!\n";
     private ArrayList<FileServerListenElement> fileServerListe = new ArrayList<>();
     //private HashMap<Integer, String> fileServers;
@@ -59,8 +59,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         fileServers.put(startPort, startIp);
         */
         fileServerListe.add(new FileServerListenElement(null, startIp, startPort));
-        fileServerListe.add(new FileServerListenElement(null, "192.168.0.26", 6666));
-        fileServerListe.add(new FileServerListenElement(null, "192.168.0.26", 8888));
+        fileServerListe.add(new FileServerListenElement(null, "192.168.0.24", 6666));
     }
 
     /**
