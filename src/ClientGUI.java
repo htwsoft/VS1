@@ -72,11 +72,7 @@ public class ClientGUI extends JFrame implements ActionListener {
 
         model.reload(root);
 
-        frame.pack();
         frame.setVisible(true);
-        frame.setSize(1100, 800);
-        //frame.setResizable(false);
-        frame.setLocation(10, 10);
 
         /**Logo laden, muss im selben dir sein wie die java Files oder absoluten Pfad eingeben */
         ImageIcon img = new ImageIcon("htw.png");
@@ -87,9 +83,10 @@ public class ClientGUI extends JFrame implements ActionListener {
 
         deaktiviereButtons();
 
-        frame.pack();
-        frame.setSize(1000, 1000);
+        //frame.setSize(1000, 1000);
         frame.setLocation(50, 0);
+        frame.pack();
+        //frame.setSize(1000, 1000);
 
 
         /** listener fuer den tree*/
@@ -102,7 +99,8 @@ public class ClientGUI extends JFrame implements ActionListener {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) ae.getPath().getLastPathComponent();
 
                 //event verlassen wenn keine Node ausgewaehlt wurde
-                if (node == null) {
+                if (node == null)
+                {
                     return;
                 }
 
@@ -110,21 +108,27 @@ public class ClientGUI extends JFrame implements ActionListener {
                 client.append("Ausgewaehlt: " + pfad + "\n");
 
                 node.removeAllChildren();
-                try {
+                try
+                {
                     String dirs = vServer.browseDirs(pfad);
                     String[] dirList = dirs.split("[;]");
                     String files = vServer.browseFiles(pfad);
                     String[] fileList = files.split("[;]");
+
                     //verarbeiten der gefunden Ordner
-                    for (int i = 0; i < dirList.length; i++) {
-                        if (!dirList[i].equals("")) {
+                    for (int i = 0; i < dirList.length; i++)
+                    {
+                        if (!dirList[i].equals(""))
+                        {
                             node.add(new DefaultMutableTreeNode(dirList[i]));
                         }
                     }
 
                     //verarbeite der gefundenen dateien
-                    for (int j = 0; j < fileList.length; j++) {
-                        if (!fileList[j].equals("")) {
+                    for (int j = 0; j < fileList.length; j++)
+                    {
+                        if (!fileList[j].equals(""))
+                        {
                             Contact temp = new Contact(fileList[j]);
                             node.add(new DefaultMutableTreeNode(temp));
                         }
@@ -137,7 +141,8 @@ public class ClientGUI extends JFrame implements ActionListener {
     }
 
 
-    void append(String text) {
+    void append(String text)
+    {
         clientTextArea.append(text);
         clientTextArea.setCaretPosition(clientTextArea.getText().length() - 1);
     }
@@ -145,7 +150,8 @@ public class ClientGUI extends JFrame implements ActionListener {
     /**
      * Button gedrückt
      */
-    public void actionPerformed(ActionEvent ae) {
+    public void actionPerformed(ActionEvent ae)
+    {
         /**
          * Die Quelle des Events finden,
          * d.h. welcher Button wurden geklickt?
@@ -179,17 +185,20 @@ public class ClientGUI extends JFrame implements ActionListener {
      * Zeigt ausgewählten Knoten als root
      * fuehrt die Aktion des startClientButton-button aus
      **/
-    private void startClientButton() {
+    private void startClientButton()
+    {
         int serverPort;
-        String host = "192.168.178.31";
+        String host = "192.168.0.101";
         try {
             serverPort = Integer.parseInt(portTextFeld.getText().trim());
         } catch (Exception er) {
             JOptionPane.showMessageDialog(null, "Fehler bei der Port-Eingabe", "Port-Nr", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        try {
-            if (System.getSecurityManager() == null) {
+        try
+        {
+            if (System.getSecurityManager() == null)
+            {
                 System.setSecurityManager(new SecurityManager());
             }
             Registry registry = LocateRegistry.getRegistry(host, serverPort + 1);
@@ -211,8 +220,10 @@ public class ClientGUI extends JFrame implements ActionListener {
     /**
      * fuehrt die Aktion des OSInfoButton-button aus
      */
-    private void OSInfoButton() {
-        try {
+    private void OSInfoButton()
+    {
+        try
+        {
             client.append(" Verwendetes OS: " + this.vServer.getOSName() + "\n");
             client.append(" Name des Hosts:  " + this.vServer.getHostName() + "\n\n");
         } catch (Exception eOS) {
@@ -234,6 +245,7 @@ public class ClientGUI extends JFrame implements ActionListener {
             JOptionPane.showMessageDialog(null, "Bitte Pfad/Datei waehlen!", "Create Directory", JOptionPane.ERROR_MESSAGE);
             return;
         }
+        TreePath aktuellerBaumPfad = tree1.getSelectionPath();
         JFrame eingabe = new JFrame();
         String pfad = JOptionPane.showInputDialog(eingabe, "Welcher Ordner soll erstellt werden?", "Create Directory", JOptionPane.PLAIN_MESSAGE);
         if(pfad != null)
@@ -243,6 +255,8 @@ public class ClientGUI extends JFrame implements ActionListener {
                 if( this.vServer.createDir(dirPfad + "//" + pfad) )
                 {
                     JOptionPane.showMessageDialog(null, pfad + "   wurde erstellt!", "Create Directory", JOptionPane.INFORMATION_MESSAGE);
+                    refreshBaum();
+                    tree1.expandPath(aktuellerBaumPfad);
                 }
                 else
                 {
@@ -253,9 +267,6 @@ public class ClientGUI extends JFrame implements ActionListener {
             {
                 client.append("Fehler: " + eDir.getMessage()+"\n");
             }
-            TreePath aktuellerBaumPfad = tree1.getSelectionPath();
-            refreshBaum();
-            tree1.expandPath(aktuellerBaumPfad);
         }
     }
 
@@ -275,6 +286,7 @@ public class ClientGUI extends JFrame implements ActionListener {
         }
         JFrame eingabe = new JFrame();
         String pfad = JOptionPane.showInputDialog(eingabe, "Welche Datei soll erstellt werden?", "Create File", JOptionPane.PLAIN_MESSAGE);
+        TreePath aktuellerBaumPfad = tree1.getSelectionPath();
         if(pfad != null)
         {
             try
@@ -282,6 +294,8 @@ public class ClientGUI extends JFrame implements ActionListener {
                 if( this.vServer.createFile( filePfad + "//" + pfad ))
                 {
                     JOptionPane.showMessageDialog(null, pfad + "   wurde erstellt!", "Create File", JOptionPane.INFORMATION_MESSAGE);
+                    refreshBaum();
+                    tree1.expandPath(aktuellerBaumPfad);
                 }
                 else
                 {
@@ -292,9 +306,6 @@ public class ClientGUI extends JFrame implements ActionListener {
             {
                 client.append("Fehler: " + eFile.getMessage() + "\n");
             }
-            TreePath aktuellerBaumPfad = tree1.getSelectionPath();
-            refreshBaum();
-            tree1.expandPath(aktuellerBaumPfad);
         }
     }
 
@@ -341,9 +352,12 @@ public class ClientGUI extends JFrame implements ActionListener {
 
         int jaNein = JOptionPane.showConfirmDialog(null, "Soll  " + loeschPfad + "  wirklich geloescht werden?", "Delete", JOptionPane.YES_NO_OPTION);
 
-        if (jaNein == JOptionPane.YES_OPTION) {
-            try {
-                if (this.vServer.delete(loeschPfad)) {
+        if (jaNein == JOptionPane.YES_OPTION)
+        {
+            try
+            {
+                if (this.vServer.delete(loeschPfad))
+                {
 
                     DefaultMutableTreeNode node;
                     DefaultTreeModel model = (DefaultTreeModel) (tree1.getModel());
@@ -352,7 +366,9 @@ public class ClientGUI extends JFrame implements ActionListener {
 
                     aktuellerBaumPfad = tree1.getSelectionPath().getParentPath();
                     JOptionPane.showMessageDialog(null, loeschPfad + "  wurde geloescht!", "Delete", JOptionPane.INFORMATION_MESSAGE);
-                } else {
+                }
+                else
+                {
                     JOptionPane.showMessageDialog(null, "Ordner oder Datei konnte NICHT geloescht werden!", "Delete", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (IOException eDelete) {
@@ -366,7 +382,8 @@ public class ClientGUI extends JFrame implements ActionListener {
     /**
      * Funtion fuehrt die Aktion fuer den Rename Button aus
      */
-    private void renameButton() {
+    private void renameButton()
+    {
         String wahl = clientTextArea.getText().trim();
         String[] parts = wahl.split(":");
         String renamePfad = parts[parts.length - 1].trim();
@@ -378,10 +395,12 @@ public class ClientGUI extends JFrame implements ActionListener {
         String name = JOptionPane.showInputDialog(eingabe, "Wie lautet die neue Bezeichnung?", "Rename", JOptionPane.PLAIN_MESSAGE);
 
         String array[] = renamePfad.split("\\\\");
-        for (int i=0; i<array.length; i++) {
+        for (int i=0; i<array.length; i++)
+        {
             array[i].trim();
         }
-        for (int i=1; i<array.length-1; i++) {
+        for (int i=1; i<array.length-1; i++)
+        {
 
             System.out.println("ARRAY " + i + ": " + array[i]);
             oldPath = oldPath + "\\" + array[i];
@@ -391,13 +410,17 @@ public class ClientGUI extends JFrame implements ActionListener {
         newName = oldPath + "\\" + name; // newName ist der ganze alte Pfad(oldPath) + der neue Name. z.B. \test\NeuerName
 
         TreePath aktuellerBaumPfad = tree1.getSelectionPath().getParentPath().getParentPath();
-        try {
-            if (this.vServer.rename(renamePfad, newName)) {
+        try
+        {
+            if (this.vServer.rename(renamePfad, newName))
+            {
                 JOptionPane.showMessageDialog(null, "Ordner oder Datei wurde umbenannt!", "Rename", JOptionPane.INFORMATION_MESSAGE);
-            } else {
+            } else
+            {
                 JOptionPane.showMessageDialog(null, "Ordner oder Datei konnte NICHT umbenannt werden!", "Rename", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (IOException eRename) {
+        } catch (IOException eRename)
+        {
             client.append("Fehler: " + eRename.getMessage() + "\n");
         }
         refreshBaum();
@@ -406,51 +429,62 @@ public class ClientGUI extends JFrame implements ActionListener {
 
     /**
      * Funktion fuehrt die Aktion beim WechselButton aus
-     */
-    private void wechselButton() {
+     * */
+    private void wechselButton()
+    {
         int serverPort;
-        Object[] selectionValues = {"10.9.41.43", "10.9.40.171", "10.9.40.174"};
+        Object[] selectionValues = { "10.9.41.43", "10.9.40.171", "10.9.40.174" };
         String initialSelection = "10.9.41.43";
         Object selection = JOptionPane.showInputDialog(null, "Zu welchen Server wechseln?",
                 "Server Wechsel", JOptionPane.QUESTION_MESSAGE, null, selectionValues, initialSelection);
 
-        try {
+        try
+        {
             serverPort = Integer.parseInt(portTextFeld.getText().trim());
-        } catch (Exception er) {
+        } catch(Exception er)
+        {
             JOptionPane.showMessageDialog(null, "Fehler bei der Port-Eingabe", "Port-Nr", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        try {
-            Registry registry = LocateRegistry.getRegistry(String.valueOf(selection), serverPort + 1);
+        try
+        {
+            Registry registry = LocateRegistry.getRegistry(String.valueOf(selection), serverPort+1);
             this.vServer = (VerwalterInterface) registry.lookup("VerwalterServer");
             client.append("Server gewechselt...\n");
             client.append((String) selection);
-        } catch (Exception eOS) {
+        }
+        catch(Exception eOS)
+        {
             System.out.println("Fehler_serverWechsel: " + eOS.getMessage());
         }
     }
 
 
-    private void anzeigen() {
+    private void anzeigen()
+    {
         String wahl = clientTextArea.getText().trim();
         String[] parts = wahl.split(":");
         String zeigePfad = parts[parts.length - 1].trim();
 
-        if (tree1.getSelectionPath() == null) {
+        if (tree1.getSelectionPath() == null)
+        {
             browse("\\");
-        } else {
+        } else
+        {
             browse(zeigePfad);
         }
     }
 
-    private void backButton() {
+    private void backButton()
+    {
         browse("\\");
     }
 
     /**
      * deaktiviert die Steuer-Elemente
      */
-    private void deaktiviereButtons() {
+    private void deaktiviereButtons()
+    {
         seachButton.setEnabled(false);
         createDirButton.setEnabled(false);
         createFileButton.setEnabled(false);
@@ -467,8 +501,8 @@ public class ClientGUI extends JFrame implements ActionListener {
     /**
      * aktiviert alle Steuer-Elemente
      */
-    private void aktiviereButtons() {
-        //Buttons aktivieren
+    private void aktiviereButtons()
+    {
         seachButton.setEnabled(true);
         createDirButton.setEnabled(true);
         createFileButton.setEnabled(true);
@@ -485,7 +519,8 @@ public class ClientGUI extends JFrame implements ActionListener {
     /**
      * fuegt die Listener zu den Steuer-Elementen
      */
-    private void addListener() {
+    private void addListener()
+    {
         startClientButton.addActionListener(this);
         seachButton.addActionListener(this);
         createDirButton.addActionListener(this);
@@ -498,14 +533,16 @@ public class ClientGUI extends JFrame implements ActionListener {
         backButton.addActionListener(this);
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException
+    {
         //Propertys aus Datei laden
         System.setProperty("java.security.policy", "java.policy");
         client = new ClientGUI();
     }
 
 
-    private void refreshBaum() {
+    private void refreshBaum()
+    {
         DefaultTreeModel model = (DefaultTreeModel) tree1.getModel();
         tree1.setModel(model);
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
@@ -515,11 +552,13 @@ public class ClientGUI extends JFrame implements ActionListener {
     /**
      * @param pfad: wird im JTree angezeigt
      */
-    public void browse(String pfad) {
+    public void browse(String pfad)
+    {
         String erg;
         String[] dirListe = new String[0];
         String[] fileListe = new String[0];
-        try {
+        try
+        {
             erg = this.vServer.browseDirs(pfad);
             dirListe = erg.split("[;]");
 
@@ -537,17 +576,21 @@ public class ClientGUI extends JFrame implements ActionListener {
         root.removeAllChildren();
         root.setUserObject(pfad);
 
-        if (root == null) {
+        if (root == null)
+        {
             return;
         }
 
-        for (int i = 0; i < dirListe.length; i++) {
-            if (!dirListe[i].equals("")) {
+        for (int i = 0; i < dirListe.length; i++)
+        {
+            if (!dirListe[i].equals(""))
+            {
                 root.add(new DefaultMutableTreeNode(dirListe[i]));
             }
         }
 
-        for (int i = 0; i < fileListe.length; i++) {
+        for (int i = 0; i < fileListe.length; i++)
+        {
             if (!fileListe[i].equals("")) {
                 Contact temp = new Contact(fileListe[i]);
                 root.add(new DefaultMutableTreeNode(temp));
@@ -556,124 +599,135 @@ public class ClientGUI extends JFrame implements ActionListener {
         model.reload(root);
     }
 
-    /**
-     * Logo Render Tests
-     */
-    class MyTreeCellRenderer extends DefaultTreeCellRenderer {
-        @Override
-        public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
-            super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
-            // decide what icons you want by examining the node
-            if (value instanceof DefaultMutableTreeNode) {
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-                if (node.getUserObject() instanceof String) {
-                    // your root node, since you just put a String as a user obj
-                    setIcon(UIManager.getIcon("FileView.computerIcon"));
-                } else if (node.getUserObject() instanceof Contact) {
-                    // decide based on some property of your Contact obj
-                    Contact contact = (Contact) node.getUserObject();
-                    if (contact.isSomeProperty()) {
-                        setIcon(UIManager.getIcon("FileView.hardDriveIcon"));
-                    } else {
-                        setIcon(UIManager.getIcon("FileChooser.homeFolderIcon"));
-                    }
+}
+
+
+/**Logo Render */
+class MyTreeCellRenderer extends DefaultTreeCellRenderer
+{
+    @Override
+    public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus)
+    {
+        ImageIcon file = new ImageIcon("file.png");
+        ImageIcon folder = new ImageIcon("folder.png");
+
+        super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+        // decide what icons you want by examining the node
+        if (value instanceof DefaultMutableTreeNode)
+        {
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+            if (node.getUserObject() instanceof String)
+            {
+                // your root node, since you just put a String as a user obj
+                setIcon(folder);
+            }
+            else if (node.getUserObject() instanceof Contact)
+            {
+                // decide based on some property of your Contact obj
+                Contact contact = (Contact)node.getUserObject();
+                if (contact.isSomeProperty())
+                {
+                    setIcon(UIManager.getIcon("FileView.hardDriveIcon"));
+                }
+                else
+                {
+                    setIcon(file);
                 }
             }
-            return this;
         }
-    }
-
-
-    class Contact implements MutableTreeNode {
-        private boolean someProperty;
-        private String name;
-
-        public Contact(String name) {
-            this(name, false);
-        }
-
-        public Contact(String name, boolean property) {
-            this.someProperty = property;
-            this.name = name;
-        }
-
-        public boolean isSomeProperty() {
-            return someProperty;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        @Override
-        public String toString() {
-            return name;
-        }
-
-        @Override
-        public void insert(MutableTreeNode child, int index) {
-
-        }
-
-        @Override
-        public void remove(int index) {
-
-        }
-
-        @Override
-        public void remove(MutableTreeNode node) {
-
-        }
-
-        @Override
-        public void setUserObject(Object object) {
-
-        }
-
-        @Override
-        public void removeFromParent() {
-
-        }
-
-        @Override
-        public void setParent(MutableTreeNode newParent) {
-
-        }
-
-        @Override
-        public TreeNode getChildAt(int childIndex) {
-            return null;
-        }
-
-        @Override
-        public int getChildCount() {
-            return 0;
-        }
-
-        @Override
-        public TreeNode getParent() {
-            return null;
-        }
-
-        @Override
-        public int getIndex(TreeNode node) {
-            return 0;
-        }
-
-        @Override
-        public boolean getAllowsChildren() {
-            return false;
-        }
-
-        @Override
-        public boolean isLeaf() {
-            return false;
-        }
-
-        @Override
-        public Enumeration children() {
-            return null;
-        }
+        return this;
     }
 }
 
+
+class Contact implements MutableTreeNode
+{
+    private boolean someProperty;
+    private String name;
+
+    public Contact(String name)
+    {
+        this(name, false);
+    }
+
+    public Contact(String name, boolean property)
+    {
+        this.someProperty = property;
+        this.name = name;
+    }
+
+    public boolean isSomeProperty()
+    {
+        return someProperty;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    @Override
+    public String toString()
+    {
+        return name;
+    }
+
+    @Override
+    public void insert(MutableTreeNode child, int index) {
+    }
+
+    @Override
+    public void remove(int index) {
+    }
+
+    @Override
+    public void remove(MutableTreeNode node) {
+    }
+
+    @Override
+    public void setUserObject(Object object) {
+    }
+
+    @Override
+    public void removeFromParent() {
+    }
+
+    @Override
+    public void setParent(MutableTreeNode newParent) {
+    }
+
+    @Override
+    public TreeNode getChildAt(int childIndex) {
+        return null;
+    }
+
+    @Override
+    public int getChildCount() {
+        return 0;
+    }
+
+    @Override
+    public TreeNode getParent() {
+        return null;
+    }
+
+    @Override
+    public int getIndex(TreeNode node) {
+        return 0;
+    }
+
+    @Override
+    public boolean getAllowsChildren() {
+        return false;
+    }
+
+    @Override
+    public boolean isLeaf() {
+        return false;
+    }
+
+    @Override
+    public Enumeration children() {
+        return null;
+    }
+}

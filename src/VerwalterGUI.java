@@ -76,7 +76,7 @@ public class VerwalterGUI extends JFrame implements VerwalterInterface, RMIClien
                 Registry registry = LocateRegistry.getRegistry(HOST, serverPort); //HOST ist immer null?
                 this.fsserver = (FSInterface) registry.lookup("FileSystemServer"); //schaue nach dem Server?
 
-                System.setProperty("java.rmi.server.hostname","192.168.178.31"); //hier die eigene IP
+                System.setProperty("java.rmi.server.hostname","192.168.0.101"); //hier die eigene IP
                 VerwalterInterface stub = (VerwalterInterface) UnicastRemoteObject.exportObject(vServer, serverPort+1);
 
                 Registry registry2 =  LocateRegistry.createRegistry(serverPort+1); //neue registry2 fuer Verwalter
