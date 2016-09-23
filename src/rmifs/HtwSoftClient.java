@@ -12,13 +12,15 @@ import java.rmi.RemoteException;
  * @version 1.02
  * @date 2016-09-16
  */
-public class HtwSoftClient {
-
+public class HtwSoftClient
+{
     private static final String FEHLER_VERBINDUNG_VERWALTER = "Die Verbindung zum Verwalter konnte nicht hergestellt" +
-                                                                " werden bzw. sie wurde unterbrochen!";
+            " werden bzw. sie wurde unterbrochen!\n Bitte versuchen versuchen Sie es spaeter noch einmal!\n" +
+            "Sollte das Problem weiterhin bestehen, dann starten Sie das Programm neu.\n";
+    private static final String FEHLER_EINGABE = "Fehlerhafte Eingabe! Bitte ueberpruefen Sie ihre Eingabe!\n";
     private enum MENUE { CLOSE, LIST, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE,
                          RENAME, OS_NAME, SERVER_WAHL, FALSE }
-    private final static String SERVER_HOST_IP = "192.168.0.24";
+    private final static String SERVER_HOST_IP = "192.168.0.26";
     private final static int VERWALTER_PORT_NR = 4712;
 
     private static FileSystemClient client;
@@ -49,17 +51,18 @@ public class HtwSoftClient {
             NetworkController nc = new NetworkController(client);
             System.out.println(nc);
             System.out.println(client);
-            client.getServerNames();
             client.browse();
             menue();
         }
         catch (RemoteException rex)
         {
-            System.out.println(FEHLER_VERBINDUNG_VERWALTER);rex.printStackTrace();
+            System.out.println(FEHLER_VERBINDUNG_VERWALTER);
+            start();
         }
         catch (NotBoundException nbe)
         {
-            System.out.println(FEHLER_VERBINDUNG_VERWALTER);nbe.printStackTrace();
+            System.out.println(FEHLER_VERBINDUNG_VERWALTER);
+            start();
         }
     }
 
@@ -113,7 +116,7 @@ public class HtwSoftClient {
         }
         catch (IOException ioe)
         {
-            ioe.printStackTrace();
+            System.out.println(FEHLER_EINGABE);
         }
         System.exit(0);
     }
@@ -151,7 +154,7 @@ public class HtwSoftClient {
             }
             catch(IOException ioe)
             {
-                ioe.printStackTrace();
+                System.out.println(FEHLER_EINGABE);
             }
         }
         System.out.println("");
@@ -179,7 +182,7 @@ public class HtwSoftClient {
             }
             catch(IOException ioe)
             {
-                ioe.printStackTrace();
+                System.out.println(FEHLER_EINGABE);
             }
         }
         return eingabe;

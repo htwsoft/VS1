@@ -17,24 +17,19 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.RMIClientSocketFactory;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.Map;
-
+import java.util.*;
 
 
 public class VerwalterServer implements VerwalterInterface, RMIClientSocketFactory
 {
     private static final String FEHLER_VERBINDUNG_MESSAGE = "Fehler!\n\tDie Verbindung zu einem der File-Server ist unterbrochen!\n" +
-                                                            "Die angezeigten Informationen sind moeglicherweise lueckenhaft!\n" +
-                                                            "Bitte versuchen Sie es spaeter noch einmal!\n";
+            "Die angezeigten Informationen sind moeglicherweise lueckenhaft!\nBitte versuchen Sie es spaeter noch einmal!\n";
     private static final String FEHLER_AKTUELLER_SERVER = "Fehler!\n\tDie Verbindung zu dem Server auf dem Sie arbeiten wollen ist " +
-                                                          "unterbrochen! Bitte versuchen Sie es spaeter noch einmal!\n";
-    private HashMap<Integer, String> fileServers;
+            "unterbrochen! Bitte versuchen Sie es spaeter noch einmal!\n";
+    private ArrayList<FileServerListenElement> fileServerListe = new ArrayList<>();
+    //private HashMap<Integer, String> fileServers;
     private FSInterface fsserver;
-    public String[] fileServerNames = new String[10];
+    //public String[] fileServerNames = new String[10];
     private String clientIP = "*unknown*";
     private String timeStamp = "not set yet"; //ToDo String server
     private enum FUNKTIONALITAET{BROWSE_FILES, BROWSE_DIRS, SEARCH, CREATE_DIR, CREATE_FILE, DELETE,
@@ -58,10 +53,14 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
      */
     private void fileServersInit(int startPort, String startIp)
     {
-        fileServers = new HashMap<>();
+        /*fileServers = new HashMap<>();
         fileServers.put(6666, "192.168.0.26");
         fileServers.put(8888, "192.168.0.26");
         fileServers.put(startPort, startIp);
+        */
+        fileServerListe.add(new FileServerListenElement(null, startIp, startPort));
+        fileServerListe.add(new FileServerListenElement(null, "192.168.0.26", 6666));
+        fileServerListe.add(new FileServerListenElement(null, "192.168.0.26", 8888));
     }
 
     /**
@@ -180,8 +179,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     {
         String[] serverNames = new String[10];
         int i = 0;
-        Set set = fileServers.entrySet();
-        Iterator iterator = set.iterator();
+        ListIterator<FileServerListenElement> iterator = fileServerListe.listIterator();
         if (System.getSecurityManager() == null) {
             System.setSecurityManager(new SecurityManager());
         }
@@ -189,8 +187,8 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         {
             while (iterator.hasNext())
             {
-                Map.Entry mentry = (Map.Entry) iterator.next();
-                Registry registry = LocateRegistry.getRegistry((String) mentry.getValue(), (Integer) mentry.getKey());
+                FileServerListenElement tmp = iterator.next();
+                Registry registry = LocateRegistry.getRegistry(tmp.serverIP, tmp.serverPort);
                 this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
                 serverNames[i] = fsserver.getHostName();
                 i++;
@@ -268,14 +266,13 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     private void connectFileSystem()throws RemoteException, NotBoundException
     {
 
-        Set set = fileServers.entrySet();
-        Iterator iterator = set.iterator();
+        ListIterator<FileServerListenElement> iterator = fileServerListe.listIterator();
         if (System.getSecurityManager() == null)
         {
             System.setSecurityManager(new SecurityManager());
         }
-        Map.Entry mentry = (Map.Entry)iterator.next();
-        Registry registry = LocateRegistry.getRegistry((String)mentry.getValue(), (Integer)mentry.getKey());
+        FileServerListenElement tmp = iterator.next();
+        Registry registry = LocateRegistry.getRegistry(tmp.serverIP, tmp.serverPort);
         this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
     }
 
@@ -293,30 +290,29 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         int i = 0;
         String ergebnis = "";
         String serverName = "";
-        Set set = fileServers.entrySet();
-        Iterator iterator = set.iterator();
+        ListIterator<FileServerListenElement> iterator = fileServerListe.listIterator();
         if (System.getSecurityManager() == null)
             System.setSecurityManager(new SecurityManager());
         try
         {
             while (iterator.hasNext())
             {
-                Map.Entry mentry = (Map.Entry) iterator.next();
-                Registry registry = LocateRegistry.getRegistry((String) mentry.getValue(),
-                                                                (Integer) mentry.getKey());
+                FileServerListenElement tmp = iterator.next();
+                Registry registry = LocateRegistry.getRegistry(tmp.serverIP, tmp.serverPort);
                 this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
                 switch (n)
                 {
                     case BROWSE_FILES:
-                        ergebnis += "\n" + fileServerNames[i] + ":\n\t\t" + fsserver.browseFiles(dir);
+                        ergebnis += "\n" + tmp.serverName + ":\n\t\t" + fsserver.browseFiles(dir);
                         break;
                     case BROWSE_DIRS:
                         serverName = fsserver.getHostName();
-                        fileServerNames[i] = serverName;
-                        ergebnis += "\n" + fileServerNames[i] + ":\n\t\t" + fsserver.browseDirs(dir);
+                        tmp.setServerName(serverName);
+                        fileServerListe.set(i, tmp);
+                        ergebnis += "\n" + tmp.serverName + ":\n\t\t" + fsserver.browseDirs(dir);
                         break;
                     case SEARCH:
-                        ergebnis += "\n" + fileServerNames[i] + ":\n\t\t" + fsserver.search(dir, file);
+                        ergebnis += "\n" + tmp.serverName + ":\n\t\t" + fsserver.search(dir, file);
                         break;
                 }
                 i++;
@@ -340,32 +336,31 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     private boolean connectServer(String server)
     {
         System.out.println("connectServer(), Server: "+server);
-        System.out.println(fileServerNames[1]);
+
         if (System.getSecurityManager() == null)
         {
             System.setSecurityManager(new SecurityManager());
         }
         Registry registry;
-        Set set = fileServers.entrySet();
-        Iterator iterator = set.iterator();
-        Map.Entry mentry = (Map.Entry)iterator.next();
+        ListIterator<FileServerListenElement> iterator = fileServerListe.listIterator();
+        FileServerListenElement tmp = iterator.next();
         try
         {
-            if (server.equals(fileServerNames[0]))
+            if (server.equals(tmp.serverName))
             {
-                registry = LocateRegistry.getRegistry((String) mentry.getValue(), (Integer) mentry.getKey());
+                registry = LocateRegistry.getRegistry(tmp.serverIP, tmp.serverPort);
                 this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
             }
-            else if (server.equals(fileServerNames[1]))
+            else if (server.equals(tmp.serverName))
             {
-                mentry = (Map.Entry) iterator.next();
-                registry = LocateRegistry.getRegistry((String) mentry.getValue(), (Integer) mentry.getKey());
+                tmp = iterator.next();
+                registry = LocateRegistry.getRegistry(tmp.serverIP, tmp.serverPort);
                 this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
             }
-            else if (server.equals(fileServerNames[2]))
+            else if (server.equals(tmp.serverName))
             {
-                mentry = (Map.Entry) iterator.next();mentry = (Map.Entry) iterator.next();
-                registry = LocateRegistry.getRegistry((String) mentry.getValue(), (Integer) mentry.getKey());
+                tmp = iterator.next();tmp = iterator.next();
+                registry = LocateRegistry.getRegistry(tmp.serverIP, tmp.serverPort);
                 this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
             }
         }
