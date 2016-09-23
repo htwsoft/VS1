@@ -312,7 +312,8 @@ public class ClientGUI extends JFrame implements ActionListener {
     /**
      * fuehrt die Aktion des search-button aus
      */
-    private void searchButton() {
+    private void searchButton()
+    {
         String erg;
         String[] fileListe2;
         //Erste Eingabe: Was suchen Sie?
@@ -344,11 +345,17 @@ public class ClientGUI extends JFrame implements ActionListener {
     /**
      * Funktion fuehrt die AKtion des delete Buttons aus
      */
-    private void deleteButton() {
-        String wahl = clientTextArea.getText().trim();
-        String[] parts = wahl.split(":");
-        String loeschPfad = parts[parts.length - 1].trim();
+    private void deleteButton()
+    {
+        if (tree1.getSelectionPath() == null)
+        {
+            JOptionPane.showMessageDialog(null, "Bitte Pfad/Datei waehlen!", "Delete", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        /**Markierte Datei/Order aufwaehlen */
         TreePath aktuellerBaumPfad = tree1.getSelectionPath();
+        String loeschPfad = aktuellerBaumPfad.getLastPathComponent().toString();
 
         int jaNein = JOptionPane.showConfirmDialog(null, "Soll  " + loeschPfad + "  wirklich geloescht werden?", "Delete", JOptionPane.YES_NO_OPTION);
 
@@ -358,13 +365,10 @@ public class ClientGUI extends JFrame implements ActionListener {
             {
                 if (this.vServer.delete(loeschPfad))
                 {
-
                     DefaultMutableTreeNode node;
                     DefaultTreeModel model = (DefaultTreeModel) (tree1.getModel());
                     node = (DefaultMutableTreeNode) (aktuellerBaumPfad.getLastPathComponent());
                     model.removeNodeFromParent(node);
-
-                    aktuellerBaumPfad = tree1.getSelectionPath().getParentPath();
                     JOptionPane.showMessageDialog(null, loeschPfad + "  wurde geloescht!", "Delete", JOptionPane.INFORMATION_MESSAGE);
                 }
                 else
@@ -375,8 +379,6 @@ public class ClientGUI extends JFrame implements ActionListener {
                 client.append("Fehler: " + eDelete.getMessage());
             }
         }
-        refreshBaum();
-        tree1.expandPath(aktuellerBaumPfad.getParentPath().getParentPath());
     }
 
     /**
