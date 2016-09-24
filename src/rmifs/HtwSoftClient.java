@@ -226,15 +226,14 @@ public class HtwSoftClient
         BufferedReader br = new BufferedReader(isr);
         int eingabe = -1;
         System.out.println("Zu welchem Verwalter wollen Sie verbinden?");
-        while(eingabe < 0 || eingabe > 2)
+        while(eingabe < 0 || eingabe > 1)
         { //Auswahlmenue zeigen bis eingabe richtig
             try
             {
                 client.getServerNames();
                 System.out.println("---------------------------------------");
                 System.out.println("        Verfuegbare Verwalter");
-                System.out.println("0: Cancel\n1: "+client.verwalterNames[0]+"\n2: "
-                        +client.verwalterNames[1]+"\n");
+                System.out.println("0: Cancel\n1: "+client.verwalterNames[0]+"\n");
                 System.out.println("---------------------------------------");
                 eingabe = Integer.parseInt(br.readLine());
             }
