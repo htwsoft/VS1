@@ -17,24 +17,21 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.RMIClientSocketFactory;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.Map;
-
+import java.util.*;
 
 
 public class VerwalterServer implements VerwalterInterface, RMIClientSocketFactory
 {
-    private static final String FEHLER_VERBINDUNG_MESSAGE = "Fehler!\n\tDie Verbindung zu einem der File-Server ist unterbrochen!\n" +
-                                                            "Die angezeigten Informationen sind moeglicherweise lueckenhaft!\n" +
-                                                            "Bitte versuchen Sie es spaeter noch einmal!\n";
-    private static final String FEHLER_AKTUELLER_SERVER = "Fehler!\n\tDie Verbindung zu dem Server auf dem Sie arbeiten wollen ist " +
-                                                          "unterbrochen! Bitte versuchen Sie es spaeter noch einmal!\n";
-    private HashMap<Integer, String> fileServers;
+    private static final String FEHLER_VERBINDUNG_MESSAGE = "\nFehler!\n\tDie Verbindung zu einem der File-Server ist unterbrochen!\n" +
+            "Die angezeigten Informationen sind moeglicherweise lueckenhaft!\nBitte versuchen Sie es spaeter noch einmal!\n";
+    private static final String FEHLER_AKTUELLER_SERVER = "\nFehler!\n\tDie Verbindung zu dem Server auf dem Sie arbeiten wollen ist " +
+            "unterbrochen! Bitte versuchen Sie es spaeter noch einmal!\n";
+    private static final String FEHLER_ALLE_SERVER = "\nFehler! Alle File-Server sind aktuell nicht erreichbar!\n" +
+            "Versuchen Sie es spaeter erneut!\n";
+    private ArrayList<FileServerListenElement> fileServerListe = new ArrayList<>();
+    //private HashMap<Integer, String> fileServers;
     private FSInterface fsserver;
-    public String[] fileServerNames = new String[10];
+    private ArrayList<FileServerListenElement> verwalterListe= new ArrayList<>();
     private String clientIP = "*unknown*";
     private String timeStamp = "not set yet"; //ToDo String server
     private enum FUNKTIONALITAET{BROWSE_FILES, BROWSE_DIRS, SEARCH, CREATE_DIR, CREATE_FILE, DELETE,
@@ -58,10 +55,16 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
      */
     private void fileServersInit(int startPort, String startIp)
     {
-        fileServers = new HashMap<>();
+        /*fileServers = new HashMap<>();
         fileServers.put(6666, "192.168.0.26");
         fileServers.put(8888, "192.168.0.26");
         fileServers.put(startPort, startIp);
+        */
+        verwalterListe.add(new FileServerListenElement("RemotVerwalter1", "192.168.0.26", HtwSoftVerwalter.VERWALTER_PORT));
+        //verwalterListe.add(new FileServerListenElement("Verwalter2", "192.168.0.24", HtwSoftVerwalter.VERWALTER_PORT));
+        fileServerListe.add(new FileServerListenElement(null, startIp, startPort));
+        fileServerListe.add(new FileServerListenElement(null, "192.168.0.24", 6666));
+        fileServerListe.add(new FileServerListenElement(null, "192.168.0.24", 8888));
     }
 
     /**
@@ -171,44 +174,143 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     }
 
     /**
-     * <br>Fragt nach allen Namen der FileServer, damit Client diese identifizieren kann</br>
+     * <br>Fragt nach allen Namen der Verwalter, damit der Client diese identifizieren kann</br>
      * @return
      * @throws RemoteException
      * @throws NotBoundException
      */
-    public String[] getAllHosts() throws RemoteException, NotBoundException
+    public String[] getAllVerwalterNames() throws RemoteException, NotBoundException
     {
         String[] serverNames = new String[10];
         int i = 0;
-        Set set = fileServers.entrySet();
-        Iterator iterator = set.iterator();
-        if (System.getSecurityManager() == null) {
+        ListIterator<FileServerListenElement> iterator = verwalterListe.listIterator();
+        while(iterator.hasNext())
+        {
+            FileServerListenElement tmp = iterator.next();
+            serverNames[i] = tmp.getServerName();
+            i++;
+        }
+        return serverNames;
+    }
+
+    /**
+     * <br> Uebergibt die Verbindungsinformation des angeforderten Verwalters
+     * @param verwalter angeforderter Verwalter
+     * @return alle Verbindungsinformationen des angeforderten Verwalters(IP,NAME,PORT)
+     * @throws RemoteException
+     * @throws NotBoundException
+     */
+    public FileServerListenElement getVerwalter(int verwalter) throws RemoteException, NotBoundException
+    {
+        System.out.println("Angeforderter Verwalter:\n IP: "+verwalterListe.get(verwalter).getServerIP()+
+                    "\t Port: "+verwalterListe.get(verwalter).getServerPort());
+        return verwalterListe.get(verwalter);
+    }
+    /**
+     * <br>Fragt nach allen Namen der FileServer, damit der Client diese identifizieren kann</br>
+     * @return
+     * @throws RemoteException
+     * @throws NotBoundException
+     */
+    public String[] getAllFileServerNames() throws RemoteException, NotBoundException
+    {
+        String[] serverNames = new String[10];
+        int i = 0;
+        ListIterator<FileServerListenElement> iterator = fileServerListe.listIterator();
+        if (System.getSecurityManager() == null)
+        {
             System.setSecurityManager(new SecurityManager());
         }
         try
         {
             while (iterator.hasNext())
             {
-                Map.Entry mentry = (Map.Entry) iterator.next();
-                Registry registry = LocateRegistry.getRegistry((String) mentry.getValue(), (Integer) mentry.getKey());
+                FileServerListenElement tmp = iterator.next();
+                Registry registry = LocateRegistry.getRegistry(tmp.getServerIP(), tmp.getServerPort());
                 this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
                 serverNames[i] = fsserver.getHostName();
                 i++;
             }
-            return serverNames;
         }
         catch(RemoteException rex)
         {
-            serverNames[i] += FEHLER_AKTUELLER_SERVER+rex.getMessage();
-            return serverNames;
+            String zwischenErgebnis[] = new String[10];
+            if(i<1)
+            {
+                zwischenErgebnis[0] = FEHLER_VERBINDUNG_MESSAGE;
+                zwischenErgebnis = handleServerNamesException();
+                if(!zwischenErgebnis[1].contains("Fehler"))
+                    return zwischenErgebnis;
+
+                else
+                    return zwischenErgebnis;
+            }
+            else
+            {
+                zwischenErgebnis[0] = serverNames[0];
+                zwischenErgebnis[1] = FEHLER_VERBINDUNG_MESSAGE;
+                return zwischenErgebnis;
+            }
         }
         catch(NotBoundException nex)
         {
-            serverNames[i] += FEHLER_AKTUELLER_SERVER+nex.getMessage();
+            String zwischenErgebnis[] = new String[10];
+            if(i<1)
+            {
+                zwischenErgebnis[0] = FEHLER_VERBINDUNG_MESSAGE;
+                zwischenErgebnis = handleServerNamesException();
+                if(!zwischenErgebnis[1].contains("Fehler"))
+                    return zwischenErgebnis;
+
+                else
+                    return zwischenErgebnis;
+            }
+            else
+            {
+                zwischenErgebnis[0] = serverNames[0];
+                zwischenErgebnis[1] = FEHLER_VERBINDUNG_MESSAGE;
+                return zwischenErgebnis;
+            }
+        }
+        return serverNames;
+    }
+    public String[] handleServerNamesException()
+    {
+        String[] serverNames = new String[10];
+        int i = 1;
+        ListIterator<FileServerListenElement> iterator = fileServerListe.listIterator();
+        if (System.getSecurityManager() == null)
+        {
+            System.setSecurityManager(new SecurityManager());
+        }
+        try
+        {
+            while (iterator.hasNext())
+            {
+                FileServerListenElement tmp = iterator.next(); tmp = iterator.next();
+                Registry registry = LocateRegistry.getRegistry(tmp.getServerIP(), tmp.getServerPort());
+                this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
+                serverNames[i] = fsserver.getHostName();
+                i++;
+            }
+        }
+        catch(RemoteException rex)
+        {
+            serverNames[1] = FEHLER_ALLE_SERVER;
+            return  serverNames;
+        }
+        catch (NotBoundException nex)
+        {
+            serverNames[1] = FEHLER_ALLE_SERVER;
             return serverNames;
         }
+        catch(NoSuchElementException nsee)
+        {
+            serverNames[1] = FEHLER_ALLE_SERVER;
+            return serverNames;
+        }
+        return serverNames;
     }
-
     public String getHostName(String server) throws RemoteException, NotBoundException
     {
         log(" - Client [" + clientIP + "] request hostname");
@@ -268,14 +370,13 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     private void connectFileSystem()throws RemoteException, NotBoundException
     {
 
-        Set set = fileServers.entrySet();
-        Iterator iterator = set.iterator();
+        ListIterator<FileServerListenElement> iterator = fileServerListe.listIterator();
         if (System.getSecurityManager() == null)
         {
             System.setSecurityManager(new SecurityManager());
         }
-        Map.Entry mentry = (Map.Entry)iterator.next();
-        Registry registry = LocateRegistry.getRegistry((String)mentry.getValue(), (Integer)mentry.getKey());
+        FileServerListenElement tmp = iterator.next();
+        Registry registry = LocateRegistry.getRegistry(tmp.getServerIP(), tmp.getServerPort());
         this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
     }
 
@@ -291,46 +392,116 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     private String iterateFileSystems(FUNKTIONALITAET n, String dir, String file)
     {
         int i = 0;
+        FileServerListenElement tmp;
         String ergebnis = "";
         String serverName = "";
-        Set set = fileServers.entrySet();
-        Iterator iterator = set.iterator();
+        ListIterator<FileServerListenElement> iterator = fileServerListe.listIterator();
         if (System.getSecurityManager() == null)
             System.setSecurityManager(new SecurityManager());
         try
         {
             while (iterator.hasNext())
             {
-                Map.Entry mentry = (Map.Entry) iterator.next();
-                Registry registry = LocateRegistry.getRegistry((String) mentry.getValue(),
-                                                                (Integer) mentry.getKey());
+                tmp = iterator.next();
+                Registry registry = LocateRegistry.getRegistry(tmp.getServerIP(), tmp.getServerPort());
                 this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
                 switch (n)
                 {
                     case BROWSE_FILES:
-                        ergebnis += "\n" + fileServerNames[i] + ":\n\t\t" + fsserver.browseFiles(dir);
+                        ergebnis += "\n" + tmp.getServerName() + ":\n" + fsserver.browseFiles(dir);
                         break;
                     case BROWSE_DIRS:
                         serverName = fsserver.getHostName();
-                        fileServerNames[i] = serverName;
-                        ergebnis += "\n" + fileServerNames[i] + ":\n\t\t" + fsserver.browseDirs(dir);
+                        tmp.setServerName(serverName);
+                        fileServerListe.set(i, tmp);
+                        ergebnis += "\n" + tmp.getServerName() + ":\n" + fsserver.browseDirs(dir);
                         break;
                     case SEARCH:
-                        ergebnis += "\n" + fileServerNames[i] + ":\n\t\t" + fsserver.search(dir, file);
+                        ergebnis += "\n" + tmp.getServerName() + ":\n" + fsserver.search(dir, file);
                         break;
                 }
                 i++;
             }
-            return ergebnis;
         }
         catch(RemoteException rex)
         {
-            return ergebnis+"\n"+FEHLER_VERBINDUNG_MESSAGE+rex.getMessage();
+            String zwischenErgebnis = "";
+            if(i<1)
+            {
+                zwischenErgebnis = handleIterateException(n, dir, file);
+                if(!zwischenErgebnis.contains("Fehler"))
+                    return FEHLER_VERBINDUNG_MESSAGE+zwischenErgebnis;
+
+                else
+                    return FEHLER_ALLE_SERVER;
+
+            }
+            else
+                return ergebnis+"\n"+FEHLER_VERBINDUNG_MESSAGE+rex.getMessage();
         }
         catch(NotBoundException nex)
         {
-            return ergebnis+"\n"+FEHLER_VERBINDUNG_MESSAGE+nex.getMessage();
+            String zwischenErgebnis = "";
+            if(i<1)
+            {
+                zwischenErgebnis = handleIterateException(n, dir, file);
+                if(!zwischenErgebnis.contains("Fehler"))
+                    return FEHLER_VERBINDUNG_MESSAGE+zwischenErgebnis;
+
+                else
+                    return FEHLER_ALLE_SERVER;
+
+            }
+            else
+                return ergebnis+"\n"+FEHLER_VERBINDUNG_MESSAGE+nex.getMessage();
         }
+        return ergebnis;
+    }
+    /**
+     * <br> Ueberprueft ob der erste oder zweite Server der Liste nicht verbunden ist und reagiert entsprechend
+     * darauf</br>
+     * @param n gibt an welche Funktion der FileServer aufgerufen wird
+     * @param dir Parameter fuer dirName/startDirName, abhaengig von n
+     * @param file Parameter fuer fileName, abhaengig von n
+     * @return gibt entweder an, dass alle Server down sind oder das einer der beiden down ist und gibt das ergebnis
+     *         dessen, der up ist, weiter
+     */
+    private String handleIterateException( FUNKTIONALITAET n, String dir, String file)
+    {
+        int i = 1;
+        String ergebnis = "";
+        String serverName;
+        try
+        {
+            ListIterator<FileServerListenElement> iterator = fileServerListe.listIterator();
+            FileServerListenElement tmp = iterator.next(); tmp = iterator.next();
+            Registry registry = LocateRegistry.getRegistry(tmp.getServerIP(), tmp.getServerPort());
+            this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
+            switch (n)
+            {
+                case BROWSE_FILES:
+                    ergebnis += "\n" + tmp.getServerName() + ":\n" + fsserver.browseFiles(dir);
+                    break;
+                case BROWSE_DIRS:
+                    serverName = fsserver.getHostName();
+                    tmp.setServerName(serverName);
+                    fileServerListe.set(i, tmp);
+                    ergebnis += "\n" + tmp.getServerName() + ":\n" + fsserver.browseDirs(dir);
+                    break;
+                case SEARCH:
+                    ergebnis += "\n" + tmp.getServerName() + ":\n" + fsserver.search(dir, file);
+                    break;
+            }
+        }
+        catch(RemoteException rex)
+        {
+            return FEHLER_ALLE_SERVER;
+        }
+        catch(NotBoundException nex)
+        {
+            return FEHLER_ALLE_SERVER;
+        }
+        return ergebnis;
     }
     /**
      * Verbindet den Verwalter zum geforderten FileServer, um anschließend dort eine Operation
@@ -340,32 +511,31 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     private boolean connectServer(String server)
     {
         System.out.println("connectServer(), Server: "+server);
-        System.out.println(fileServerNames[1]);
+
         if (System.getSecurityManager() == null)
         {
             System.setSecurityManager(new SecurityManager());
         }
         Registry registry;
-        Set set = fileServers.entrySet();
-        Iterator iterator = set.iterator();
-        Map.Entry mentry = (Map.Entry)iterator.next();
+        ListIterator<FileServerListenElement> iterator = fileServerListe.listIterator();
+        FileServerListenElement tmp = iterator.next();
         try
         {
-            if (server.equals(fileServerNames[0]))
+            if (server.equals(tmp.getServerName()))
             {
-                registry = LocateRegistry.getRegistry((String) mentry.getValue(), (Integer) mentry.getKey());
+                registry = LocateRegistry.getRegistry(tmp.getServerIP(), tmp.getServerPort());
                 this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
             }
-            else if (server.equals(fileServerNames[1]))
+            else if (server.equals(tmp.getServerName()))
             {
-                mentry = (Map.Entry) iterator.next();
-                registry = LocateRegistry.getRegistry((String) mentry.getValue(), (Integer) mentry.getKey());
+                tmp = iterator.next();
+                registry = LocateRegistry.getRegistry(tmp.getServerIP(), tmp.getServerPort());
                 this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
             }
-            else if (server.equals(fileServerNames[2]))
+            else if (server.equals(tmp.getServerName()))
             {
-                mentry = (Map.Entry) iterator.next();mentry = (Map.Entry) iterator.next();
-                registry = LocateRegistry.getRegistry((String) mentry.getValue(), (Integer) mentry.getKey());
+                tmp = iterator.next();tmp = iterator.next();
+                registry = LocateRegistry.getRegistry(tmp.getServerIP(), tmp.getServerPort());
                 this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
             }
         }
