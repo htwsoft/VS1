@@ -189,7 +189,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
             while (iterator.hasNext())
             {
                 FileServerListenElement tmp = iterator.next();
-                Registry registry = LocateRegistry.getRegistry(tmp.serverIP, tmp.serverPort);
+                Registry registry = LocateRegistry.getRegistry(tmp.getServerIP(), tmp.getServerPort());
                 this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
                 serverNames[i] = fsserver.getHostName();
                 i++;
@@ -273,7 +273,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
             System.setSecurityManager(new SecurityManager());
         }
         FileServerListenElement tmp = iterator.next();
-        Registry registry = LocateRegistry.getRegistry(tmp.serverIP, tmp.serverPort);
+        Registry registry = LocateRegistry.getRegistry(tmp.getServerIP(), tmp.getServerPort());
         this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
     }
 
@@ -300,21 +300,21 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
             while (iterator.hasNext())
             {
                 tmp = iterator.next();
-                Registry registry = LocateRegistry.getRegistry(tmp.serverIP, tmp.serverPort);
+                Registry registry = LocateRegistry.getRegistry(tmp.getServerIP(), tmp.getServerPort());
                 this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
                 switch (n)
                 {
                     case BROWSE_FILES:
-                        ergebnis += "\n" + tmp.serverName + ":\n" + fsserver.browseFiles(dir);
+                        ergebnis += "\n" + tmp.getServerName() + ":\n" + fsserver.browseFiles(dir);
                         break;
                     case BROWSE_DIRS:
                         serverName = fsserver.getHostName();
                         tmp.setServerName(serverName);
                         fileServerListe.set(i, tmp);
-                        ergebnis += "\n" + tmp.serverName + ":\n" + fsserver.browseDirs(dir);
+                        ergebnis += "\n" + tmp.getServerName() + ":\n" + fsserver.browseDirs(dir);
                         break;
                     case SEARCH:
-                        ergebnis += "\n" + tmp.serverName + ":\n" + fsserver.search(dir, file);
+                        ergebnis += "\n" + tmp.getServerName() + ":\n" + fsserver.search(dir, file);
                         break;
                 }
                 i++;
@@ -360,8 +360,8 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
      * @param n gibt an welche Funktion der FileServer aufgerufen wird
      * @param dir Parameter fuer dirName/startDirName, abhaengig von n
      * @param file Parameter fuer fileName, abhaengig von n
-     * @return gibt entweder an das alle Server nicht up sind oder das einer der beiden down ist und gibt das ergebnis
-     *         dessen der up ist weiter
+     * @return gibt entweder an, dass alle Server down sind oder das einer der beiden down ist und gibt das ergebnis
+     *         dessen, der up ist, weiter
      */
     private String handleIterateException( FUNKTIONALITAET n, String dir, String file)
     {
@@ -372,21 +372,21 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         {
             ListIterator<FileServerListenElement> iterator = fileServerListe.listIterator();
             FileServerListenElement tmp = iterator.next(); tmp = iterator.next();
-            Registry registry = LocateRegistry.getRegistry(tmp.serverIP, tmp.serverPort);
+            Registry registry = LocateRegistry.getRegistry(tmp.getServerIP(), tmp.getServerPort());
             this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
             switch (n)
             {
                 case BROWSE_FILES:
-                    ergebnis += "\n" + tmp.serverName + ":\n" + fsserver.browseFiles(dir);
+                    ergebnis += "\n" + tmp.getServerName() + ":\n" + fsserver.browseFiles(dir);
                     break;
                 case BROWSE_DIRS:
                     serverName = fsserver.getHostName();
                     tmp.setServerName(serverName);
                     fileServerListe.set(i, tmp);
-                    ergebnis += "\n" + tmp.serverName + ":\n" + fsserver.browseDirs(dir);
+                    ergebnis += "\n" + tmp.getServerName() + ":\n" + fsserver.browseDirs(dir);
                     break;
                 case SEARCH:
-                    ergebnis += "\n" + tmp.serverName + ":\n" + fsserver.search(dir, file);
+                    ergebnis += "\n" + tmp.getServerName() + ":\n" + fsserver.search(dir, file);
                     break;
             }
         }
@@ -418,21 +418,21 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         FileServerListenElement tmp = iterator.next();
         try
         {
-            if (server.equals(tmp.serverName))
+            if (server.equals(tmp.getServerName()))
             {
-                registry = LocateRegistry.getRegistry(tmp.serverIP, tmp.serverPort);
+                registry = LocateRegistry.getRegistry(tmp.getServerIP(), tmp.getServerPort());
                 this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
             }
-            else if (server.equals(tmp.serverName))
+            else if (server.equals(tmp.getServerName()))
             {
                 tmp = iterator.next();
-                registry = LocateRegistry.getRegistry(tmp.serverIP, tmp.serverPort);
+                registry = LocateRegistry.getRegistry(tmp.getServerIP(), tmp.getServerPort());
                 this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
             }
-            else if (server.equals(tmp.serverName))
+            else if (server.equals(tmp.getServerName()))
             {
                 tmp = iterator.next();tmp = iterator.next();
-                registry = LocateRegistry.getRegistry(tmp.serverIP, tmp.serverPort);
+                registry = LocateRegistry.getRegistry(tmp.getServerIP(), tmp.getServerPort());
                 this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
             }
         }

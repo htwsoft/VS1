@@ -8,21 +8,37 @@ import javax.lang.model.element.Element;
  */
 public class FileServerListenElement
 {
-    public String serverName;
+    private String serverName;
+
+    public String getServerName()
+    {
+        return serverName;
+    }
 
     public void setServerName(String serverName)
     {
         this.serverName = serverName;
     }
 
-    public String serverIP;
+    public int getServerPort()
+    {
+        return serverPort;
+    }
+
+    public String getServerIP()
+    {
+
+        return serverIP;
+    }
+
+    private String serverIP;
 
     public void setServerIP(String serverIP)
     {
         this.serverIP = serverIP;
     }
 
-    public int serverPort;
+    private int serverPort;
 
     public void setServerPort(int serverPort)
     {

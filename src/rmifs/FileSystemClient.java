@@ -47,8 +47,6 @@ public class FileSystemClient
 		String [] dirListe;
 		String [] fileListe;	
 
-
-
 		if(initialBrowse)
 		{
 			Scanner eingabe = new Scanner(System.in);
@@ -79,8 +77,9 @@ public class FileSystemClient
 		}
 		else
 		{
-			initialBrowse();
 			getServerNames();
+			initialBrowse();
+			System.out.println("Sie arbeiten momentan auf: "+fileServerNames[0]);
 		}
 	}
 

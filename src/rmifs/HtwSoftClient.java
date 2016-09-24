@@ -18,7 +18,7 @@ public class HtwSoftClient
             " werden bzw. sie wurde unterbrochen!\n Bitte versuchen versuchen Sie es spaeter noch einmal!\n" +
             "Sollte das Problem weiterhin bestehen, dann starten Sie das Programm neu.\n";
     private static final String FEHLER_EINGABE = "Fehlerhafte Eingabe! Bitte ueberpruefen Sie ihre Eingabe!\n";
-    private enum MENUE { CLOSE, LIST, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE,
+    private enum MENUE { CLOSE, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE,
                          RENAME, OS_NAME, SERVER_WAHL, FALSE }
     private final static String SERVER_HOST_IP = "192.168.0.26";
     private final static int VERWALTER_PORT_NR = 4712;
@@ -72,15 +72,14 @@ public class HtwSoftClient
         switch(eingabe)
         {
             case 0: menue_eingabe = MENUE.CLOSE; break;
-            case 1: menue_eingabe = MENUE.LIST; break;
-            case 2: menue_eingabe = MENUE.BROWSE; break;
-            case 3: menue_eingabe = MENUE.SEARCH; break;
-            case 4: menue_eingabe = MENUE.CREATE_DIR; break;
-            case 5: menue_eingabe = MENUE.CREATE_FILE; break;
-            case 6: menue_eingabe = MENUE.DELETE; break;
-            case 7: menue_eingabe = MENUE.RENAME; break;
-            case 8: menue_eingabe = MENUE.OS_NAME; break;
-            case 9: menue_eingabe = MENUE.SERVER_WAHL; break;
+            case 1: menue_eingabe = MENUE.BROWSE; break;
+            case 2: menue_eingabe = MENUE.SEARCH; break;
+            case 3: menue_eingabe = MENUE.CREATE_DIR; break;
+            case 4: menue_eingabe = MENUE.CREATE_FILE; break;
+            case 5: menue_eingabe = MENUE.DELETE; break;
+            case 6: menue_eingabe = MENUE.RENAME; break;
+            case 7: menue_eingabe = MENUE.OS_NAME; break;
+            case 8: menue_eingabe = MENUE.SERVER_WAHL; break;
             default: menue_eingabe = MENUE.FALSE; break;
         }
         return menue_eingabe;
@@ -101,7 +100,6 @@ public class HtwSoftClient
                 switch(menue_eingabe)
                 {
                     case CLOSE: System.out.println("Programm wurde beendet!"); break;
-                    case LIST: client.list(); break;
                     case BROWSE: client.browse(); break;
                     case SEARCH: client.search(); break;
                     case CREATE_DIR: client.createDir(); break;
@@ -131,7 +129,7 @@ public class HtwSoftClient
         InputStreamReader isr = new InputStreamReader(System.in);
         BufferedReader br = new BufferedReader(isr);
         int eingabe = -1;
-        while(eingabe < 0 || eingabe > 9)
+        while(eingabe < 0 || eingabe > 8)
         { //Auswahlmenue zeigen bis eingabe richtig
           try
             {
@@ -139,15 +137,14 @@ public class HtwSoftClient
                 System.out.println("--------------------\t\tMenue\t\t--------------------");
                 System.out.println("------------------------------------------------------------");
                 System.out.println("0: Beenden");
-                System.out.println("1: Server List");
-                System.out.println("2: Browse");
-                System.out.println("3: Search");
-                System.out.println("4: Create Dir");
-                System.out.println("5: Create File");
-                System.out.println("6: Delete");
-                System.out.println("7: Rename");
-                System.out.println("8: OS-Name");
-                System.out.println("9: Server waehlen");
+                System.out.println("1: Browse");
+                System.out.println("2: Search");
+                System.out.println("3: Create Dir");
+                System.out.println("4: Create File");
+                System.out.println("5: Delete");
+                System.out.println("6: Rename");
+                System.out.println("7: OS-Name");
+                System.out.println("8: Server waehlen");
                 System.out.println("------------------------------------------------------------");
                 System.out.print("Was moechten Sie tun?: ");
                 eingabe = Integer.parseInt(br.readLine());
@@ -168,7 +165,7 @@ public class HtwSoftClient
         BufferedReader br = new BufferedReader(isr);
         int eingabe = -1;
         System.out.println("Auf welchem Server wollen Sie arbeiten?");
-        while(eingabe < 0 || eingabe > 3)
+        while(eingabe < 0 || eingabe > 2)
         { //Auswahlmenue zeigen bis eingabe richtig
             try
             {
@@ -176,8 +173,7 @@ public class HtwSoftClient
                 System.out.println("---------------------------------------");
                 System.out.println("        Verfuegbare Server");
                 System.out.println("0: Cancel\n1: "+client.fileServerNames[0]+"\n2: "
-                                    +client.fileServerNames[1]+"\n3: "
-                                    +client.fileServerNames[2]+"\n");
+                                    +client.fileServerNames[1]+"\n");
                 System.out.println("---------------------------------------");
                 eingabe = Integer.parseInt(br.readLine());
             }
