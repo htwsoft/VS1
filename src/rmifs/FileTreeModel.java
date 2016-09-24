@@ -1,7 +1,10 @@
 /**
- * Created by Fuse on 13.09.2016.
+ * The methods in this class allow the JTree component to traverse
+ * the file system tree, and display the files and directories.
+ * @author aaljovic, eeberle
+ * @version 1.01
+ * @date 2016-09-13
  */
-
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
@@ -10,8 +13,7 @@ import java.io.File;
 import java.io.Serializable;
 
 /**
- * The methods in this class allow the JTree component to traverse
- * the file system tree, and display the files and directories.
+
  **/
 
 
