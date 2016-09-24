@@ -14,15 +14,27 @@ import java.rmi.RemoteException;
  */
 public class HtwSoftClient
 {
-    private static final String FEHLER_VERBINDUNG_VERWALTER = "Die Verbindung zum Verwalter konnte nicht hergestellt" +
-            " werden bzw. sie wurde unterbrochen!\n Bitte versuchen versuchen Sie es spaeter noch einmal!\n" +
-            "Sollte das Problem weiterhin bestehen, dann starten Sie das Programm neu.\n";
+    private static final String FEHLER_VERBINDUNG_VERWALTER =
+            "Die Verbindung zum lokalen Verwalter ist verloren gegangen!" +
+            "\n Erneuter Verbindungsversuch in 5 Sekunden.";
+    private static final String FEHLER_VERBINDUNG_VERWALTER_STARTUP =
+            "Die Verbindung zum lokalen Verwalter konnte nicht hergestellt" +
+            " werden bzw. sie wurde unterbrochen!\n Erneuter Verbindungsversuch in 5 Sekunden.";
+    private static final String FEHLER_VERBINDUNG_VERWALTER_REMOTE =
+            "\nSie sind entweder bereits mit diesem Verwalter verbunden " +
+            "oder der angeforderte/lokale Verwalter ist aktuell offline!\n" +
+            "Sollte das Problem bestehen bleiben, starten Sie bitte das Programm neu.\n";
+    private static final String FEHLER_NUMBER_OF_ATTEMPTS_EXCEEDED =
+            "Es kann keine Verbindung aktuell hergestellt werden!\n" +
+            "Bitte starten Sie das Programm neu und versuchen Sie es erneut, falls das Problem bestehen bleibt," +
+            "wenden Sie sich bitte an einen Administrator";
+    private static final String FEHLER_KRITISCH = "Kritischer Fehler, das Programm beendet sich nun!\n";
     private static final String FEHLER_EINGABE = "Fehlerhafte Eingabe! Bitte ueberpruefen Sie ihre Eingabe!\n";
     private enum MENUE { CLOSE, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE,
                          RENAME, OS_NAME, SERVER_WAHL, VERWALTER_WAHL, FALSE }
     private final static String VERWALTER_IP = "192.168.0.26";
     private final static int VERWALTER_PORT_NR = 4712;
-
+    private static int numberOfAttempts = 0;
     private static FileSystemClient client;
 
     /**
@@ -49,6 +61,7 @@ public class HtwSoftClient
 
             client = new FileSystemClient(VERWALTER_PORT_NR, VERWALTER_IP);
             NetworkController nc = new NetworkController(client);
+            numberOfAttempts = 0;
             System.out.println(nc);
             System.out.println(client);
             client.browse();
@@ -56,14 +69,36 @@ public class HtwSoftClient
         }
         catch (RemoteException rex)
         {
-            System.out.println(FEHLER_VERBINDUNG_VERWALTER);
-            start();
+            startupExceptionHandling();
         }
         catch (NotBoundException nbe)
         {
-            System.out.println(FEHLER_VERBINDUNG_VERWALTER);
+            startupExceptionHandling();
+        }
+    }
+
+    /**
+     * Bearbeitet Exceptions die beim start des Clients auftreten koennen
+     */
+    public static void startupExceptionHandling()
+    {
+        if(numberOfAttempts<3)
+        {
+            System.out.println(FEHLER_VERBINDUNG_VERWALTER_STARTUP);
+            try
+            {
+                Thread.sleep(5);
+            }
+            catch(InterruptedException ie)
+            {
+                System.out.println(FEHLER_KRITISCH);
+                System.exit(1);
+            }
+            numberOfAttempts++;
             start();
         }
+        else
+            System.out.println(FEHLER_NUMBER_OF_ATTEMPTS_EXCEEDED);
     }
 
     public static MENUE intToMenue(int eingabe)
@@ -86,8 +121,9 @@ public class HtwSoftClient
         return menue_eingabe;
     }
 
-    private static void menue() throws RemoteException, NotBoundException
+    private static void menue()
     {
+        boolean remoteVerwalter = false;
         int eingabe = -1;
         MENUE menue_eingabe = MENUE.FALSE;
         try
@@ -109,14 +145,36 @@ public class HtwSoftClient
                     case OS_NAME: client.osname(); break;
                     case SERVER_WAHL: client.setServer(serverWahl()); break;
                     case VERWALTER_WAHL: client.connectNewVerwalter(verwalterWahl());
-                        break;
+                        remoteVerwalter = true; break;
                     default: System.out.println("Falsche Eingabe!"); break;
                 }
             }
         }
-        catch (IOException ioe)
+        catch(RemoteException rex)
         {
-            System.out.println(FEHLER_EINGABE);
+            if(remoteVerwalter)
+            {
+                System.out.println(FEHLER_VERBINDUNG_VERWALTER_REMOTE);
+                menue();
+            }
+            else
+            {
+                System.out.println(FEHLER_VERBINDUNG_VERWALTER);
+                start();
+            }
+        }
+        catch(NotBoundException nex)
+        {
+            if(remoteVerwalter)
+            {
+                System.out.println(FEHLER_VERBINDUNG_VERWALTER_REMOTE);
+                menue();
+            }
+            else
+            {
+                System.out.println(FEHLER_VERBINDUNG_VERWALTER);
+                start();
+            }
         }
         System.exit(0);
     }

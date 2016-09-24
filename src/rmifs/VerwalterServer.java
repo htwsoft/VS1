@@ -63,7 +63,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         verwalterListe.add(new FileServerListenElement("Verwalter1", startIp, startPort));
         verwalterListe.add(new FileServerListenElement("Verwalter2", "192.168.0.24", startPort));
         fileServerListe.add(new FileServerListenElement(null, startIp, startPort));
-        fileServerListe.add(new FileServerListenElement(null, "192.168.0.24", 6666));
+        //fileServerListe.add(new FileServerListenElement(null, "192.168.0.24", 6666));
     }
 
     /**
