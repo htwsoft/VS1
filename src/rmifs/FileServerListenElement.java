@@ -4,8 +4,11 @@ import javax.lang.model.element.Element;
 import java.io.Serializable;
 
 /**
- * Created by cpatzek on 23.09.16.
- * Liste der FileServer, angelegt zur Nutzung in einer ArrayList
+ *
+ * <br>Liste der FileServer, angelegt zur Nutzung in einer ArrayList</br>
+ * @author cpatzek
+ * @version 1.02
+ * @date 2016-09-24
  */
 public class FileServerListenElement implements Serializable
 {
