@@ -15,6 +15,7 @@ import java.util.Scanner;
 public class FileSystemClient
 {
 	public String[] fileServerNames = new String[10];
+	public String[] verwalterNames = new String[10];
 	private  String aktuellerServer = "Server1";
 	private VerwalterInterface vserver;  //Attribute zum Zugriff auf Verwalter Server Funktionen
 	private String clientAddress = "not set!";
@@ -298,6 +299,20 @@ public class FileSystemClient
 	}
 
 	/**
+	 * <br> Verbindet den Client zum neuen Verwalter</br>
+	 * @param verwalter der ausgewaehlte Verwalter
+	 */
+	public void connectNewVerwalter(int verwalter)throws RemoteException, NotBoundException
+	{
+		FileServerListenElement tmp = vserver.getVerwalter(verwalter);
+		if (System.getSecurityManager() == null)
+		{
+			System.setSecurityManager(new SecurityManager());
+		}
+		Registry registry = LocateRegistry.getRegistry(tmp.getServerIP(), tmp.getServerPort());
+		this.vserver = (VerwalterInterface) registry.lookup("VerwalterServer");
+	}
+	/**
 	 * <br>Bestimmt auf welchem Server ab jetzt gearbeitet werden soll</br>
 	 * @param server Server der ausgewaehlt wurde
 	 */
@@ -305,8 +320,7 @@ public class FileSystemClient
 	{
 		switch(server)
 		{
-			case 0: System.out.println("Vorgang abgebrochen");
-				break;
+			case 0: System.out.println("Vorgang abgebrochen");break;
 			case 1: aktuellerServer = fileServerNames[0];
 				System.out.println("Sie arbeiten nun auf: "+fileServerNames[0]);break;
 			case 2: aktuellerServer = fileServerNames[1];
@@ -318,11 +332,12 @@ public class FileSystemClient
 		}
 	}
 	/**
-	 * <br>Fordert die Namen der FileServer an und speichert sie in dem Attribut fileServerNames</br>
+	 * <br>Fordert die Namen der FileServer und der Verwalter an und speichert sie in dem Attribut fileServerNames</br>
 	 */
 	public void getServerNames() throws RemoteException, NotBoundException
 	{
-		fileServerNames = vserver.getAllHosts();
+		fileServerNames = vserver.getAllFileServerNames();
+		verwalterNames = vserver.getAllVerwalterNames();
 	}
 }
 

@@ -31,7 +31,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     private ArrayList<FileServerListenElement> fileServerListe = new ArrayList<>();
     //private HashMap<Integer, String> fileServers;
     private FSInterface fsserver;
-    //public String[] fileServerNames = new String[10];
+    private ArrayList<FileServerListenElement> verwalterListe= new ArrayList<>();
     private String clientIP = "*unknown*";
     private String timeStamp = "not set yet"; //ToDo String server
     private enum FUNKTIONALITAET{BROWSE_FILES, BROWSE_DIRS, SEARCH, CREATE_DIR, CREATE_FILE, DELETE,
@@ -60,6 +60,8 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         fileServers.put(8888, "192.168.0.26");
         fileServers.put(startPort, startIp);
         */
+        verwalterListe.add(new FileServerListenElement("Verwalter1", startIp, startPort));
+        verwalterListe.add(new FileServerListenElement("Verwalter2", "192.168.0.24", startPort));
         fileServerListe.add(new FileServerListenElement(null, startIp, startPort));
         fileServerListe.add(new FileServerListenElement(null, "192.168.0.24", 6666));
     }
@@ -171,12 +173,43 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     }
 
     /**
-     * <br>Fragt nach allen Namen der FileServer, damit Client diese identifizieren kann</br>
+     * <br>Fragt nach allen Namen der Verwalter, damit der Client diese identifizieren kann</br>
      * @return
      * @throws RemoteException
      * @throws NotBoundException
      */
-    public String[] getAllHosts() throws RemoteException, NotBoundException
+    public String[] getAllVerwalterNames() throws RemoteException, NotBoundException
+    {
+        String[] serverNames = new String[10];
+        int i = 0;
+        ListIterator<FileServerListenElement> iterator = verwalterListe.listIterator();
+        while(iterator.hasNext())
+        {
+            FileServerListenElement tmp = iterator.next();
+            serverNames[i] = tmp.getServerName();
+            i++;
+        }
+        return serverNames;
+    }
+
+    /**
+     * <br> Uebergibt die Verbindungsinformation des angeforderten Verwalters
+     * @param verwalter angeforderter Verwalter
+     * @return alle Verbindungsinformationen des angeforderten Verwalters(IP,NAME,PORT)
+     * @throws RemoteException
+     * @throws NotBoundException
+     */
+    public FileServerListenElement getVerwalter(int verwalter) throws RemoteException, NotBoundException
+    {
+        return verwalterListe.get(verwalter);
+    }
+    /**
+     * <br>Fragt nach allen Namen der FileServer, damit der Client diese identifizieren kann</br>
+     * @return
+     * @throws RemoteException
+     * @throws NotBoundException
+     */
+    public String[] getAllFileServerNames() throws RemoteException, NotBoundException
     {
         String[] serverNames = new String[10];
         int i = 0;

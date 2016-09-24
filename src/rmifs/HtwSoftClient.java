@@ -19,8 +19,8 @@ public class HtwSoftClient
             "Sollte das Problem weiterhin bestehen, dann starten Sie das Programm neu.\n";
     private static final String FEHLER_EINGABE = "Fehlerhafte Eingabe! Bitte ueberpruefen Sie ihre Eingabe!\n";
     private enum MENUE { CLOSE, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE,
-                         RENAME, OS_NAME, SERVER_WAHL, FALSE }
-    private final static String SERVER_HOST_IP = "192.168.0.26";
+                         RENAME, OS_NAME, SERVER_WAHL, VERWALTER_WAHL, FALSE }
+    private final static String VERWALTER_IP = "192.168.0.26";
     private final static int VERWALTER_PORT_NR = 4712;
 
     private static FileSystemClient client;
@@ -39,7 +39,7 @@ public class HtwSoftClient
     private static void init()
     {
         System.setProperty("java.security.policy", "policy/java.policy" );
-        System.setProperty("java.rmi.server.hostname", SERVER_HOST_IP);
+        System.setProperty("java.rmi.server.hostname", VERWALTER_IP);
     }
 
     private static void start()
@@ -47,7 +47,7 @@ public class HtwSoftClient
         try
         {
 
-            client = new FileSystemClient(VERWALTER_PORT_NR, SERVER_HOST_IP);
+            client = new FileSystemClient(VERWALTER_PORT_NR, VERWALTER_IP);
             NetworkController nc = new NetworkController(client);
             System.out.println(nc);
             System.out.println(client);
@@ -80,6 +80,7 @@ public class HtwSoftClient
             case 6: menue_eingabe = MENUE.RENAME; break;
             case 7: menue_eingabe = MENUE.OS_NAME; break;
             case 8: menue_eingabe = MENUE.SERVER_WAHL; break;
+            case 9: menue_eingabe = MENUE.VERWALTER_WAHL; break;
             default: menue_eingabe = MENUE.FALSE; break;
         }
         return menue_eingabe;
@@ -87,7 +88,6 @@ public class HtwSoftClient
 
     private static void menue() throws RemoteException, NotBoundException
     {
-
         int eingabe = -1;
         MENUE menue_eingabe = MENUE.FALSE;
         try
@@ -108,6 +108,8 @@ public class HtwSoftClient
                     case RENAME: client.rename(); break;
                     case OS_NAME: client.osname(); break;
                     case SERVER_WAHL: client.setServer(serverWahl()); break;
+                    case VERWALTER_WAHL: client.connectNewVerwalter(verwalterWahl());
+                        break;
                     default: System.out.println("Falsche Eingabe!"); break;
                 }
             }
@@ -129,7 +131,7 @@ public class HtwSoftClient
         InputStreamReader isr = new InputStreamReader(System.in);
         BufferedReader br = new BufferedReader(isr);
         int eingabe = -1;
-        while(eingabe < 0 || eingabe > 8)
+        while(eingabe < 0 || eingabe > 9)
         { //Auswahlmenue zeigen bis eingabe richtig
           try
             {
@@ -145,6 +147,7 @@ public class HtwSoftClient
                 System.out.println("6: Rename");
                 System.out.println("7: OS-Name");
                 System.out.println("8: Server waehlen");
+                System.out.println("9: Verwalter waehlen");
                 System.out.println("------------------------------------------------------------");
                 System.out.print("Was moechten Sie tun?: ");
                 eingabe = Integer.parseInt(br.readLine());
@@ -158,6 +161,38 @@ public class HtwSoftClient
         return eingabe;
     }
 
+    private static int verwalterWahl() throws RemoteException, NotBoundException
+    {
+        String server="";
+        InputStreamReader isr = new InputStreamReader(System.in);
+        BufferedReader br = new BufferedReader(isr);
+        int eingabe = -1;
+        System.out.println("Zu welchem Verwalter wollen Sie verbinden?");
+        while(eingabe < 0 || eingabe > 2)
+        { //Auswahlmenue zeigen bis eingabe richtig
+            try
+            {
+                client.getServerNames();
+                System.out.println("---------------------------------------");
+                System.out.println("        Verfuegbare Verwalter");
+                System.out.println("0: Cancel\n1: "+client.verwalterNames[0]+"\n2: "
+                        +client.verwalterNames[1]+"\n");
+                System.out.println("---------------------------------------");
+                eingabe = Integer.parseInt(br.readLine());
+            }
+            catch(IOException ioe)
+            {
+                System.out.println(FEHLER_EINGABE);
+            }
+        }
+        return eingabe;
+    }
+    /**
+     * <br> Untermenue zur Auswahl eines File-Servers die am aktuellen Verwalter angebunden sind
+     * @return Wahl des Servers als Ganzzahl
+     * @throws RemoteException
+     * @throws NotBoundException
+     */
     private static int serverWahl() throws RemoteException, NotBoundException
     {
         String server="";
