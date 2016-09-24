@@ -1,3 +1,5 @@
+import rmifs.*;
+
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.tree.*;
@@ -48,7 +50,7 @@ public class ClientGUI extends JFrame implements ActionListener {
     private JButton anzeigenButton;
     private JButton backButton;
 
-    private VerwalterInterface vServer;
+    private FileSystemClient vServer;
 
     /**
      * Fuer search
@@ -130,10 +132,10 @@ public class ClientGUI extends JFrame implements ActionListener {
                         if (!fileList[j].equals(""))
                         {
                             Contact temp = new Contact(fileList[j]);
-                            node.add(new DefaultMutableTreeNode(temp));
+                            node.add(new DefaultMutableTreeNode( temp));
                         }
                     }
-                } catch (RemoteException re) {
+                } catch (Exception re) {
                     re.printStackTrace();
                 }
             }
@@ -207,7 +209,7 @@ public class ClientGUI extends JFrame implements ActionListener {
     private void startClientButton()
     {
         int serverPort;
-        String host = "192.168.0.101";
+        String host = "127.0.0.1";
         try {
             serverPort = Integer.parseInt(portTextFeld.getText().trim());
         } catch (Exception er) {
@@ -216,24 +218,14 @@ public class ClientGUI extends JFrame implements ActionListener {
         }
         try
         {
-            if (System.getSecurityManager() == null)
-            {
-                System.setSecurityManager(new SecurityManager());
-            }
-            Registry registry = LocateRegistry.getRegistry(host, serverPort + 1);
-            this.vServer = (VerwalterInterface) registry.lookup("VerwalterServer");
-            client.append("Verbunden...\n");
-
-            ipLabel.setText(host);
-            // Start-Button deaktivieren nach Start
-            startClientButton.setEnabled(false);
-            // Portfeld deaktivieren nach Start
-            portTextFeld.setEditable(false);
+            vServer = new FileSystemClient(serverPort, host);
+            browse(".");
             aktiviereButtons();
-        } catch (Exception e2) {
-            client.append("Fehler: " + e2.toString());
         }
-        browse("\\");
+        catch(Exception e)
+        {
+            client.append("Fehler: " + e.getMessage()+"\n");
+        }
     }
 
     /**
@@ -293,7 +285,7 @@ public class ClientGUI extends JFrame implements ActionListener {
                     model.reload(node);
                 }
             }
-            catch(IOException eDir)
+            catch(Exception eDir)
             {
                 client.append("Fehler: " + eDir.getMessage()+"\n");
             }
@@ -342,7 +334,7 @@ public class ClientGUI extends JFrame implements ActionListener {
                     model.reload(node);
                 }
             }
-            catch(IOException eFile)
+            catch(Exception eFile)
             {
                 client.append("Fehler: " + eFile.getMessage() + "\n");
             }
@@ -384,7 +376,7 @@ public class ClientGUI extends JFrame implements ActionListener {
                         client.append("  " + fileListe2[i] + "\n");
                     }
                     client.append("---------------------------------------------------------------\n");
-                } catch (IOException eSeach)
+                } catch (Exception eSeach)
                 {
                     client.append("Fehler: " + eSeach.getMessage() + "\n");
                 }
@@ -438,7 +430,7 @@ public class ClientGUI extends JFrame implements ActionListener {
                 {
                     JOptionPane.showMessageDialog(null, "Ordner oder Datei konnte NICHT geloescht werden!", "Delete", JOptionPane.ERROR_MESSAGE);
                 }
-            } catch (IOException eDelete) {
+            } catch (Exception eDelete) {
                 client.append("Fehler: " + eDelete.getMessage());
             }
         }
@@ -493,7 +485,7 @@ public class ClientGUI extends JFrame implements ActionListener {
                     node = (DefaultMutableTreeNode) (aktuellerBaumPfad.getLastPathComponent());
                     model.reload(node);
                 }
-            } catch (IOException eRename)
+            } catch (Exception eRename)
             {
                 client.append("Fehler: " + eRename.getMessage() + "\n");
             }
@@ -506,31 +498,56 @@ public class ClientGUI extends JFrame implements ActionListener {
      * */
     private void wechselButton()
     {
-        int serverPort;
-        Object[] selectionValues = { "10.9.41.43", "10.9.40.171", "10.9.40.174" };
-        String initialSelection = "10.9.41.43";
+        //int serverPort;
+        Object[] selectionValues = { "192.168.1.10", "192.168.1.13", "192.168.1.14" };
+        String initialSelection = "192.168.1.13";
         Object selection = JOptionPane.showInputDialog(null, "Zu welchen Server wechseln?",
                 "Server Wechsel", JOptionPane.QUESTION_MESSAGE, null, selectionValues, initialSelection);
 
-        try
+//        try
+//        {
+//            serverPort = Integer.parseInt(portTextFeld.getText().trim());
+//        } catch(Exception er)
+//        {
+//            JOptionPane.showMessageDialog(null, "Fehler bei der Port-Eingabe", "Port-Nr", JOptionPane.ERROR_MESSAGE);
+//            return;
+//        }
+
+        if(selection != null)
         {
-            serverPort = Integer.parseInt(portTextFeld.getText().trim());
-        } catch(Exception er)
-        {
-            JOptionPane.showMessageDialog(null, "Fehler bei der Port-Eingabe", "Port-Nr", JOptionPane.ERROR_MESSAGE);
-            return;
+            try
+            {
+           /*     if(selection.toString().equals("192.168.1.14"))
+                {
+                    Registry registry = LocateRegistry.getRegistry(String.valueOf(selection), 8989+1);
+                    this.vServer = (VerwalterInterface) registry.lookup("VerwalterServer");
+                    //browse("\\");
+                    //ipLabel.setText(selection.toString());
+                }
+                if(selection.toString().equals("192.168.1.10"))
+                {
+                    Registry registry = LocateRegistry.getRegistry(String.valueOf(selection), 7878+1);
+                    this.vServer = (VerwalterInterface) registry.lookup("VerwalterServer");
+                    //browse("\\");
+                }
+                if(selection.toString().equals("192.168.1.13"))
+                {
+                    Registry registry = LocateRegistry.getRegistry(String.valueOf(selection), 5656+1);
+                    this.vServer = (VerwalterInterface) registry.lookup("VerwalterServer");
+                    //browse("\\");
+                }
+                browse("\\");*/
+                ipLabel.setText(selection.toString());
+                client.append("Server gewechselt...\n");
+                client.append((String) selection);
+            }
+            catch(Exception eOS)
+            {
+                client.append("\n Fehler_serverWechsel: " + eOS.getMessage()+"\n");
+            }
+
         }
-        try
-        {
-            Registry registry = LocateRegistry.getRegistry(String.valueOf(selection), serverPort+1);
-            this.vServer = (VerwalterInterface) registry.lookup("VerwalterServer");
-            client.append("Server gewechselt...\n");
-            client.append((String) selection);
-        }
-        catch(Exception eOS)
-        {
-            System.out.println("Fehler_serverWechsel: " + eOS.getMessage());
-        }
+
     }
 
 
@@ -639,7 +656,7 @@ public class ClientGUI extends JFrame implements ActionListener {
 
             erg = this.vServer.browseFiles(pfad);
             fileListe = erg.split("[;]");
-        } catch (IOException e11) {
+        } catch (Exception e11) {
             client.append("Fehler: " + e11.getMessage() + "\n");
         }
 
