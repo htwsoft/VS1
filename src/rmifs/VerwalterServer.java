@@ -26,6 +26,8 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
             "Die angezeigten Informationen sind moeglicherweise lueckenhaft!\nBitte versuchen Sie es spaeter noch einmal!\n";
     private static final String FEHLER_AKTUELLER_SERVER = "\nFehler!\n\tDie Verbindung zu dem Server auf dem Sie arbeiten wollen ist " +
             "unterbrochen! Bitte versuchen Sie es spaeter noch einmal!\n";
+    private static final String FEHLER_ALLE_SERVER = "\nFehler! Alle File-Server sind aktuell nicht erreichbar!\n" +
+            "                                           Versuchen Sie es spaeter erneut!\n";
     private ArrayList<FileServerListenElement> fileServerListe = new ArrayList<>();
     //private HashMap<Integer, String> fileServers;
     private FSInterface fsserver;
@@ -287,6 +289,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     private String iterateFileSystems(FUNKTIONALITAET n, String dir, String file)
     {
         int i = 0;
+        FileServerListenElement tmp;
         String ergebnis = "";
         String serverName = "";
         ListIterator<FileServerListenElement> iterator = fileServerListe.listIterator();
@@ -296,36 +299,106 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         {
             while (iterator.hasNext())
             {
-                FileServerListenElement tmp = iterator.next();
+                tmp = iterator.next();
                 Registry registry = LocateRegistry.getRegistry(tmp.serverIP, tmp.serverPort);
                 this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
                 switch (n)
                 {
                     case BROWSE_FILES:
-                        ergebnis += "\n" + tmp.serverName + ":\n\t\t" + fsserver.browseFiles(dir);
+                        ergebnis += "\n" + tmp.serverName + ":\n" + fsserver.browseFiles(dir);
                         break;
                     case BROWSE_DIRS:
                         serverName = fsserver.getHostName();
                         tmp.setServerName(serverName);
                         fileServerListe.set(i, tmp);
-                        ergebnis += "\n" + tmp.serverName + ":\n\t\t" + fsserver.browseDirs(dir);
+                        ergebnis += "\n" + tmp.serverName + ":\n" + fsserver.browseDirs(dir);
                         break;
                     case SEARCH:
-                        ergebnis += "\n" + tmp.serverName + ":\n\t\t" + fsserver.search(dir, file);
+                        ergebnis += "\n" + tmp.serverName + ":\n" + fsserver.search(dir, file);
                         break;
                 }
                 i++;
             }
-            return ergebnis;
         }
         catch(RemoteException rex)
         {
-            return ergebnis+"\n"+FEHLER_VERBINDUNG_MESSAGE+rex.getMessage();
+            String zwischenErgebnis = "";
+            if(i<1)
+            {
+                zwischenErgebnis = handleIterateException(n, dir, file);
+                if(!zwischenErgebnis.contains("Fehler"))
+                    return FEHLER_VERBINDUNG_MESSAGE+zwischenErgebnis;
+
+                else
+                    return FEHLER_ALLE_SERVER;
+
+            }
+            else
+                return ergebnis+"\n"+FEHLER_VERBINDUNG_MESSAGE+rex.getMessage();
         }
         catch(NotBoundException nex)
         {
-            return ergebnis+"\n"+FEHLER_VERBINDUNG_MESSAGE+nex.getMessage();
+            String zwischenErgebnis = "";
+            if(i<1)
+            {
+                zwischenErgebnis = handleIterateException(n, dir, file);
+                if(!zwischenErgebnis.contains("Fehler"))
+                    return FEHLER_VERBINDUNG_MESSAGE+zwischenErgebnis;
+
+                else
+                    return FEHLER_ALLE_SERVER;
+
+            }
+            else
+                return ergebnis+"\n"+FEHLER_VERBINDUNG_MESSAGE+nex.getMessage();
         }
+        return ergebnis;
+    }
+    /**
+     * <br> Ueberprueft ob der erste oder zweite Server der Liste nicht verbunden ist und reagiert entsprechend
+     * darauf</br>
+     * @param n gibt an welche Funktion der FileServer aufgerufen wird
+     * @param dir Parameter fuer dirName/startDirName, abhaengig von n
+     * @param file Parameter fuer fileName, abhaengig von n
+     * @return gibt entweder an das alle Server nicht up sind oder das einer der beiden down ist und gibt das ergebnis
+     *         dessen der up ist weiter
+     */
+    private String handleIterateException( FUNKTIONALITAET n, String dir, String file)
+    {
+        int i = 1;
+        String ergebnis = "";
+        String serverName;
+        try
+        {
+            ListIterator<FileServerListenElement> iterator = fileServerListe.listIterator();
+            FileServerListenElement tmp = iterator.next(); tmp = iterator.next();
+            Registry registry = LocateRegistry.getRegistry(tmp.serverIP, tmp.serverPort);
+            this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
+            switch (n)
+            {
+                case BROWSE_FILES:
+                    ergebnis += "\n" + tmp.serverName + ":\n" + fsserver.browseFiles(dir);
+                    break;
+                case BROWSE_DIRS:
+                    serverName = fsserver.getHostName();
+                    tmp.setServerName(serverName);
+                    fileServerListe.set(i, tmp);
+                    ergebnis += "\n" + tmp.serverName + ":\n" + fsserver.browseDirs(dir);
+                    break;
+                case SEARCH:
+                    ergebnis += "\n" + tmp.serverName + ":\n" + fsserver.search(dir, file);
+                    break;
+            }
+        }
+        catch(RemoteException rex)
+        {
+            return FEHLER_ALLE_SERVER;
+        }
+        catch(NotBoundException nex)
+        {
+            return FEHLER_ALLE_SERVER;
+        }
+        return ergebnis;
     }
     /**
      * Verbindet den Verwalter zum geforderten FileServer, um anschließend dort eine Operation

@@ -117,7 +117,8 @@ public class FileSystemClient
 		{
 			System.out.println(dirListe[j]);
 		}
-		initialBrowse = true;
+		if(!erg.contains("Fehler"))
+			initialBrowse = true;
 	}
 
     public void search()throws RemoteException, NotBoundException
