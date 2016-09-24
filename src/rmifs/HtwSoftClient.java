@@ -32,7 +32,7 @@ public class HtwSoftClient
     private static final String FEHLER_EINGABE = "Fehlerhafte Eingabe! Bitte ueberpruefen Sie ihre Eingabe!\n";
     private enum MENUE { CLOSE, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE,
                          RENAME, OS_NAME, SERVER_WAHL, VERWALTER_WAHL, FALSE }
-    private static  String verwalterIp = "192.168.0.26";
+    private static  String verwalterIp = "192.168.0.24";
     private static int verwalterPortNr = 4712;
     private static int numberOfAttempts = 0;
     private static FileSystemClient client;
@@ -87,7 +87,7 @@ public class HtwSoftClient
             System.out.println(FEHLER_VERBINDUNG_VERWALTER_STARTUP);
             try
             {
-                Thread.sleep(5);
+                Thread.sleep(5000);
             }
             catch(InterruptedException ie)
             {
@@ -165,7 +165,16 @@ public class HtwSoftClient
             else
             {
                 System.out.println(FEHLER_VERBINDUNG_VERWALTER);
-                start();
+                try
+                {
+                    Thread.sleep(5000);
+                    start();
+                }
+                catch(InterruptedException ie)
+                {
+                    System.out.println(FEHLER_KRITISCH);
+                    System.exit(1);
+                }
             }
         }
         catch(NotBoundException nex)

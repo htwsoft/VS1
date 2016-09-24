@@ -308,7 +308,6 @@ public class FileSystemClient
 		try
 		{
 			tmp = vserver.getVerwalter(verwalter);
-			System.out.println("\nAlles gut. Eingabe: "+verwalter);
 			return tmp;
 		}
 		catch(RemoteException rex)

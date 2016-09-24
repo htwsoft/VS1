@@ -14,7 +14,7 @@ import java.rmi.server.UnicastRemoteObject;
 public class HtwSoftServer {
 
     private final static String SERVER_HOST_IP = "192.168.0.26";
-    private final static int SERVER_PORT_NR = 6666;
+    private final static int SERVER_PORT_NR = 4711;
 
     public static void main(String args [])
     {
