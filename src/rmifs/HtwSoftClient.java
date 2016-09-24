@@ -32,8 +32,9 @@ public class HtwSoftClient
     private static final String FEHLER_EINGABE = "Fehlerhafte Eingabe! Bitte ueberpruefen Sie ihre Eingabe!\n";
     private enum MENUE { CLOSE, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE,
                          RENAME, OS_NAME, SERVER_WAHL, VERWALTER_WAHL, FALSE }
-    private static  String verwalterIp = "192.168.0.24";
+    private static  String verwalterIp = "192.168.0.26";
     private static int verwalterPortNr = 4712;
+    private static FileServerListenElement verwalterDaten = new FileServerListenElement("LocalVerwalter", verwalterIp, verwalterPortNr);
     private static int numberOfAttempts = 0;
     private static FileSystemClient client;
 
@@ -59,7 +60,7 @@ public class HtwSoftClient
         try
         {
 
-            client = new FileSystemClient(verwalterPortNr, verwalterIp);
+            client = new FileSystemClient(verwalterDaten.getServerPort(), verwalterDaten.getServerIP());
             NetworkController nc = new NetworkController(client);
             numberOfAttempts = 0;
             System.out.println(nc);
@@ -144,10 +145,9 @@ public class HtwSoftClient
                     case DELETE: client.delete(); break;
                     case RENAME: client.rename(); break;
                     case OS_NAME: client.osname(); break;
-                    case SERVER_WAHL: client.setServer(serverWahl()); break;
+                    case SERVER_WAHL: client.setServer(serverWahl(), getServerLaenge()); break;
                     case VERWALTER_WAHL: remoteVerwalter = true;
-                        tmp = client.connectNewVerwalter(verwalterWahl());
-                        verwalterIp = tmp.getServerIP(); verwalterPortNr = tmp.getServerPort();
+                        connectVerwalter(verwalterWahl(), getVerwalterLaenge());
                         System.out.println("\nVerbinde nun zu neuem Verwalter!\n");
                         start();
                         break;
@@ -194,6 +194,10 @@ public class HtwSoftClient
         {
             System.out.println(FEHLER_EINGABE);
             menue();
+        }
+        catch(IOException ioe)
+        {
+
         }
         System.exit(0);
     }
@@ -245,20 +249,21 @@ public class HtwSoftClient
         BufferedReader br = new BufferedReader(isr);
         int eingabe = -1;
         int i = 0;
+        int laenge = getVerwalterLaenge();
         System.out.println("Zu welchem Verwalter wollen Sie verbinden?");
-        while(eingabe < 0 || eingabe > client.verwalterNames.length)
+        while(eingabe < 0 || eingabe > laenge)
         { //Auswahlmenue zeigen bis eingabe richtig
             try
             {
                 client.getServerNames();
                 System.out.println("---------------------------------------");
                 System.out.println("        Verfuegbare Verwalter");
-                System.out.println("0: Cancel");
-                while(client.verwalterNames[i] != null)
+                while(!client.verwalterNames.get(i).contains("default"))
                 {
-                    System.out.println("\n"+(i+1)+": "+client.verwalterNames[i]);
+                    System.out.println("\n"+i+": "+client.verwalterNames.get(i));
                     i++;
                 }
+                System.out.println(i+": Cancel");
                 System.out.println("---------------------------------------");
                 eingabe = Integer.parseInt(br.readLine());
             }
@@ -271,7 +276,7 @@ public class HtwSoftClient
                 System.out.println(FEHLER_EINGABE);
             }
         }
-        return eingabe-1;
+        return eingabe;
     }
     /**
      * <br> Untermenue zur Auswahl eines File-Servers die am aktuellen Verwalter angebunden sind
@@ -279,35 +284,67 @@ public class HtwSoftClient
      * @throws RemoteException
      * @throws NotBoundException
      */
-    private static int serverWahl() throws RemoteException, NotBoundException
+    private static int serverWahl() throws NotBoundException, IOException
     {
         String server="";
         InputStreamReader isr = new InputStreamReader(System.in);
         BufferedReader br = new BufferedReader(isr);
         int eingabe = -1;
         int i = 0;
+        int laenge = getServerLaenge();
         System.out.println("Auf welchem Server wollen Sie arbeiten?");
-        while(eingabe < 0 || eingabe > client.fileServerNames.length)
+
+        while(eingabe < 0 || eingabe > laenge)
         { //Auswahlmenue zeigen bis eingabe richtig
-            try
+
+            client.getServerNames();
+            System.out.println("---------------------------------------");
+            System.out.println("        Verfuegbare Server");
+            while(!client.fileServerNames.get(i).contains("default"))
             {
-                client.getServerNames();
-                System.out.println("---------------------------------------");
-                System.out.println("        Verfuegbare Server");
-                System.out.println("0: Cancel");
-                while(client.fileServerNames[i] != null)
-                {
-                    System.out.println("\n"+(i+1)+": "+client.fileServerNames[i]);
-                    i++;
-                }
-                System.out.println("---------------------------------------");
-                eingabe = Integer.parseInt(br.readLine());
+                System.out.println("\n"+i+": "+client.fileServerNames.get(i));
+                i++;
             }
-            catch(IOException ioe)
-            {
-                System.out.println(FEHLER_EINGABE);
-            }
+            System.out.println(i+": Cancel");
+            System.out.println("---------------------------------------");
+            eingabe = Integer.parseInt(br.readLine());
         }
         return eingabe;
+    }
+
+    /**
+     * <br> Fragt die tatsaechliche Laenge des ArrayList fileServerNames ab</br>
+     * @return laenge des Arrays
+     */
+    private static int getServerLaenge()
+    {
+        int laenge = 0;
+        while(!client.fileServerNames.get(laenge).contains("default"))
+            laenge++;
+        return laenge;
+    }
+
+    /**
+     * <br> Fragt die tatsaechliche Laenge des ArrayList fileServerNames ab</br>
+     * @return laenge des Arrays
+     */
+    private static int getVerwalterLaenge()
+    {
+        int laenge = 0;
+        while(!client.verwalterNames.get(laenge).contains("default"))
+            laenge++;
+        return laenge;
+    }
+    private static void connectVerwalter(int verwalter, int laenge)throws RemoteException, NotBoundException
+    {
+        FileServerListenElement tmp;
+        if(verwalter < laenge)
+        {
+            tmp = client.getNewVerwalter(verwalter);
+            verwalterDaten.setServerIP(tmp.getServerIP());
+            verwalterDaten.setServerPort(tmp.getServerPort());
+        }
+        else
+            System.out.println("\nVorgang abgebrochen\n");
     }
 }//ENDE

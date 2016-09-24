@@ -4,6 +4,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -14,9 +15,9 @@ import java.util.Scanner;
 
 public class FileSystemClient
 {
-	public String[] fileServerNames = new String[10];
-	public String[] verwalterNames = new String[10];
-	private  String aktuellerServer = "Server1";
+	public ArrayList<String> fileServerNames = new ArrayList<>();
+	public ArrayList<String> verwalterNames = new ArrayList<>();
+	private  int aktuellerServer = 0;
 	private VerwalterInterface vserver;  //Attribute zum Zugriff auf Verwalter Server Funktionen
 	private String clientAddress = "not set!";
 	private String clientName = "not set!";
@@ -80,7 +81,7 @@ public class FileSystemClient
 		{
 			getServerNames();
 			initialBrowse();
-			System.out.println("Sie arbeiten momentan auf: "+fileServerNames[0]);
+			System.out.println("Sie arbeiten momentan auf: "+fileServerNames.get(0));
 		}
 	}
 
@@ -302,33 +303,25 @@ public class FileSystemClient
 	 * <br> Verbindet den Client zum neuen Verwalter</br>
 	 * @param verwalter der ausgewaehlte Verwalter
 	 */
-	public FileServerListenElement connectNewVerwalter(int verwalter)throws RemoteException, NotBoundException
+	public FileServerListenElement getNewVerwalter(int verwalter)throws RemoteException, NotBoundException
 	{
-		FileServerListenElement tmp = new FileServerListenElement();
-		try
-		{
-			tmp = vserver.getVerwalter(verwalter);
-			return tmp;
-		}
-		catch(RemoteException rex)
-		{
-			System.out.println("\nFehler RemoteEX: "+rex.getMessage());
-			rex.printStackTrace();
-		}
-		catch(NotBoundException nex)
-		{
-			System.out.println("\nFehler NotBoundEX: "+nex.getMessage());
-			nex.printStackTrace();
-		}
-		return tmp;
+		return vserver.getVerwalter(verwalter);
 	}
 	/**
 	 * <br>Bestimmt auf welchem Server ab jetzt gearbeitet werden soll</br>
 	 * @param server Server der ausgewaehlt wurde
+	 * @param laenge
 	 */
-	public void setServer(int server)
+	public void setServer(int server, int laenge)
 	{
-		switch(server)
+		if(server < laenge)
+		{
+			aktuellerServer = server;
+			System.out.println("Sie arbeiten nun auf: "+ fileServerNames.get(server));
+		}
+		else
+			System.out.println("\nVorgang abgebrochen!\n");
+		/*switch(server)
 		{
 			case 0: System.out.println("Vorgang abgebrochen");break;
 			case 1: aktuellerServer = fileServerNames[0];
@@ -339,7 +332,7 @@ public class FileSystemClient
 				System.out.println("Sie arbeiten nun auf: "+fileServerNames[2]);break;
 			default:
 				System.out.println("Fehlerhafte Eingabe!");
-		}
+		}*/
 	}
 	/**
 	 * <br>Fordert die Namen der FileServer und der Verwalter an und speichert sie in dem Attribut fileServerNames
@@ -347,8 +340,15 @@ public class FileSystemClient
 	 */
 	public void getServerNames() throws RemoteException, NotBoundException
 	{
-		fileServerNames = vserver.getAllFileServerNames();
-		verwalterNames = vserver.getAllVerwalterNames();
+		try{
+			fileServerNames = vserver.getAllFileServerNames(0);
+			verwalterNames = vserver.getAllVerwalterNames(0);
+		}
+		catch(Exception e)
+		{
+			System.out.println("Fehler: "+e.getMessage());
+			e.printStackTrace();
+		}
 	}
 }
 
