@@ -1,16 +1,19 @@
-/**
-* Klasse zum Darstellen eines Dateisystems
-* @author Marco Palumbo, Nadine Breitenstein
-* @version 1.0
-*/
 //package src.rmifs;
 package rmifs;
 
+/**
+* Klasse zum Darstellen eines Dateisystems
+* @author Marco Palumbo, Nadine Breitenstein
+* @version 1.01
+*/
+//ToDo Beobachter (Observer) Entwurfsmuster implementieren um Veränderungen am FileSystem zu melden diese
+//ToDo StandardWatchEventKinds with NIO
 import java.io.*;
-import java.nio.*;
-import java.nio.file.*;
 import java.net.*;
+import java.net.Inet4Address;
+import java.nio.file.*;
 import static java.nio.file.StandardCopyOption.*;
+import static java.nio.file.StandardWatchEventKinds.*;
 
 /**
 * Klasse Filesystem dient zur leichteren Kommunikation/ Darstellung
@@ -19,8 +22,8 @@ import static java.nio.file.StandardCopyOption.*;
 public class FileSystem
 {	
 	private String osname; //Name des Betriebsystems
-	private String hostname;
-	private String hostAddress;
+	private String hostname; // Name der FileSystem Maschine
+	private String hostAddress; // IP der FileSystem Maschine
 	private Path [] dirListe; //Liste der gefundenen Ordner bei Browse
 	private Path [] fileListe; //Liste der gefundenen Dateien bei Browse
 	
@@ -33,8 +36,8 @@ public class FileSystem
 		this.osname = System.getProperty("os.name");
 
 		try {
-			this.hostname = InetAddress.getLocalHost().getHostName();
-			this.hostAddress = InetAddress.getLocalHost().getHostAddress();
+			this.hostname = Inet4Address.getLocalHost().getHostName();
+			this.hostAddress = Inet4Address.getLocalHost().getHostAddress();
 		} catch (UnknownHostException uhe) {
 			uhe.printStackTrace();
 		}
@@ -112,6 +115,12 @@ public class FileSystem
 		}
 	}
 	
+	/**
+	* Funktion erstellt einen Ordner oder eine Datei in dem übergebenen Ordner
+	* @param dir Datei- oder Ordnername
+	* @param typ Angabe ob Ordner oder Datei erstellt werden soll "dir" oder "file"
+	* @return true wenn das erstellen erfolgreich war
+	*/
 	public boolean create(String dir, String typ) throws IOException
 	{
 		boolean returnWert = false;
@@ -142,7 +151,11 @@ public class FileSystem
 		}
 		return returnWert;
 	}
-	
+	/**
+	* Funktion löscht die übergebene Datei oder den übergebenen Ordner
+	* @param dir Datei oder Ordner der geloescht werden soll
+	* @return true wenn das Loeschen erfolgreich war	
+	*/
 	public boolean delete(String dir)
 	{
 		try
@@ -164,9 +177,15 @@ public class FileSystem
 		}
 	}
 	
+	/**
+	* Funktion benennt eine Datei oder einen Ordner um
+	* @param oldName aktueller Name
+	* @param newName neuer Name 
+	* @return true wenn das Umbennen erfolgreich war
+	*/
 	public boolean rename(String oldName, String newName) throws IOException
 	{
-		Path pathOld = Paths.get(oldName); //Ordner der durchsucht werden soll
+		Path pathOld = Paths.get(oldName); //Ordner indem der zu ändernde Ordner oder Datei liegt
 		
 		if( !Files.exists(pathOld, LinkOption.NOFOLLOW_LINKS))
 		{
@@ -176,28 +195,35 @@ public class FileSystem
 		else
 		{
 			Path pathNew = Paths.get(newName);
-			CopyOption[] options = new CopyOption[] { COPY_ATTRIBUTES, REPLACE_EXISTING };
-			Files.copy(pathOld, pathNew, options);
-			Files.delete(pathOld);
-			return true;
+			//Aktueller Name
+			File fileOld = new File(oldName);
+			//Neuer name
+			File fileNew = new File(newName);
+			//Prüfen ob neuer Name schon vergeben ist
+			if (fileNew.exists())
+			{
+				//neuer Dateiname existiert bereits
+				return false;				
+			}
+			else
+			{
+				//Datei umbenennen
+				return fileOld.renameTo(fileNew);
+			}
 		}
 
 	
 	}	
 	
 	/**
-	* Funktion liefert den Betriebsystemname des 
+	* Funktionen liefern den Betriebsystemnamen,
+	* sowie Maschinenname und IP-Adresse des
 	* FileSystems zurück
-	* @return OS-Name
+	* @return osname, hostname, hostAddress
 	*/
-	public String getOSName()
-	{
-		return this.osname;
-	}
-
+	public String getOSName() {return this.osname;}
 	public String getHostName() {return this.hostname;}
-
-	public String getHostAdress() {return this.hostAddress;}
+	public String getHostAddress() {return this.hostAddress;}
 
 	/**
 	* Prozedur liefert die gefundenen Dateien zurück

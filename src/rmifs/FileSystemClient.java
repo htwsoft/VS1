@@ -4,18 +4,36 @@ package rmifs;
 import java.io.*;
 import java.util.*;
 import java.rmi.*;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.lang.*;
 
-
-
+/**
+ * @author mpalumbo, cpatzek, soezdemir
+ * @version 1.03
+ * @date indefinitely
+ */
+//ToDo dringend aufräumen
 
 public class FileSystemClient
 {
-	private VerwalterInterface vserver;  //Attribute zum Zugriff auf Verwalter Server Funktion
-	private enum MENUE { CLOSE, LIST, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE, RENAME, OS_NAME, FALSE };
+	private final static String SERVER_HOST_IP_1 = "192.168.0.11";
+	private final static String SERVER_HOST_IP_2 = "192.168.0.23";
+	private final static String SERVER_HOST_IP_3 = "192.168.0.24";
+	private final static String SERVER_HOST_FGVT = "172.19.1.209"; //localhost
+	private final static int SERVER_PORT = 4712; 	//ToDo variable Ports und IPs
+
+	private VerwalterInterface vserver;  //Attribute zum Zugriff auf Verwalter Server Funktionen
+	private String clientAddress = "not set!";
+	private String clientName = "not set!";
+	private String clientOS = "not set!";
+
+
+
+	private enum MENUE { CLOSE, LIST, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE, RENAME, OS_NAME, FALSE }
+
+
 	/**
 	* Hauptmethode der Demo
 	* startet eine Menue
@@ -23,14 +41,26 @@ public class FileSystemClient
 	*/	
 	public static void main(String args[]) 
 	{
+		//**** regelt RMI Kommunikation ***** muss anfang der main bleiben
+		System.setProperty("policy/java.security.policy", "policy/java.policy" );
+		//System.setProperty("java.rmi.server.hostname", SERVER_HOST_IP_3);//warum steht das hier????
 		FileSystemClient fsc = null;
+		//FileSystemClient fsclient = nsendew FileSystemClient(4712, "localhost");
+
 		int serverPort = 0;
 		int eingabe = -1;
 		MENUE menue_eingabe = MENUE.FALSE;
 		try 
 		{
-			serverPort = Integer.parseInt(args[0]);	
-			fsc = new FileSystemClient(serverPort, args[1]);
+			serverPort = SERVER_PORT; //Integer.parseInt(args[0]);
+
+			//noetig für die Verbindung zum Verwalter (verwalterPort, vewalterIP)
+			fsc = new FileSystemClient(serverPort, SERVER_HOST_FGVT); //args[1]
+			NetworkController nc = new NetworkController(fsc);
+
+			System.out.println(nc);
+			System.out.println(fsc);
+
 			while(menue_eingabe != MENUE.CLOSE)
 			{
 				eingabe = fsc.zeigeMenue();
@@ -50,10 +80,15 @@ public class FileSystemClient
 				}
 			}	
 		} 
-		catch (Exception e) 
+		catch (IOException ioe)
 		{
-			System.err.println("FileSystemClient exception:"); e.printStackTrace();
+			ioe.printStackTrace();
 		}
+		catch (NotBoundException nbe)
+		{
+			nbe.printStackTrace();
+		}
+
 		System.exit(0);
 	} 
 	
@@ -89,10 +124,11 @@ public class FileSystemClient
 		}
 		Registry registry = LocateRegistry.getRegistry(host, portNr);
 		this.vserver = (VerwalterInterface) registry.lookup("VerwalterServer");
+		//ToDo lookup für VerwalterServer & FileServer
 	}
 	
 	/**
-	* Führt die Brwows-Methode der FileSystemServer-Klasse aus
+	* Führt die Browse-Methode der FileSystemServer-Klasse aus
 	*/
 	private void browse()
 	{
@@ -128,7 +164,7 @@ public class FileSystemClient
 		}
 		catch(IOException e)
 		{
-			System.out.println("Fehler: " + e.getMessage());	
+			e.printStackTrace();
 		}
 	}
 	
@@ -161,9 +197,9 @@ public class FileSystemClient
 				}
 			}
 		}
-		catch(IOException e)
+		catch(IOException ioe)
 		{
-			System.out.println("Fehler: " + e.getMessage());	
+			ioe.printStackTrace();
 		}			
 	}
 
@@ -184,9 +220,9 @@ public class FileSystemClient
 				System.out.println("Ordner konnte NICHT erstellt werden!");
 			}
 		}
-		catch(IOException e)
+		catch(IOException ioe)
 		{
-			System.out.println("Fehler: " + e.getMessage());	
+			ioe.printStackTrace();
 		}			
 	}
 	
@@ -269,6 +305,7 @@ public class FileSystemClient
 			System.out.println("|-------------------------------------------------");
 			System.out.println("| Verwendetes OS:  " + this.vserver.getOSName());
 			System.out.println("| Name des Hosts:  " + this.vserver.getHostName());//ToDo
+			System.out.println("| IP des Hosts	:  " + this.vserver.getHostAddress());//ToDo
 			System.out.println("|-------------------------------------------------");
 
 		}
@@ -283,17 +320,19 @@ public class FileSystemClient
 	* Funktion zeigt ein Auswahlmenue und liefert 
 	* die Auswahl des Benutzers zurück
 	*/
-	private int zeigeMenue()
+	private int zeigeMenue ()
 	{
 		//Scanner liste eingabe des Benutzers ein
 		InputStreamReader isr = new InputStreamReader(System.in);
 		BufferedReader br = new BufferedReader(isr);
+		toString();
 		int eingabe = -1;
 		while(eingabe < 0 || eingabe > 8)
 		{
 			//Auswahlmenue zeigen bis eingabe richtig
 			try
 			{
+				//Terminal Ausgabe Menue
 				System.out.println("");
 				System.out.println("---------------------");
 				System.out.println("Menue:");
@@ -310,13 +349,16 @@ public class FileSystemClient
 				System.out.print("Was moechten Sie tun?: ");
 				eingabe = Integer.parseInt(br.readLine());
 			}
-			catch(Exception e)
+			catch(IOException ioe)
 			{
-				System.out.println("Fehlerhafte Eingabe!");
+				ioe.printStackTrace();
 			}
 		}
+
 		System.out.println("");
+
 		return eingabe;
+
 	}
 
 	/**
@@ -335,4 +377,52 @@ public class FileSystemClient
 			System.out.println("Fehler: "+ e.getMessage());
 		}
 	}
+
+
+
+	//ToDo --> noch in Bearbeitung durch soezdemir
+	/**
+	 * Folgende Methoden liefern den Namen, IP-Adresse
+	 * und den OS-Nammen eines Clients zurück
+	 * @return Host Name, IP-Adresse und OS des Clients
+	 * @throws RemoteException
+	 * @author soezdemir
+	 */
+	public void setClientAddress(String clientAddress)throws RemoteException{
+		this.clientAddress = clientAddress;
+		sendClientAddress(clientAddress);
+	}
+
+	public void sendClientAddress(String clientAddress) throws RemoteException {
+		vserver.sendClientAddress(clientAddress);
+		System.out.println("\n***** Client: -> IP: [" + clientAddress + "] *****\n");
+	}
+
+
+	public String getClientAddress(){
+		return this.clientAddress;
+
+	}
+
+	public void setClientOS(String clientOS){this.clientOS = clientOS;
+	}
+
+	public String  getClientOS ()
+	{
+		//vserver.sendClientAddress(clientAddress);
+		return this.clientOS;
+	}
+
+
+	public String toString(){
+		StringBuffer sb = new StringBuffer();
+		sb.append("*clientaddress: " + clientAddress);
+
+		return " ";  //sb.toString();
+
+	}
+
+
+
 }
+

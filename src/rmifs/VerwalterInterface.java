@@ -1,17 +1,18 @@
 //package src.rmifs;
 package rmifs;
 
+/**
+ * Interface für die VerwalterServer
+ * @author cpatzek & soezdemir
+ * @version 1.03
+ * @date 2016-09-14
+ */
+
+import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
-/**
- * Created by Christian Patzek on 03.09.2016.
- * Interface für die Verwalter
- */
-interface VerwalterInterface extends Remote
-{
+interface VerwalterInterface extends Remote{
     public String getServerList() throws RemoteException;
     public String browseDirs(String dir) throws RemoteException;
     public String browseFiles(String dir) throws RemoteException;
@@ -22,5 +23,9 @@ interface VerwalterInterface extends Remote
     public boolean rename(String oldName, String newName) throws RemoteException;
     public String getOSName()throws RemoteException;
     public String getHostName() throws RemoteException;
-    public String getHostAdress() throws RemoteException; //ToDo
+    public String getHostAddress() throws RemoteException, NotBoundException;
+    public void sendClientAddress(String clientAddress) throws RemoteException;
+    //public String sendClientName(String clientName) throws RemoteException;//ToDo
+    //public String sendClientOS(String clientOS) throws RemoteException; //ToDo
+
 }
