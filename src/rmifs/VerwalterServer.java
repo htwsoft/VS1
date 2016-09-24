@@ -201,6 +201,8 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
      */
     public FileServerListenElement getVerwalter(int verwalter) throws RemoteException, NotBoundException
     {
+        System.out.println("Angeforderter Verwalter:\n IP: "+verwalterListe.get(verwalter).getServerIP()+
+                    "\t Port: "+verwalterListe.get(verwalter).getServerPort());
         return verwalterListe.get(verwalter);
     }
     /**

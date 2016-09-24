@@ -1,12 +1,13 @@
 package rmifs;
 
 import javax.lang.model.element.Element;
+import java.io.Serializable;
 
 /**
  * Created by cpatzek on 23.09.16.
  * Liste der FileServer, angelegt zur Nutzung in einer ArrayList
  */
-public class FileServerListenElement
+public class FileServerListenElement implements Serializable
 {
     private String serverName;
 

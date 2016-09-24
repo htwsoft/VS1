@@ -32,8 +32,8 @@ public class HtwSoftClient
     private static final String FEHLER_EINGABE = "Fehlerhafte Eingabe! Bitte ueberpruefen Sie ihre Eingabe!\n";
     private enum MENUE { CLOSE, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE,
                          RENAME, OS_NAME, SERVER_WAHL, VERWALTER_WAHL, FALSE }
-    private final static String VERWALTER_IP = "192.168.0.26";
-    private final static int VERWALTER_PORT_NR = 4712;
+    private static  String verwalterIp = "192.168.0.26";
+    private static int verwalterPortNr = 4712;
     private static int numberOfAttempts = 0;
     private static FileSystemClient client;
 
@@ -51,7 +51,7 @@ public class HtwSoftClient
     private static void init()
     {
         System.setProperty("java.security.policy", "policy/java.policy" );
-        System.setProperty("java.rmi.server.hostname", VERWALTER_IP);
+        System.setProperty("java.rmi.server.hostname", verwalterIp);
     }
 
     private static void start()
@@ -59,7 +59,7 @@ public class HtwSoftClient
         try
         {
 
-            client = new FileSystemClient(VERWALTER_PORT_NR, VERWALTER_IP);
+            client = new FileSystemClient(verwalterPortNr, verwalterIp);
             NetworkController nc = new NetworkController(client);
             numberOfAttempts = 0;
             System.out.println(nc);
@@ -125,6 +125,7 @@ public class HtwSoftClient
     {
         boolean remoteVerwalter = false;
         int eingabe = -1;
+        FileServerListenElement tmp;
         MENUE menue_eingabe = MENUE.FALSE;
         try
         {
@@ -144,8 +145,12 @@ public class HtwSoftClient
                     case RENAME: client.rename(); break;
                     case OS_NAME: client.osname(); break;
                     case SERVER_WAHL: client.setServer(serverWahl()); break;
-                    case VERWALTER_WAHL: client.connectNewVerwalter(verwalterWahl());
-                        remoteVerwalter = true; break;
+                    case VERWALTER_WAHL: remoteVerwalter = true;
+                        tmp = client.connectNewVerwalter(verwalterWahl());
+                        verwalterIp = tmp.getServerIP(); verwalterPortNr = tmp.getServerPort();
+                        System.out.println("\nVerbinde nun zu neuem Verwalter!\n");
+                        start();
+                        break;
                     default: System.out.println("Falsche Eingabe!"); break;
                 }
             }

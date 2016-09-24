@@ -302,15 +302,26 @@ public class FileSystemClient
 	 * <br> Verbindet den Client zum neuen Verwalter</br>
 	 * @param verwalter der ausgewaehlte Verwalter
 	 */
-	public void connectNewVerwalter(int verwalter)throws RemoteException, NotBoundException
+	public FileServerListenElement connectNewVerwalter(int verwalter)throws RemoteException, NotBoundException
 	{
-		FileServerListenElement tmp = vserver.getVerwalter(verwalter);
-		if (System.getSecurityManager() == null)
+		FileServerListenElement tmp = new FileServerListenElement();
+		try
 		{
-			System.setSecurityManager(new SecurityManager());
+			tmp = vserver.getVerwalter(verwalter);
+			System.out.println("\nAlles gut. Eingabe: "+verwalter);
+			return tmp;
 		}
-		Registry registry = LocateRegistry.getRegistry(tmp.getServerIP(), tmp.getServerPort());
-		this.vserver = (VerwalterInterface) registry.lookup("VerwalterServer");
+		catch(RemoteException rex)
+		{
+			System.out.println("\nFehler RemoteEX: "+rex.getMessage());
+			rex.printStackTrace();
+		}
+		catch(NotBoundException nex)
+		{
+			System.out.println("\nFehler NotBoundEX: "+nex.getMessage());
+			nex.printStackTrace();
+		}
+		return tmp;
 	}
 	/**
 	 * <br>Bestimmt auf welchem Server ab jetzt gearbeitet werden soll</br>
