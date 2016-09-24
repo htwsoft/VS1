@@ -172,6 +172,7 @@ public class HtwSoftClient
         { //Auswahlmenue zeigen bis eingabe richtig
             try
             {
+                client.getServerNames();
                 System.out.println("---------------------------------------");
                 System.out.println("        Verfuegbare Server");
                 System.out.println("0: Cancel\n1: "+client.fileServerNames[0]+"\n2: "

@@ -27,7 +27,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     private static final String FEHLER_AKTUELLER_SERVER = "\nFehler!\n\tDie Verbindung zu dem Server auf dem Sie arbeiten wollen ist " +
             "unterbrochen! Bitte versuchen Sie es spaeter noch einmal!\n";
     private static final String FEHLER_ALLE_SERVER = "\nFehler! Alle File-Server sind aktuell nicht erreichbar!\n" +
-            "                                           Versuchen Sie es spaeter erneut!\n";
+            "Versuchen Sie es spaeter erneut!\n";
     private ArrayList<FileServerListenElement> fileServerListe = new ArrayList<>();
     //private HashMap<Integer, String> fileServers;
     private FSInterface fsserver;
