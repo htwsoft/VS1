@@ -60,10 +60,10 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         fileServers.put(8888, "192.168.0.26");
         fileServers.put(startPort, startIp);
         */
-        verwalterListe.add(new FileServerListenElement("RemoteVerwalter1", "192.168.0.24", HtwSoftVerwalter.VERWALTER_PORT));
+        verwalterListe.add(new FileServerListenElement("RemotVerwalter1", "192.168.0.24", HtwSoftVerwalter.VERWALTER_PORT));
         //verwalterListe.add(new FileServerListenElement("Verwalter2", "192.168.0.24", HtwSoftVerwalter.VERWALTER_PORT));
         fileServerListe.add(new FileServerListenElement(null, startIp, startPort));
-        //fileServerListe.add(new FileServerListenElement(null, "192.168.0.24", 6666));
+        fileServerListe.add(new FileServerListenElement(null, "192.168.0.24", 6666));
     }
 
     /**

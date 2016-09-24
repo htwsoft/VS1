@@ -242,7 +242,7 @@ public class HtwSoftClient
                 System.out.println(FEHLER_EINGABE);
             }
         }
-        return eingabe;
+        return eingabe-1;
     }
     /**
      * <br> Untermenue zur Auswahl eines File-Servers die am aktuellen Verwalter angebunden sind

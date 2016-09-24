@@ -332,7 +332,8 @@ public class FileSystemClient
 		}
 	}
 	/**
-	 * <br>Fordert die Namen der FileServer und der Verwalter an und speichert sie in dem Attribut fileServerNames</br>
+	 * <br>Fordert die Namen der FileServer und der Verwalter an und speichert sie in dem Attribut fileServerNames
+	 * bzw. in verwalterNames</br>
 	 */
 	public void getServerNames() throws RemoteException, NotBoundException
 	{
