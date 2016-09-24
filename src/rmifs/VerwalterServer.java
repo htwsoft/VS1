@@ -63,11 +63,14 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         fileServers.put(8888, "192.168.0.26");
         fileServers.put(startPort, startIp);
         */
-        //verwalterListe.add(new FileServerListenElement("RemotVerwalter1", "192.168.0.26", HtwSoftVerwalter.VERWALTER_PORT));
+        verwalterListe.add(new FileServerListenElement("RemoteVerwalter1", "192.168.0.26", 4713));
+        verwalterListe.add(new FileServerListenElement("RemoteVerwalter2", "192.168.0.26", 4714));
         //verwalterListe.add(new FileServerListenElement("Verwalter2", "192.168.0.24", HtwSoftVerwalter.VERWALTER_PORT));
         fileServerListe.add(new FileServerListenElement(null, startIp, startPort));
-        //fileServerListe.add(new FileServerListenElement(null, "192.168.0.24", 6666));
-        //fileServerListe.add(new FileServerListenElement(null, "192.168.0.24", 8888));
+        fileServerListe.add(new FileServerListenElement(null, "192.168.0.26", 1111));
+        fileServerListe.add(new FileServerListenElement(null, "192.168.0.26", 2222));
+        fileServerListe.add(new FileServerListenElement(null, "192.168.0.26", 3333));
+        fileServerListe.add(new FileServerListenElement(null, "192.168.0.26", 4444));
         for(int i = 0; i < ARRAY_GRENZE; i++)
         {
             serverNames.add("default"+i);
@@ -240,12 +243,12 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         }
         catch(RemoteException rex)
         {
-            serverNames.set(index, fsserver.getHostName()+"(online)");
+            serverNames.set(index, fileServerListe.get(index).getServerName()+"(offline)");
             getAllFileServerNames(index+1);
         }
         catch(NotBoundException nex)
         {
-            serverNames.set(index, fsserver.getHostName()+"(online)");
+            serverNames.set(index, fsserver.getHostName()+"(offline)");
             getAllFileServerNames(index+1);
         }
         return serverNames;

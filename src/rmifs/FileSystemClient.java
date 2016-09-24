@@ -340,15 +340,8 @@ public class FileSystemClient
 	 */
 	public void getServerNames() throws RemoteException, NotBoundException
 	{
-		try{
-			fileServerNames = vserver.getAllFileServerNames(0);
-			verwalterNames = vserver.getAllVerwalterNames(0);
-		}
-		catch(Exception e)
-		{
-			System.out.println("Fehler: "+e.getMessage());
-			e.printStackTrace();
-		}
+		fileServerNames = vserver.getAllFileServerNames(0);
+		verwalterNames = vserver.getAllVerwalterNames(0);
 	}
 }
 
