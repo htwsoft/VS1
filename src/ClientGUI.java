@@ -554,7 +554,6 @@ public class ClientGUI extends JFrame implements ActionListener
                 client.append("Fehler_rename: " + eRename.getMessage() + "\n");
             }
         }
-
     }
 
     /**
