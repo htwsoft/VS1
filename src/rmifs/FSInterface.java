@@ -1,6 +1,6 @@
-//package src.rmifs;
 package rmifs;
 
+import java.nio.file.Path;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -24,6 +24,8 @@ public interface FSInterface extends Remote
 	public String getHostName() throws RemoteException;
 	public String getHostAddress() throws RemoteException;
 	public void sendClientAddress(String clientAddress) throws RemoteException;
+	public String getClientAddress() throws  RemoteException;
+	public Path [] getFileList() throws RemoteException;
 	//public String sendClientName(String clientName) throws RemoteException; //ToDo
 	//public String sendClientOS(String clientOS) throws RemoteException; //ToDo
 }

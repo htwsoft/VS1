@@ -1,4 +1,3 @@
-//package src.rmifs;
 package rmifs;
 
 /**
@@ -8,23 +7,32 @@ package rmifs;
  * @date 2016-09-14
  */
 
+import java.nio.file.Path;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-interface VerwalterInterface extends Remote{
-    public String getServerList() throws RemoteException;
-    public String browseDirs(String dir) throws RemoteException;
-    public String browseFiles(String dir) throws RemoteException;
-    public String search(String file, String startDir) throws RemoteException;
-    public boolean createFile(String file) throws RemoteException;
-    public boolean createDir(String dir) throws RemoteException;
-    public boolean delete(String file) throws RemoteException;
-    public boolean rename(String oldName, String newName) throws RemoteException;
-    public String getOSName()throws RemoteException;
-    public String getHostName() throws RemoteException;
-    public String getHostAddress() throws RemoteException, NotBoundException;
-    public void sendClientAddress(String clientAddress) throws RemoteException;
+public interface VerwalterInterface extends Remote
+{
+    public String initialBrowseDirs(String dir) throws RemoteException, NotBoundException;
+    public String initialBrowseFiles(String dir) throws RemoteException, NotBoundException;
+    public String getServerList() throws RemoteException, NotBoundException;
+    public String search(String file, String startDir) throws RemoteException, NotBoundException;
+    public String browseDirs(String dir, String server) throws RemoteException, NotBoundException;
+    public String browseFiles(String dir, String server) throws RemoteException, NotBoundException;
+    public String[] getAllVerwalterNames()throws RemoteException, NotBoundException;
+    public FileServerListenElement getVerwalter(int verwalter) throws RemoteException, NotBoundException;
+    public String[] getAllFileServerNames() throws RemoteException, NotBoundException;
+    //public boolean search(String file, String startDir) throws RemoteException;
+    public String createFile(String file, String server) throws RemoteException, NotBoundException;
+    public String createDir(String dir, String server) throws RemoteException, NotBoundException;
+    public String delete(String file, String server) throws RemoteException, NotBoundException;
+    public String rename(String oldName, String newName, String server) throws RemoteException, NotBoundException;
+    public String getOSName(String server) throws RemoteException, NotBoundException;
+    public String getHostName(String server) throws RemoteException, NotBoundException;
+    public String getHostAddress(String server) throws RemoteException, NotBoundException;
+    public String sendClientAddress(String clientAddress) throws RemoteException, NotBoundException;
+    public Path [] getFileList() throws RemoteException, NotBoundException;
     //public String sendClientName(String clientName) throws RemoteException;//ToDo
     //public String sendClientOS(String clientOS) throws RemoteException; //ToDo
 
