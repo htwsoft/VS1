@@ -31,6 +31,9 @@ public class ClientGUI extends JFrame implements ActionListener
 {
     static ClientGUI client;
     private static String HOST_IP = "192.168.0.102";
+    //private static String HOST_IP = "192.168.1.13";
+    //private static String HOST_IP = "192.168.1.14";
+    //private static String HOST_IP = "192.168.1.15";
     private int HOST_PORT;
     private JPanel clientPanel;
     private JTextField portTextFeld;
