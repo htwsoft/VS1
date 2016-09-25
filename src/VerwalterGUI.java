@@ -37,7 +37,7 @@ public class VerwalterGUI extends JFrame implements ActionListener
 
     public VerwalterGUI()
     {
-        SYSTEM_HOST_IP   = "127.0.0.1";
+        SYSTEM_HOST_IP   = "192.168.1.4";
         frame.setContentPane(verwalterPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
@@ -77,6 +77,7 @@ public class VerwalterGUI extends JFrame implements ActionListener
                 registry.rebind("VerwalterServer", stub);
 
                 verwalterServer.log("\nServer bound ...\tPort open at " + (serverPort+1));
+                append("\nServer bound ...\tPort open at " + (serverPort+1));
             }
             catch (RemoteException rex)
             {

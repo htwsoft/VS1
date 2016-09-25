@@ -26,7 +26,7 @@ public class ServerGUI extends JFrame implements ActionListener
     private JTextArea serverTextArea;
     private JPanel serverPanel;
 
-    private final String SERVER_HOST_IP = "127.0.0.1";
+    private final String SERVER_HOST_IP = "192.168.1.4";
     JFrame frame = new JFrame("ServerGUI");
 
     public ServerGUI()
