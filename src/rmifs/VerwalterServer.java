@@ -47,7 +47,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
      */
     public VerwalterServer(int port, String ip) throws RemoteException, NotBoundException
     {
-        System.setProperty("java.security.policy", "policy/java.policy" );
+        System.setProperty("java.security.policy", "java.policy" );
         fileServersInit(port, ip);
         connectFileSystem();
     }
@@ -64,9 +64,9 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         fileServers.put(startPort, startIp);
         */
         verwalterListe.add(new FileServerListenElement("RemoteVerwalter1", startIp, startPort));
-        verwalterListe.add(new FileServerListenElement("RemoteVerwalter2", startIp, 1501));
-        fileServerListe.add(new FileServerListenElement(null, startIp, 1500));
-        //fileServerListe.add(new FileServerListenElement(null, "192.168.0.24", 6666));
+        verwalterListe.add(new FileServerListenElement("RemoteVerwalter2", "192.168.1.8", 1501));
+        fileServerListe.add(new FileServerListenElement(null, startIp, startPort-1));
+        //fileServerListe.add(new FileServerListenElement(null, "192.168.1.8", 1500));
         //fileServerListe.add(new FileServerListenElement(null, "192.168.0.24", 8888));
         for(int i = 0; i < ARRAY_GRENZE; i++)
         {

@@ -37,7 +37,7 @@ public class VerwalterGUI extends JFrame implements ActionListener
 
     public VerwalterGUI()
     {
-        SYSTEM_HOST_IP   = "192.168.1.4";
+        SYSTEM_HOST_IP   = "192.168.1.7";
         frame.setContentPane(verwalterPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();

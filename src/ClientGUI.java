@@ -28,7 +28,8 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 
 public class ClientGUI extends JFrame implements ActionListener {
     static ClientGUI client;
-    private static String HOST_IP = "192.168.1.4";
+    private static String HOST_IP = "192.168.1.7";
+    private int HOST_PORT;
     private JPanel clientPanel;
     private JTextField portTextFeld;
     private JButton startClientButton;
@@ -53,7 +54,9 @@ public class ClientGUI extends JFrame implements ActionListener {
     private String pfadTrenner; //Variable beinhaltet "Slash" fuer Windows oder Linux
     private static String initDir = "."; //Ordner aus der init browse gemacht wird
     private boolean isWindows;
-    private FileSystemClient vServer;
+    private FileSystemClient aktuellerVerwalter;
+    private FileSystemClient mainVerwalter;
+
     /**
      * Fuer search
      */
@@ -68,8 +71,6 @@ public class ClientGUI extends JFrame implements ActionListener {
     public ClientGUI() throws IOException {
         frame.setContentPane(clientPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-
         /** JTree */
         DefaultTreeModel model = (DefaultTreeModel) tree1.getModel();
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
@@ -117,10 +118,10 @@ public class ClientGUI extends JFrame implements ActionListener {
                 }
                 try
                 {
-                    String dirs = vServer.browseDirs(pfad);
+                    String dirs = aktuellerVerwalter.browseDirs(pfad);
                     dirs = dirs.trim();
                     String[] dirList = dirs.split("[;]");
-                    String files = vServer.browseFiles(pfad);
+                    String files = aktuellerVerwalter.browseFiles(pfad);
                     files = files.trim();
                     String[] fileList = files.split("[;]");
 
@@ -142,8 +143,10 @@ public class ClientGUI extends JFrame implements ActionListener {
                             node.add(new DefaultMutableTreeNode( temp));
                         }
                     }
-                } catch (Exception re) {
-                    re.printStackTrace();
+                } catch (Exception re)
+                {
+                    append("\nFehler beim Browsen des Ordners\n");
+                    append(re.getMessage() + "\n");
                 }
             }
         });
@@ -227,8 +230,10 @@ public class ClientGUI extends JFrame implements ActionListener {
         }
         try
         {
-            this.vServer = new FileSystemClient(serverPort, host);
-            this.isWindows = this.vServer.getOSName().contains("Windows");
+            HOST_PORT = serverPort;
+            this.aktuellerVerwalter = new FileSystemClient(serverPort, host);
+            this.mainVerwalter = new FileSystemClient(serverPort, host);
+            this.isWindows = this.aktuellerVerwalter.getOSName().contains("Windows");
             //Slash fuer Ordnepfade richtig setzen
             if(this.isWindows){this.pfadTrenner = "\\";}
             else{this.pfadTrenner = "/";}
@@ -248,8 +253,8 @@ public class ClientGUI extends JFrame implements ActionListener {
     {
         try
         {
-            client.append(" Verwendetes OS: " + this.vServer.getOSName() + "\n");
-            client.append(" Name des Hosts:  " + this.vServer.getHostName() + "\n\n");
+            client.append(" Verwendetes OS: " + this.aktuellerVerwalter.getOSName() + "\n");
+            client.append(" Name des Hosts:  " + this.aktuellerVerwalter.getHostName() + "\n\n");
         } catch (Exception eOS) {
             client.append("Fehler: " + eOS.getMessage() + "\n");
         }
@@ -283,7 +288,7 @@ public class ClientGUI extends JFrame implements ActionListener {
         {
             try
             {
-                if( this.vServer.createDir(dirPfad + "//" + pfad) )
+                if( this.aktuellerVerwalter.createDir(dirPfad + "//" + pfad) )
                 {
                     JOptionPane.showMessageDialog(null, pfad + "   wurde erstellt!", "Create Directory", JOptionPane.INFORMATION_MESSAGE);
                     refreshBaum();
@@ -300,6 +305,7 @@ public class ClientGUI extends JFrame implements ActionListener {
             }
             catch(Exception eDir)
             {
+                client.append("\nFehler beim erstellen des Ordners\n");
                 client.append("Fehler: " + eDir.getMessage()+"\n");
             }
         }
@@ -328,7 +334,7 @@ public class ClientGUI extends JFrame implements ActionListener {
         {
             try
             {
-                if( this.vServer.createFile( filePfad + "//" + pfad ))
+                if( this.aktuellerVerwalter.createFile( filePfad + "//" + pfad ))
                 {
                     DefaultMutableTreeNode node;
                     node = (DefaultMutableTreeNode) (aktuellerBaumPfad.getLastPathComponent());
@@ -349,6 +355,7 @@ public class ClientGUI extends JFrame implements ActionListener {
             }
             catch(Exception eFile)
             {
+                client.append("\nFehler beim erstellen der Datei\n");
                 client.append("Fehler: " + eFile.getMessage() + "\n");
             }
         }
@@ -381,7 +388,7 @@ public class ClientGUI extends JFrame implements ActionListener {
             {
                 try
                 {
-                    erg = this.vServer.search(searchPfad, startDir);
+                    erg = this.aktuellerVerwalter.search(searchPfad, startDir);
                     fileListe2 = erg.split("[;]");
                     client.append("\n Found-Files: \n");
                     for (int i = 0; i < fileListe2.length; i++)
@@ -391,6 +398,7 @@ public class ClientGUI extends JFrame implements ActionListener {
                     client.append("---------------------------------------------------------------\n");
                 } catch (Exception eSeach)
                 {
+                    client.append("\nFehler beim Suchen inherhalb des Ordners\n");
                     client.append("Fehler: " + eSeach.getMessage() + "\n");
                 }
             }
@@ -434,7 +442,7 @@ public class ClientGUI extends JFrame implements ActionListener {
                     model.removeNodeFromParent(node);
                 }
 
-                if (this.vServer.delete(loeschPfad))
+                if (this.aktuellerVerwalter.delete(loeschPfad))
                 {
                     JOptionPane.showMessageDialog(null, loeschPfad + "  wurde geloescht!", "Delete", JOptionPane.INFORMATION_MESSAGE);
 
@@ -444,6 +452,7 @@ public class ClientGUI extends JFrame implements ActionListener {
                     JOptionPane.showMessageDialog(null, "Ordner oder Datei konnte NICHT geloescht werden!", "Delete", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (Exception eDelete) {
+                client.append("\nFehler beim loeschen des Ordners / der Datei \n");
                 client.append("Fehler: " + eDelete.getMessage() + "\n");
             }
         }
@@ -476,7 +485,7 @@ public class ClientGUI extends JFrame implements ActionListener {
         {
             try
             {
-                if (this.vServer.rename(alterName, neuerName))
+                if (this.aktuellerVerwalter.rename(alterName, neuerName))
                 {
                     JOptionPane.showMessageDialog(null, "Ordner oder Datei wurde umbenannt!", "Rename", JOptionPane.INFORMATION_MESSAGE);
                     browse(initDir);
@@ -491,6 +500,7 @@ public class ClientGUI extends JFrame implements ActionListener {
                 model.reload(node);
             } catch (Exception eRename)
             {
+                client.append("\nFehler beim umbenennen des Ordners / der Datei \n");
                 client.append("Fehler: " + eRename.getMessage() + "\n");
             }
         }
@@ -504,7 +514,8 @@ public class ClientGUI extends JFrame implements ActionListener {
     {
         try
         {
-            String[] verwalterNames = this.vServer.getAllVerwalterNames();
+
+            String[] verwalterNames = this.mainVerwalter.getAllVerwalterNames();
             String initialSelection = HOST_IP;
             Object selection = JOptionPane.showInputDialog(null, "Zu welchen Server wechseln?",
                     "Server Wechsel", JOptionPane.QUESTION_MESSAGE, null, verwalterNames, initialSelection);
@@ -516,12 +527,13 @@ public class ClientGUI extends JFrame implements ActionListener {
                     {
                         if(selection.toString().equals(verwalterNames[i]))
                         {
-                            vServer.connectNewVerwalter(i);
+                            aktuellerVerwalter = new FileSystemClient(HOST_PORT, HOST_IP);
+                            aktuellerVerwalter.connectNewVerwalter(i);
                         }
                     }
                     browse(initDir);
                     ipLabel.setText(selection.toString());
-                    client.append("Server gewechselt...\n");
+                    client.append(" Server gewechselt...\n");
                     client.append((String) selection);
                 } catch (Exception e) {
                     client.append("\n Fehler_serverWechsel: " + e.getMessage() + "\n");
@@ -637,11 +649,11 @@ public class ClientGUI extends JFrame implements ActionListener {
         String[] fileListe = new String[0];
         try
         {
-            erg = this.vServer.browseDirs(pfad);
+            erg = this.aktuellerVerwalter.browseDirs(pfad);
             erg = erg.trim();
             dirListe = erg.split("[;]");
 
-            erg = this.vServer.browseFiles(pfad);
+            erg = this.aktuellerVerwalter.browseFiles(pfad);
             erg = erg.trim();
             fileListe = erg.split("[;]");
         } catch (Exception e11)

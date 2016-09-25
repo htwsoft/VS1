@@ -35,11 +35,16 @@ public class FileSystemClient
 		{
 			System.setSecurityManager(new SecurityManager());
 		}
-		Registry registry = LocateRegistry.getRegistry(host, portNr);
-		this.vserver = (VerwalterInterface) registry.lookup("VerwalterServer");
+		startNew(portNr, host);
 		//ToDo lookup für VerwalterServer & FileServer
 	}
-	
+
+	private void startNew(int portNr, String host)throws RemoteException, NotBoundException
+	{
+		Registry registry = LocateRegistry.getRegistry(host, portNr);
+		this.vserver = (VerwalterInterface) registry.lookup("VerwalterServer");
+	}
+
 	/**
 	* <br>Fuehrt die Browse-Methode der FileSystemServer-Klasse aus, bzw. initialBrowse</br>
 	*/
@@ -226,25 +231,12 @@ public class FileSystemClient
 	 * <br> Verbindet den Client zum neuen Verwalter</br>
 	 * @param verwalter der ausgewaehlte Verwalter
 	 */
-	public FileServerListenElement connectNewVerwalter(int verwalter)throws RemoteException, NotBoundException
+	public boolean connectNewVerwalter(int verwalter) throws RemoteException, NotBoundException
 	{
 		FileServerListenElement tmp = new FileServerListenElement();
-		try
-		{
-			tmp = vserver.getVerwalter(verwalter);
-			return tmp;
-		}
-		catch(RemoteException rex)
-		{
-			System.out.println("\nFehler RemoteEX: "+rex.getMessage());
-			rex.printStackTrace();
-		}
-		catch(NotBoundException nex)
-		{
-			System.out.println("\nFehler NotBoundEX: "+nex.getMessage());
-			nex.printStackTrace();
-		}
-		return tmp;
+		tmp = vserver.getVerwalter(verwalter);
+		startNew(tmp.getServerPort(), tmp.getServerIP());
+		return true;
 	}
 
 	/**
