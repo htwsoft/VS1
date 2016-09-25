@@ -63,12 +63,12 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         fileServers.put(8888, "192.168.0.26");
         fileServers.put(startPort, startIp);
         */
-        verwalterListe.add(new FileServerListenElement("RemoteVerwalter1", "192.168.0.24", 4712));
+        //verwalterListe.add(new FileServerListenElement("RemoteVerwalter1", "192.168.0.24", 4712));
         //verwalterListe.add(new FileServerListenElement("RemoteVerwalter2", "192.168.0.26", 4714));
         //verwalterListe.add(new FileServerListenElement("Verwalter2", "192.168.0.24", HtwSoftVerwalter.VERWALTER_PORT));
         fileServerListe.add(new FileServerListenElement(null, startIp, startPort));
-        fileServerListe.add(new FileServerListenElement(null, "192.168.0.24", 4711));
-        fileServerListe.add(new FileServerListenElement(null, "192.168.0.24", 4777));
+        //fileServerListe.add(new FileServerListenElement(null, "192.168.0.24", 4711));
+        //fileServerListe.add(new FileServerListenElement(null, "192.168.0.24", 4777));
         //fileServerListe.add(new FileServerListenElement(null, "192.168.0.26", 3333));
         //fileServerListe.add(new FileServerListenElement(null, "192.168.0.26", 4444));
         for(int i = 0; i < ARRAY_GRENZE; i++)
@@ -330,12 +330,12 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         catch(RemoteException rex)
         {
             ergebnis += "\n" + fileServerListe.get(index).getServerName()+": "+FEHLER_VERBINDUNG_MESSAGE;
-            iterateFileSystems(n, dir, file, index, ergebnis);
+            iterateFileSystems(n, dir, file, index+1, ergebnis);
         }
         catch(NotBoundException nex)
         {
             ergebnis += "\n" + fileServerListe.get(index).getServerName()+": "+FEHLER_VERBINDUNG_MESSAGE;
-            iterateFileSystems(n, dir, file, index, ergebnis);
+            iterateFileSystems(n, dir, file, index+1, ergebnis);
         }
         return ergebnis;
     }
