@@ -122,11 +122,11 @@ public class ClientGUI extends JFrame implements ActionListener
 
                 String pfad = node.toString();
                 client.append("Ausgewaehlt: " + pfad + "\n");
-                if(pfad.equals(initDir))
-                {
-                    browse(initDir);
-                    return;
-                }
+//                if(pfad.equals(initDir))
+//                {
+//                    browse(initDir);
+//                    return;
+//                }
                 node.removeAllChildren();
                 try
                 {
