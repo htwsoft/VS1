@@ -31,9 +31,8 @@ public class FileSystemClient
 	public FileSystemClient(int portNr, String host) throws RemoteException, NotBoundException
 	{
 		if (System.getSecurityManager() == null) 
-		{
 			System.setSecurityManager(new SecurityManager());
-		}
+
 		Registry registry = LocateRegistry.getRegistry(host, portNr);
 		this.vserver = (VerwalterInterface) registry.lookup("VerwalterServer");
 		//ToDo lookup für VerwalterServer & FileServer

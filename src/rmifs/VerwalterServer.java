@@ -49,7 +49,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     {
         System.setProperty("java.security.policy", "policy/java.policy" );
         fileServersInit(port, ip);
-        connectFileSystem();
+        connect(0);
     }
 
     /**
@@ -135,9 +135,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     public String browseDirs(String dir, int server) throws RemoteException, NotBoundException {
         log(" - Client [" + clientIP + "] request browse");
         if (!connectServer(server))
-        {
             return FEHLER_AKTUELLER_SERVER;
-        }
         return performOperation(FUNKTIONALITAET.BROWSE_DIRS, dir, null);
     }
 
@@ -145,9 +143,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     {
         log(" - Client [" + clientIP + "] request delete");
         if (!connectServer(server))
-        {
             return FEHLER_AKTUELLER_SERVER;
-        }
         return performOperation(FUNKTIONALITAET.DELETE, null, file);
     }
 
@@ -162,9 +158,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     {
         log(" - Client [" + clientIP + "] request createDir");
         if (!connectServer(server))
-        {
             return FEHLER_AKTUELLER_SERVER;
-        }
         return performOperation(FUNKTIONALITAET.CREATE_DIR, dir, null);
     }
 
@@ -172,9 +166,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     {
         log(" - Client [" + clientIP + "] request rename");
         if (!connectServer(server))
-        {
             return FEHLER_AKTUELLER_SERVER;
-        }
         return performOperation(FUNKTIONALITAET.RENAME, oldName, newName);
     }
 
@@ -182,9 +174,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     {
         log(" - Client [" + clientIP + "] request serverOSname");
         if (!connectServer(server))
-        {
             return FEHLER_AKTUELLER_SERVER;
-        }
         return performOperation(FUNKTIONALITAET.GET_OS_NAME, null, null);
     }
 
@@ -226,17 +216,11 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
      */
     public ArrayList<String> getAllFileServerNames(int index) throws RemoteException, NotBoundException
     {
-        if (System.getSecurityManager() == null)
-        {
-            System.setSecurityManager(new SecurityManager());
-        }
         try
         {
             while (index < fileServerListe.size())
             {
-                Registry registry = LocateRegistry.getRegistry(fileServerListe.get(index).getServerIP(),
-                        fileServerListe.get(index).getServerPort());
-                this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
+                connect(index);
                 serverNames.set(index, fsserver.getHostName()+"(online)");
                 index++;
             }
@@ -279,8 +263,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     {
         clientIP = clientAddress;
         log(" - Client [" + clientAddress + "] connected via RMI handshake");
-        try
-        {
+        try{
             fsserver.sendClientAddress(clientAddress);
         }
         catch(RemoteException rex)
@@ -310,19 +293,6 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         System.out.println(getTime() + message);
     }
 
-    private void connectFileSystem()throws RemoteException, NotBoundException
-    {
-
-        ListIterator<FileServerListenElement> iterator = fileServerListe.listIterator();
-        if (System.getSecurityManager() == null)
-        {
-            System.setSecurityManager(new SecurityManager());
-        }
-        FileServerListenElement tmp = iterator.next();
-        Registry registry = LocateRegistry.getRegistry(tmp.getServerIP(), tmp.getServerPort());
-        this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
-    }
-
     /**
      * <br> Verbindet abwechselnd zu jedem FileServer und fordert die benoetigten Informationen an</br>
      * @param n gibt an welche Funktion der FileServer aufgerufen wird
@@ -335,16 +305,11 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     private String iterateFileSystems(FUNKTIONALITAET n, String dir, String file, int index, String ergebnis)
     {
         String serverName;
-        if (System.getSecurityManager() == null)
-            System.setSecurityManager(new SecurityManager());
         try
         {
             while (index < fileServerListe.size())
             {
-
-                Registry registry = LocateRegistry.getRegistry(fileServerListe.get(index).getServerIP(),
-                        fileServerListe.get(index).getServerPort());
-                this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
+                connect(index);
                 switch (n)
                 {
                     case BROWSE_FILES:
@@ -383,27 +348,24 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
      */
     private boolean connectServer(int server)
     {
+        boolean isConnected = false;
         System.out.println("connectServer(), Server: "+fileServerListe.get(server).getServerName());
-        if (System.getSecurityManager() == null)
-        {
-            System.setSecurityManager(new SecurityManager());
-        }
         try
         {
-            Registry registry = LocateRegistry.getRegistry(fileServerListe.get(server).getServerIP(),
-                    fileServerListe.get(server).getServerPort());
-            this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
+            connect(server);
+            isConnected = true;
         }
         catch(RemoteException rex)
         {
-            return false;
+            rex.printStackTrace();
         }
         catch(NotBoundException nex)
         {
-            return false;
+            nex.printStackTrace();
         }
-        return true;
+        return isConnected;
     }
+
     /**
      * Fuehrt die angegebene Operation auf dem derzeit verbundenen FileServer durch
      * @param n gibt an welche Funktion der FileServer aufgerufen wird
@@ -452,6 +414,15 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
             return ergebnis+FEHLER_AKTUELLER_SERVER+rex.getMessage();
         }
         return ergebnis;
+    }
+
+    private void connect(int index)throws RemoteException, NotBoundException
+    {
+        if(System.getSecurityManager() == null)
+            System.setSecurityManager(new SecurityManager());
+        Registry registry = LocateRegistry.getRegistry(fileServerListe.get(index).getServerIP(),
+                fileServerListe.get(index).getServerPort());
+        this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
     }
 
     public Path [] getFileList() throws RemoteException
