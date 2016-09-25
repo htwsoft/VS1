@@ -32,7 +32,7 @@ public class HtwSoftClient
     private static final String FEHLER_EINGABE = "Fehlerhafte Eingabe! Bitte ueberpruefen Sie ihre Eingabe!\n";
     private enum MENUE { CLOSE, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE,
                          RENAME, OS_NAME, SERVER_WAHL, VERWALTER_WAHL, FALSE }
-    private static  String verwalterIp = "192.168.0.26";
+    private static  String verwalterIp = "192.168.1.11";
     private static int verwalterPortNr = 4712;
     private static FileServerListenElement verwalterDaten = new FileServerListenElement("LocalVerwalter", verwalterIp, verwalterPortNr);
     private static int numberOfAttempts = 0;

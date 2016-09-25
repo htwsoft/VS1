@@ -7,8 +7,8 @@ import java.util.Collections;
 import java.util.Enumeration;
 
 /**
- * <br>Ermittelt Netzwerkinformationen des Clients und stellt</br>
- * diese dem FileSystemClient zur Verfügung
+ * <br>Ermittelt Netzwerkinformationen des Clients und stellt
+ * diese dem FileSystemClient zur Verfuegung</br>
  * @author  soezdemir, cpatzek
  * @version 1.03
  * @date    2016-09-14

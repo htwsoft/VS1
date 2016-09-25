@@ -6,15 +6,15 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
 /**
- * HtwSoftserver-Klasse zum starten eines FileSystemServers
+ * <br>HtwSoftserver-Klasse zum starten eines FileSystemServers</br>
  * @author soezdemir
  * @version 1.03
  * @date 2016-09-18
  */
 public class HtwSoftServer {
 
-    private final static String SERVER_HOST_IP = "192.168.0.26";
-    private final static int SERVER_PORT_NR = 1110;
+    private final static String SERVER_HOST_IP = "192.168.1.11";
+    private final static int SERVER_PORT_NR = 4711;
 
     public static void main(String args [])
     {

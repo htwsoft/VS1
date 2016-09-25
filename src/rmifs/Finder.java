@@ -1,7 +1,7 @@
 package rmifs;
 
 /**
-* Klasse zum suchen einer Datei innerhalb eines Systems
+* <br>Klasse zum suchen einer Datei innerhalb eines Systems</br>
 * wurde abgeleitet von der Java-Klasse "SimpleFileVisitor"
 * @author Marco Palumbo
 * @version 1.0
@@ -24,7 +24,7 @@ public class Finder extends SimpleFileVisitor<Path> {
 	private int numMatches;
 	
 	/**
-	* Konstruktor der Finder Klasse
+	* <br>Konstruktor der Finder Klasse</br>
 	* @param pattern Name bzw. muster der Datei
 	*/
 	Finder(String file) 

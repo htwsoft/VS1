@@ -1,7 +1,7 @@
 package rmifs;
 
 /**
-* Klasse zum Darstellen eines Dateisystems
+* <br>Klasse zum Darstellen eines Dateisystems</br>
 * @author Marco Palumbo, Nadine Breitenstein
 * @version 1.01
 */
@@ -18,8 +18,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
-* Klasse Filesystem dient zur leichteren Kommunikation/ Darstellung
-* mit einem beliebigen FileSystem
+* <br>Klasse Filesystem dient zur leichteren Kommunikation / Darstellung
+* mit einem beliebigen FileSystem</br>
 */
 public class FileSystem
 {	
@@ -30,8 +30,8 @@ public class FileSystem
 	private Path [] fileListe; //Liste der gefundenen Dateien bei Browse
 	
 	/**
-	* Konstruktor der FileSystem Klasse
-	* Initialisiert die internen variablen
+	* <br>Konstruktor der FileSystem Klasse</br>
+	* Initialisiert die internen Variablen
 	*/
 	public FileSystem()
 	{

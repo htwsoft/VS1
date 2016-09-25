@@ -7,7 +7,7 @@ import java.io.Serializable;
  *
  * <br>Liste der FileServer, angelegt zur Nutzung in einer ArrayList</br>
  * @author cpatzek
- * @version 1.02
+ * @version 1.03
  * @date 2016-09-24
  */
 public class FileServerListenElement implements Serializable

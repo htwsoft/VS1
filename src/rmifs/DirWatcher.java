@@ -1,8 +1,7 @@
-//package src.rmifs;
 package rmifs;
 
 /**
-* Klasse zum durchlaufen und untersuchen der Directories
+* <br>Klasse zum durchlaufen und untersuchen der Directories</br>
 * wurde abgeleitet von der Java-Klasse "SimpleFileVisitor"
 * @author Marco Palumbo
 * @version 1.0

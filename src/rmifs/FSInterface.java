@@ -5,7 +5,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /**
- * RMI-Klasse zum Darstellen eines Dateisystems
+ * <br>Interface fuer die FileSystems</br>
  * @author Marco Palumbo
  * @version 1.01
  */

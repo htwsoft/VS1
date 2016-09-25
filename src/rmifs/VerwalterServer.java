@@ -1,10 +1,10 @@
 package rmifs;
 
 /**
- * VerwalterServer ist gleichzeitig Client und Server.
+ * <br>VerwalterServer ist gleichzeitig Client und Server</br>
  * Zwischenstelle zwischen Client und FileServer.
  * @author cpatzek, soezdemir
- * @version 1.04
+ * @version 1.05
  * @date 2016-09-14
  */
 
@@ -22,12 +22,13 @@ import java.util.*;
 
 public class VerwalterServer implements VerwalterInterface, RMIClientSocketFactory
 {
-    private static final String FEHLER_VERBINDUNG_MESSAGE = "Fehler!\n\tDie Verbindung zu diesem File-Server ist unterbrochen!\n" +
-            "Die angezeigten Informationen sind moeglicherweise lueckenhaft!\nBitte versuchen Sie es spaeter noch einmal!\n";
-    private static final String FEHLER_AKTUELLER_SERVER = "\nFehler!\n\tDie Verbindung zu dem Server auf dem Sie arbeiten wollen ist " +
-            "unterbrochen! Bitte versuchen Sie es spaeter noch einmal!\n";
-    private static final String FEHLER_ALLE_SERVER = "\nFehler! Alle File-Server sind aktuell nicht erreichbar!\n" +
-            "Versuchen Sie es spaeter erneut!\n";
+    private static final String FEHLER_VERBINDUNG_MESSAGE = "\n--> FEHLER:\n\tDie Verbindung zu diesem File-Server ist unterbrochen!\n"
+                                                            + "Die angezeigten Informationen sind moeglicherweise lueckenhaft!\n"
+                                                            + "Bitte versuchen Sie es spaeter noch einmal!\n";
+    private static final String FEHLER_AKTUELLER_SERVER =   "\n--> FEHLER:\n\tDie Verbindung zu dem Server auf dem Sie arbeiten wollen ist "
+                                                            + "unterbrochen! Bitte versuchen Sie es spaeter noch einmal!\n";
+    private static final String FEHLER_ALLE_SERVER =        "\n--> FEHLER:\tAlle File-Server sind aktuell nicht erreichbar!\n"
+                                                            + "Bitte versuchen Sie es spaeter erneut!\n";
     private static final int ARRAY_GRENZE = 10;
     private ArrayList<String> verwalterNames = new ArrayList<>();
     private ArrayList<String> serverNames = new ArrayList<>();
@@ -41,7 +42,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         RENAME, GET_OS_NAME, GET_HOST_NAME, GET_HOST_ADDRESS}
 
     /**
-     * Konstruktor, baut Verbindung zum lokalen(bzw. remote) FileServer auf
+     * <br>Konstruktor, baut Verbindung zum lokalen(bzw. remote) FileServer auf</br>
      * @throws RemoteException
      * @throws NotBoundException
      */
@@ -53,8 +54,8 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     }
 
     /**
-     * Legt die Informationen der FileServer an, zu denen der Verwalter sich verbinden wird,
-     * um Anfragen zu bearbeiten
+     * <br>Legt die Informationen der FileServer an, zu denen der Verwalter sich verbinden wird,
+     * um Anfragen zu bearbeiten</br>
      */
     private void fileServersInit(int startPort, String startIp)
     {
@@ -63,12 +64,12 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         fileServers.put(8888, "192.168.0.26");
         fileServers.put(startPort, startIp);
         */
-        //verwalterListe.add(new FileServerListenElement("RemoteVerwalter1", "192.168.0.24", 4712));
-        //verwalterListe.add(new FileServerListenElement("RemoteVerwalter2", "192.168.0.26", 4714));
+        verwalterListe.add(new FileServerListenElement("RemoteVerwalter", "192.168.1.10", 4712));
+        verwalterListe.add(new FileServerListenElement("LokalVerwalter", "192.168.1.11", 4712));
         //verwalterListe.add(new FileServerListenElement("Verwalter2", "192.168.0.24", HtwSoftVerwalter.VERWALTER_PORT));
         fileServerListe.add(new FileServerListenElement(null, startIp, startPort));
-        //fileServerListe.add(new FileServerListenElement(null, "192.168.0.24", 4711));
-        //fileServerListe.add(new FileServerListenElement(null, "192.168.0.24", 4777));
+        fileServerListe.add(new FileServerListenElement(null, "192.168.1.10", 4666));
+        fileServerListe.add(new FileServerListenElement(null, "192.168.1.10", 4777));
         //fileServerListe.add(new FileServerListenElement(null, "192.168.0.26", 3333));
         //fileServerListe.add(new FileServerListenElement(null, "192.168.0.26", 4444));
         for(int i = 0; i < ARRAY_GRENZE; i++)
@@ -80,7 +81,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     }
 
     /**
-     * Erstellt einen Socket fuer remote Verbindungen
+     * <br>Erstellt einen Socket fuer remote Verbindungen</br>
      * (Funktion des Interface RMIClientSocketFactory)
      * @param host Adresse des Clients
      * @param port Port der Verbindung
@@ -93,7 +94,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     }
 
     /**
-     * //ToDo Funktion soll die Anbindung zu anderen VerwalterServer liefern
+     * <br> Funktion soll die Anbindung zu anderen VerwalterServer liefern </br>
      * @return Name und IP-Adressen aller VerwalterServer
      */
     public String getServerList() throws RemoteException, NotBoundException
@@ -116,6 +117,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         String ergebnis = "";
         return iterateFileSystems(FUNKTIONALITAET.SEARCH, file, startDir, 0, ergebnis);
     }
+
     public String initialBrowseDirs(String dir) throws RemoteException, NotBoundException
     {
         log(" - Client [" + clientIP + "] request initial browse");
@@ -179,7 +181,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     }
 
     /**
-     * <br>Fragt nach allen Namen der Verwalter, damit der Client diese identifizieren kann</br>
+     * <br> Fragt nach allen Namen der Verwalter, damit der Client diese identifizieren kann </br>
      * @return
      * @throws RemoteException
      * @throws NotBoundException
@@ -196,7 +198,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     }
 
     /**
-     * <br> Uebergibt die Verbindungsinformation des angeforderten Verwalters
+     * <br> Uebergibt die Verbindungsinformation des angeforderten Verwalters </br>
      * @param verwalter angeforderter Verwalter
      * @return alle Verbindungsinformationen des angeforderten Verwalters(IP,NAME,PORT)
      * @throws RemoteException
@@ -256,7 +258,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     }
 
     /**
-     * holt sich die IPv4 Adresse des verbundenen Clients
+     * <br>Methode holt sich die IPv4 Adresse des verbundenen Clients</br>
      * @throws RemoteException
      */
     public String sendClientAddress(String clientAddress) throws RemoteException, NotBoundException
@@ -274,8 +276,8 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     }
 
 
-    /** //ToDo timeStamp
-     * ermittelt Systemzeit des Servers
+    /**
+     * <br>Ermittelt Systemzeit des Servers</br>
      * @return timeStamp
      */
     private void setTime()
@@ -341,8 +343,8 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     }
 
     /**
-     * Verbindet den Verwalter zum geforderten FileServer, um anschließend dort eine Operation
-     * durchzufuehren
+     * <br>Verbindet den Verwalter zum geforderten FileServer, um anschließend dort eine Operation
+     * durchzufuehren</br>
      * @param server der Name des Servers auf dem die Operation durchgefuehrt werden soll
      */
     private boolean connectServer(int server)
@@ -366,7 +368,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     }
 
     /**
-     * Fuehrt die angegebene Operation auf dem derzeit verbundenen FileServer durch
+     * <br>Fuehrt die angegebene Operation auf dem derzeit verbundenen FileServer durch<br>
      * @param n gibt an welche Funktion der FileServer aufgerufen wird
      * @param dir Parameter fuer dirName/startDirName/oldName, abhaengig von n
      * @param file Parameter fuer fileName/newName, abhaengig von n

@@ -92,7 +92,7 @@ public class FileSystemClient
 	private void initialBrowse()throws RemoteException, NotBoundException
 	{
 		String erg = "";
-		String pfad = "";
+		String pfad = "./filesystem";
 		String[] fileListe;
 		String[] dirListe;
 

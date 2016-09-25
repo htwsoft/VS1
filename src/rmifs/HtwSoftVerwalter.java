@@ -15,8 +15,8 @@ import java.rmi.server.UnicastRemoteObject;
  */
 public class HtwSoftVerwalter {
 
-    public final static String SYSTEM_HOST_IP   = "192.168.0.26";
-    public final static int SYSTEM_PORT         = 1110;
+    public final static String SYSTEM_HOST_IP   = "192.168.1.11";
+    public final static int SYSTEM_PORT         = 4711;
     public final static int VERWALTER_PORT      = 4712;
 
     /**
@@ -50,7 +50,7 @@ public class HtwSoftVerwalter {
 
     //ToDo lookup fuer VerwalterServer & FileServer
     /**
-     * Erzeugt VerwalterServer
+     * <br>Erzeugt VerwalterServer</br>
      * Methode zur Initialisierung einer RMI Verbindung
     *  System.setProperty noetig fuer RMI Client Anbindung zum VerwalterServer
     *  UnicastRemoteObject stellt das Objekt dem Client zur Verfügung
@@ -68,7 +68,7 @@ public class HtwSoftVerwalter {
             Registry registry       =  LocateRegistry.createRegistry(VPORT_NR);
             registry.rebind("VerwalterServer", stub);
 
-            verwalterServer.log("\nServer bound ...\tPort open at " + ((PORT_NR)+1));
+            verwalterServer.log("\nServer bound ...\tPort open at " + (VPORT_NR));
         }
         catch (RemoteException rex)
         {

@@ -1,7 +1,7 @@
 package rmifs;
 
 /**
- * Klasse zum ueberwachen eines Ordners auf Aenderungen
+ * <br>Klasse zum ueberwachen eines Ordners auf Aenderungen</br>
  * >>> die Klasse sollte eigentlich WatchDog heissen,
  * oder Deutscher Schäferhund ;-)
  * @author Marco Palumbo
@@ -22,7 +22,7 @@ import static java.nio.file.StandardWatchEventKinds.*;
 
 
 /**
-* Observer-Klasse zum ueberwachen eines Ordners auf Aenderungen
+* <br>Observer-Klasse zum ueberwachen eines Ordners auf Aenderungen</br>
 */
 public class Observer
 {

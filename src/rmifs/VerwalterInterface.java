@@ -1,9 +1,9 @@
 package rmifs;
 
 /**
- * Interface für die VerwalterServer
+ * <br>Interface für die VerwalterServer</br>
  * @author cpatzek & soezdemir
- * @version 1.03
+ * @version 1.05
  * @date 2016-09-14
  */
 

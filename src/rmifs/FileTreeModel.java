@@ -1,6 +1,6 @@
 /**
- * The methods in this class allow the JTree component to traverse
- * the file system tree, and display the files and directories.
+ * <br>The methods in this class allow the JTree component to traverse
+ * the file system tree, and display the files and directories.</br>
  * @author aaljovic, eeberle
  * @version 1.01
  * @date 2016-09-13
@@ -11,11 +11,6 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import java.io.File;
 import java.io.Serializable;
-
-/**
-
- **/
-
 
 public class FileTreeModel extends DefaultTreeModel implements TreeModel, Serializable
 {
