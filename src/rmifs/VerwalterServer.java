@@ -22,7 +22,7 @@ import java.util.*;
 
 public class VerwalterServer implements VerwalterInterface, RMIClientSocketFactory
 {
-    private static final String FEHLER_VERBINDUNG_MESSAGE = "\nFehler!\n\tDie Verbindung zu einem der File-Server ist unterbrochen!\n" +
+    private static final String FEHLER_VERBINDUNG_MESSAGE = "Fehler!\n\tDie Verbindung zu diesem File-Server ist unterbrochen!\n" +
             "Die angezeigten Informationen sind moeglicherweise lueckenhaft!\nBitte versuchen Sie es spaeter noch einmal!\n";
     private static final String FEHLER_AKTUELLER_SERVER = "\nFehler!\n\tDie Verbindung zu dem Server auf dem Sie arbeiten wollen ist " +
             "unterbrochen! Bitte versuchen Sie es spaeter noch einmal!\n";
@@ -329,7 +329,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         }
         catch(RemoteException rex)
         {
-            ergebnis += "\n" + fileServerListe.get(index).getServerName()+": "+FEHLER_VERBINDUNG_MESSAGE;
+            ergebnis += fileServerListe.get(index).getServerName()+": "+FEHLER_VERBINDUNG_MESSAGE;
             iterateFileSystems(n, dir, file, index+1, ergebnis);
         }
         catch(NotBoundException nex)
