@@ -61,18 +61,20 @@ public class HtwSoftClient
         {
             client = new FileSystemClient(verwalterDaten.getServerPort(), verwalterDaten.getServerIP());
             NetworkController nc = new NetworkController(client);
-            numberOfAttempts = 0;
             System.out.println(nc);
             System.out.println(client);
             client.browse();
+            numberOfAttempts = 0;
             menue();
         }
         catch (RemoteException rex)
         {
+            rex.printStackTrace();
             startupExceptionHandling();
         }
         catch (NotBoundException nbe)
         {
+            nbe.printStackTrace();
             startupExceptionHandling();
         }
     }

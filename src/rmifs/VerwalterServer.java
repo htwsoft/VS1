@@ -28,7 +28,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
             "unterbrochen! Bitte versuchen Sie es spaeter noch einmal!\n";
     private static final String FEHLER_ALLE_SERVER = "\nFehler! Alle File-Server sind aktuell nicht erreichbar!\n" +
             "Versuchen Sie es spaeter erneut!\n";
-    private static final int ARRAY_GRENZE = 100;
+    private static final int ARRAY_GRENZE = 10;
     private ArrayList<String> verwalterNames = new ArrayList<>();
     private ArrayList<String> serverNames = new ArrayList<>();
     private ArrayList<FileServerListenElement> fileServerListe = new ArrayList<>();
@@ -329,7 +329,6 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         }
         catch(RemoteException rex)
         {
-
             ergebnis += "\n" + fileServerListe.get(index).getServerName()+": "+FEHLER_VERBINDUNG_MESSAGE;
             iterateFileSystems(n, dir, file, index, ergebnis);
         }
