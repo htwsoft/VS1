@@ -33,7 +33,7 @@ public class HtwSoftClient
     private enum MENUE { CLOSE, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE,
                          RENAME, OS_NAME, SERVER_WAHL, VERWALTER_WAHL, FALSE }
     private static  String verwalterIp = "192.168.0.26";
-    private static int verwalterPortNr = 4713;
+    private static int verwalterPortNr = 4712;
     private static FileServerListenElement verwalterDaten = new FileServerListenElement("LocalVerwalter", verwalterIp, verwalterPortNr);
     private static int numberOfAttempts = 0;
     private static FileSystemClient client;

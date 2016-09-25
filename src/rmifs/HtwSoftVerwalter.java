@@ -17,7 +17,7 @@ public class HtwSoftVerwalter {
 
     public final static String SYSTEM_HOST_IP   = "192.168.0.26";
     public final static int SYSTEM_PORT         = 1110;
-    public final static int VERWALTER_PORT      = 4713;
+    public final static int VERWALTER_PORT      = 4712;
 
     /**
      * SYSTEM-HOST-IP Adresse des lokalen FileServers
