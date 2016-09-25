@@ -476,7 +476,6 @@ public class ClientGUI extends JFrame implements ActionListener
                 int anzahlKinder = node.getSiblingCount();
                 if(anzahlKinder == 1)
                 {
-                    System.out.println(anzahlKinder);
                     nodeExpand = aktuellerBaumPfad.getParentPath().getParentPath();
                 }
                 else
@@ -584,7 +583,7 @@ public class ClientGUI extends JFrame implements ActionListener
                         }
                     }
                     //browse(initDir);
-                    browse2(initDir, selection.toString());
+                    browse2(initDir, "old");
                     ipLabel.setText(selection.toString());
                     client.append(" Server gewechselt...\n");
                     client.append((String) selection);
@@ -818,7 +817,6 @@ public class ClientGUI extends JFrame implements ActionListener
         //a.setUserObject(aktVerwalter);
 
         int letzerNode = tree1.getRowCount();
-        System.out.println(letzerNode);
         tree1.expandRow(letzerNode-1);
     }
 
