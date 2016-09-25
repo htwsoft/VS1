@@ -26,9 +26,10 @@ import javax.swing.tree.DefaultTreeCellRenderer;
  * Created by Eugen Eberle on 20.08.2016.
  */
 
-public class ClientGUI extends JFrame implements ActionListener {
+public class ClientGUI extends JFrame implements ActionListener
+{
     static ClientGUI client;
-    private static String HOST_IP = "192.168.1.7";
+    private static String HOST_IP = "192.168.0.102";
     private int HOST_PORT;
     private JPanel clientPanel;
     private JTextField portTextFeld;

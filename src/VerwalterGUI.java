@@ -37,7 +37,7 @@ public class VerwalterGUI extends JFrame implements ActionListener
 
     public VerwalterGUI()
     {
-        SYSTEM_HOST_IP   = "192.168.1.7";
+        SYSTEM_HOST_IP   = "192.168.0.102";
         frame.setContentPane(verwalterPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
@@ -47,8 +47,8 @@ public class VerwalterGUI extends JFrame implements ActionListener
         starteVerwalterButton.addActionListener(this);
 
         /** Logo laden, muss im selben dir sein wie die java Files oder absoluten Pfad angeben */
-        //ImageIcon img = new ImageIcon("htw.png");
-        //frame.setIconImage(img.getImage());
+        ImageIcon img = new ImageIcon("htw.png");
+        frame.setIconImage(img.getImage());
     }
 
     /**
