@@ -688,7 +688,6 @@ public class ClientGUI extends JFrame implements ActionListener
         client = new ClientGUI();
     }
 
-
     private void refreshBaum()
     {
         DefaultTreeModel model = (DefaultTreeModel) tree1.getModel();
