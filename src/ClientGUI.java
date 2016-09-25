@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -53,7 +54,7 @@ public class ClientGUI extends JFrame implements ActionListener
     private JButton anzeigenButton;
     private JButton backButton;
     private String pfadTrenner; //Variable beinhaltet "Slash" fuer Windows oder Linux
-    private static String initDir = "."; //Ordner aus der init browse gemacht wird
+    private static String initDir = "\\"; //Ordner aus der init browse gemacht wird
     private boolean isWindows;
     private FileSystemClient aktuellerVerwalter;
     private FileSystemClient mainVerwalter;
@@ -69,7 +70,8 @@ public class ClientGUI extends JFrame implements ActionListener
     /**
      * Konstruktor
      */
-    public ClientGUI() throws IOException {
+    public ClientGUI() throws IOException
+    {
         frame.setContentPane(clientPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         /** JTree */
@@ -98,7 +100,8 @@ public class ClientGUI extends JFrame implements ActionListener
 
 
         /** listener fuer den tree*/
-        tree1.addTreeSelectionListener(new TreeSelectionListener() {
+        tree1.addTreeSelectionListener(new TreeSelectionListener()
+        {
             @Override
             public void valueChanged(TreeSelectionEvent ae)
             {
@@ -109,7 +112,11 @@ public class ClientGUI extends JFrame implements ActionListener
                 {
                     return;
                 }
-                node.removeAllChildren();
+                //node.removeAllChildren();
+
+                DefaultTreeModel model = (DefaultTreeModel) (tree1.getModel());
+                model.reload(node);
+
                 String pfad = node.toString();
                 client.append("Ausgewaehlt: " + pfad + "\n");
                 if(pfad.equals(initDir))
@@ -117,6 +124,7 @@ public class ClientGUI extends JFrame implements ActionListener
                     browse(initDir);
                     return;
                 }
+                node.removeAllChildren();
                 try
                 {
                     String dirs = aktuellerVerwalter.browseDirs(pfad);
@@ -151,6 +159,7 @@ public class ClientGUI extends JFrame implements ActionListener
                 }
             }
         });
+
 
         searchFeld.addKeyListener(new KeyAdapter()
         {
@@ -238,8 +247,9 @@ public class ClientGUI extends JFrame implements ActionListener
             //Slash fuer Ordnepfade richtig setzen
             if(this.isWindows){this.pfadTrenner = "\\";}
             else{this.pfadTrenner = "/";}
-            browse(".");
+            browse(initDir);
             aktiviereButtons();
+            ipLabel.setText(aktuellerVerwalter.getHostAddress());
         }
         catch(Exception e)
         {
@@ -257,7 +267,7 @@ public class ClientGUI extends JFrame implements ActionListener
             client.append(" Verwendetes OS: " + this.aktuellerVerwalter.getOSName() + "\n");
             client.append(" Name des Hosts:  " + this.aktuellerVerwalter.getHostName() + "\n\n");
         } catch (Exception eOS) {
-            client.append("Fehler: " + eOS.getMessage() + "\n");
+            client.append("Fehler_OS-Info: " + eOS.getMessage() + "\n");
         }
     }
 
@@ -291,8 +301,13 @@ public class ClientGUI extends JFrame implements ActionListener
             {
                 if( this.aktuellerVerwalter.createDir(dirPfad + "//" + pfad) )
                 {
+                    DefaultMutableTreeNode altLetzer = (DefaultMutableTreeNode) (aktuellerBaumPfad.getLastPathComponent());////////
+                    DefaultTreeModel model = (DefaultTreeModel) (tree1.getModel());///////////
+                    altLetzer.add(new DefaultMutableTreeNode(dirPfad + "\\" + pfad));////////////
+                    model.reload(altLetzer);///////
+
                     JOptionPane.showMessageDialog(null, pfad + "   wurde erstellt!", "Create Directory", JOptionPane.INFORMATION_MESSAGE);
-                    refreshBaum();
+                    //refreshBaum();
                     tree1.expandPath(aktuellerBaumPfad);
                 }
                 else
@@ -337,12 +352,22 @@ public class ClientGUI extends JFrame implements ActionListener
             {
                 if( this.aktuellerVerwalter.createFile( filePfad + "//" + pfad ))
                 {
-                    DefaultMutableTreeNode node;
-                    node = (DefaultMutableTreeNode) (aktuellerBaumPfad.getLastPathComponent());
-                    node.add(new DefaultMutableTreeNode(pfad));
+
+                    DefaultMutableTreeNode altLetzer = (DefaultMutableTreeNode) (aktuellerBaumPfad.getLastPathComponent());////////
+                    DefaultTreeModel model = (DefaultTreeModel) (tree1.getModel());///////////
+                    Contact temp = new Contact(filePfad + "\\" + pfad);
+                    altLetzer.add(new DefaultMutableTreeNode(temp));////////////
+                    model.reload(altLetzer);///////
+
+                    //________________________________________
+
+                    //DefaultMutableTreeNode node;
+                    //node = (DefaultMutableTreeNode) (aktuellerBaumPfad.getLastPathComponent());
+                    //node.add(new DefaultMutableTreeNode(pfad));
+
 
                     JOptionPane.showMessageDialog(null, pfad + "   wurde erstellt!", "Create File", JOptionPane.INFORMATION_MESSAGE);
-                    refreshBaum();
+                    //refreshBaum();
                     tree1.expandPath(aktuellerBaumPfad);
                 }
                 else
@@ -425,6 +450,13 @@ public class ClientGUI extends JFrame implements ActionListener
         TreePath aktuellerBaumPfad = tree1.getSelectionPath();
         String loeschPfad = aktuellerBaumPfad.getLastPathComponent().toString();
 
+        String rootTest = aktuellerBaumPfad.getParentPath().getLastPathComponent().toString();
+        if (rootTest.equals("\\"))
+        {
+            JOptionPane.showMessageDialog(null, "Delete im root nicht erlaubt!", "Delete", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         int jaNein = JOptionPane.showConfirmDialog(null, "Soll  " + loeschPfad + "  wirklich geloescht werden?", "Delete", JOptionPane.YES_NO_OPTION);
 
         if (jaNein == JOptionPane.YES_OPTION)
@@ -434,19 +466,27 @@ public class ClientGUI extends JFrame implements ActionListener
                 DefaultMutableTreeNode node;
                 DefaultTreeModel model = (DefaultTreeModel) (tree1.getModel());
                 node = (DefaultMutableTreeNode) (aktuellerBaumPfad.getLastPathComponent());
-                model.reload(node);
+
+                TreePath nodeExpand = aktuellerBaumPfad.getParentPath();
 
                 /** Schauen ob Knoten Kinder hat, muss null sein sonst kann man Ordner mit Inhalt entfernen*/
-                int anzahlKinder = node.getChildCount();
-                if(anzahlKinder == 0)
+                int anzahlKinder = node.getSiblingCount();
+                if(anzahlKinder == 1)
                 {
-                    model.removeNodeFromParent(node);
+                    System.out.println(anzahlKinder);
+                    nodeExpand = aktuellerBaumPfad.getParentPath().getParentPath();
+                }
+                else
+                {
+                    nodeExpand = aktuellerBaumPfad.getParentPath();
                 }
 
                 if (this.aktuellerVerwalter.delete(loeschPfad))
                 {
                     JOptionPane.showMessageDialog(null, loeschPfad + "  wurde geloescht!", "Delete", JOptionPane.INFORMATION_MESSAGE);
-
+                    model.removeNodeFromParent(node);
+                    model.reload(node);
+                    tree1.expandPath(nodeExpand);
                 }
                 else
                 {
@@ -475,12 +515,19 @@ public class ClientGUI extends JFrame implements ActionListener
         TreePath aktuellerBaumPfad = tree1.getSelectionPath();
         String alterName = aktuellerBaumPfad.getLastPathComponent().toString();
 
+        String rootTest = aktuellerBaumPfad.getParentPath().getLastPathComponent().toString();
+        if (rootTest.equals("\\"))
+        {
+            JOptionPane.showMessageDialog(null, "Rename im root nicht erlaubt!", "Rename", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         String neueNameBeginn = aktuellerBaumPfad.getParentPath().getLastPathComponent().toString();
 
         JFrame eingabe = new JFrame();
         String neuerNameEnde = JOptionPane.showInputDialog(eingabe, "Wie lautet die neue Bezeichnung?", "Rename", JOptionPane.PLAIN_MESSAGE);
 
-        String neuerName = neueNameBeginn + pfadTrenner + neuerNameEnde;
+        String neuerName = neueNameBeginn.trim() + pfadTrenner + neuerNameEnde.trim();
 
         if(neuerNameEnde != null)
         {
@@ -502,7 +549,7 @@ public class ClientGUI extends JFrame implements ActionListener
             } catch (Exception eRename)
             {
                 client.append("\nFehler beim umbenennen des Ordners / der Datei \n");
-                client.append("Fehler: " + eRename.getMessage() + "\n");
+                client.append("Fehler_rename: " + eRename.getMessage() + "\n");
             }
         }
 
@@ -515,15 +562,16 @@ public class ClientGUI extends JFrame implements ActionListener
     {
         try
         {
-
             String[] verwalterNames = this.mainVerwalter.getAllVerwalterNames();
             String initialSelection = HOST_IP;
             Object selection = JOptionPane.showInputDialog(null, "Zu welchen Server wechseln?",
                     "Server Wechsel", JOptionPane.QUESTION_MESSAGE, null, verwalterNames, initialSelection);
 
+            browse(initDir);
             if (selection != null)
             {
-                try {
+                try
+                {
                     for(int i=0; i < verwalterNames.length; i++ )
                     {
                         if(selection.toString().equals(verwalterNames[i]))
@@ -532,7 +580,8 @@ public class ClientGUI extends JFrame implements ActionListener
                             aktuellerVerwalter.connectNewVerwalter(i);
                         }
                     }
-                    browse(initDir);
+                    //browse(initDir);
+                    browse2(initDir, selection.toString());
                     ipLabel.setText(selection.toString());
                     client.append(" Server gewechselt...\n");
                     client.append((String) selection);
@@ -552,9 +601,15 @@ public class ClientGUI extends JFrame implements ActionListener
 
     private void anzeigen()
     {
-        String wahl = clientTextArea.getText().trim();
-        String[] parts = wahl.split(":");
-        String zeigePfad = parts[parts.length - 1].trim();
+        /** Pruefe ob eine Datei markiert ist. */
+        if (tree1.getSelectionPath() == null)
+        {
+            JOptionPane.showMessageDialog(null, "Bitte Pfad/Datei waehlen!", "Auswahl", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        /**Markierte Datei/Order auswaehlen */
+        TreePath aktuellerBaumPfad = tree1.getSelectionPath();
+        String zeigePfad = aktuellerBaumPfad.getLastPathComponent().toString();
 
         if (tree1.getSelectionPath() == null)
         {
@@ -604,6 +659,7 @@ public class ClientGUI extends JFrame implements ActionListener
         anzeigenButton.setEnabled(true);
         backButton.setEnabled(true);
         tree1.setEnabled(true);
+        portTextFeld.setEnabled(false);
     }
 
     /**
@@ -693,7 +749,80 @@ public class ClientGUI extends JFrame implements ActionListener
         model.reload(root);
     }
 
+
+    public void browse2(String pfad, String aktVerwalter)
+    {
+        String erg;
+        String[] dirListe = new String[0];
+        String[] fileListe = new String[0];
+        try
+        {
+            erg = this.aktuellerVerwalter.browseDirs(pfad);
+            erg = erg.trim();
+            dirListe = erg.split("[;]");
+
+            erg = this.aktuellerVerwalter.browseFiles(pfad);
+            erg = erg.trim();
+            fileListe = erg.split("[;]");
+        } catch (Exception e11)
+        {
+            client.append("Fehler beim Laden der Ordner / Dateien innerhalb von \"" + pfad + "\"\n");
+        }
+
+        /**Baum wird aus den Inhalten dirListe und fileListe zusammengebaut*/
+        DefaultTreeModel model = (DefaultTreeModel) tree1.getModel();
+        tree1.setModel(model);
+        tree1.setCellRenderer(new MyTreeCellRenderer()); /**CellRender classe*/
+        DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
+        root.setUserObject(aktVerwalter);
+
+        DefaultMutableTreeNode a = new DefaultMutableTreeNode(pfad);
+        root.add(a);
+
+        //root.removeAllChildren();
+        //root.setUserObject(aktVerwalter);
+//        try {
+//            root.setUserObject(this.aktuellerVerwalter.getHostName());
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//        } catch (NotBoundException e) {
+//            e.printStackTrace();
+//        }
+
+        if (root == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < dirListe.length; i++)
+        {
+            if (!dirListe[i].isEmpty())
+            {
+                //root.add(new DefaultMutableTreeNode(dirListe[i]));
+                a.add(new DefaultMutableTreeNode(dirListe[i]));
+            }
+        }
+
+        for (int i = 0; i < fileListe.length; i++)
+        {
+            if (!fileListe[i].isEmpty()) {
+                Contact temp = new Contact(fileListe[i]);
+                a.add(new DefaultMutableTreeNode(temp));
+                //root.add(new DefaultMutableTreeNode(temp));
+            }
+        }
+        model.reload(root);
+        //a.setUserObject(aktVerwalter);
+
+        int letzerNode = tree1.getRowCount();
+        System.out.println(letzerNode);
+        tree1.expandRow(letzerNode-1);
+    }
+
+
 }
+
+
 
 
 /**Logo Render */

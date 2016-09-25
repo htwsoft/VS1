@@ -64,7 +64,7 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
         fileServers.put(startPort, startIp);
         */
         verwalterListe.add(new FileServerListenElement("RemoteVerwalter1", startIp, startPort));
-        verwalterListe.add(new FileServerListenElement("RemoteVerwalter2", "192.168.1.8", 1501));
+        verwalterListe.add(new FileServerListenElement("RemoteVerwalter2", "192.168.0.105", 1501));
         fileServerListe.add(new FileServerListenElement(null, startIp, startPort-1));
         //fileServerListe.add(new FileServerListenElement(null, "192.168.1.8", 1500));
         //fileServerListe.add(new FileServerListenElement(null, "192.168.0.24", 8888));
@@ -434,13 +434,13 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
                     ergebnis += "\n" + ":\n" + fsserver.rename(dir, file);
                     break;
                 case GET_OS_NAME:
-                    ergebnis += "\n\t\t" + ": " + fsserver.getOSName() + " ";
+                    ergebnis += "\n\t\t" + " " + fsserver.getOSName() + " ";
                     break;
                 case GET_HOST_ADDRESS:
-                    ergebnis += "\n\t\t" + ": " + fsserver.getHostAddress() + " ";
+                    ergebnis += "\n\t\t" + " " + fsserver.getHostAddress() + " ";
                     break;
                 case GET_HOST_NAME:
-                    ergebnis += "\n\t\t" + ": " + fsserver.getHostName() + " ";
+                    ergebnis += "\n\t\t" + " " + fsserver.getHostName() + " ";
                     break;
             }
         }
