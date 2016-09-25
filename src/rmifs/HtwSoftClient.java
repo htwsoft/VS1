@@ -69,12 +69,10 @@ public class HtwSoftClient
         }
         catch (RemoteException rex)
         {
-            rex.printStackTrace();
             startupExceptionHandling();
         }
         catch (NotBoundException nbe)
         {
-            nbe.printStackTrace();
             startupExceptionHandling();
         }
     }
