@@ -7,14 +7,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
-
 import java.awt.Component;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -30,10 +25,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 public class ClientGUI extends JFrame implements ActionListener
 {
     static ClientGUI client;
-    private static String HOST_IP = "192.168.0.102";
-    //private static String HOST_IP = "192.168.1.13";
-    //private static String HOST_IP = "192.168.1.14";
-    //private static String HOST_IP = "192.168.1.15";
+    private static String HOST_IP = "192.168.0.102"; //Eigene IP eintragen
     private int HOST_PORT;
     private JPanel clientPanel;
     private JTextField portTextFeld;
@@ -80,21 +72,21 @@ public class ClientGUI extends JFrame implements ActionListener
         /** JTree */
         DefaultTreeModel model = (DefaultTreeModel) tree1.getModel();
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
+        /**Dummy-Kinder entfernen um mit leerem root zu starten*/
         root.removeAllChildren();
+        /**Zeitstempel im Browse Fenster bevor verbunden wurde*/
         root.setUserObject(new SimpleDateFormat("HH:mm:ss").format(new Date()));
-        model.nodeChanged(root);
-
+        //model.nodeChanged(root);
         model.reload(root);
-
         frame.setVisible(true);
 
         /**Logo laden, muss im selben dir sein wie die java Files oder absoluten Pfad eingeben */
         ImageIcon img = new ImageIcon("htw.png");
         frame.setIconImage(img.getImage());
 
-        clientTextArea.append("Hallo \n\n");
+        append("Hallo im File-System Client.\n\n");
+        /**Listener setzen und die Buttons deaktiveren, werden nach der Verbindung aktiviert*/
         addListener();
-
         deaktiviereButtons();
 
         frame.setLocation(50, 0);
@@ -121,7 +113,7 @@ public class ClientGUI extends JFrame implements ActionListener
                 model.reload(node);
 
                 String pfad = node.toString();
-                client.append("Ausgewaehlt: " + pfad + "\n");
+                append("Ausgewaehlt: " + pfad + "\n");
 //                if(pfad.equals(initDir))
 //                {
 //                    browse(initDir);
@@ -137,7 +129,7 @@ public class ClientGUI extends JFrame implements ActionListener
                     files = files.trim();
                     String[] fileList = files.split("[;]");
 
-                    //verarbeiten der gefunden Ordner
+                    /**Verarbeitung von gefunden Ordner und Files im angeklickten Ordner*/
                     for (int i = 0; i < dirList.length; i++)
                     {
                         if (!dirList[i].isEmpty())
@@ -145,8 +137,6 @@ public class ClientGUI extends JFrame implements ActionListener
                             node.add(new DefaultMutableTreeNode(dirList[i]));
                         }
                     }
-
-                    //verarbeite der gefundenen dateien
                     for (int j = 0; j < fileList.length; j++)
                     {
                         if (!fileList[j].isEmpty())
@@ -157,8 +147,7 @@ public class ClientGUI extends JFrame implements ActionListener
                     }
                 } catch (Exception re)
                 {
-                    append("\nFehler beim Browsen des Ordners\n");
-                    append(re.getMessage() + "\n");
+                    append("\nFehler beim Browsen des Ordners" + re.getMessage() + "\n");
                 }
             }
         });
@@ -170,6 +159,7 @@ public class ClientGUI extends JFrame implements ActionListener
         searchFeld.addKeyListener(new KeyAdapter()
         {
         });
+        /**Key-Listener um im Search-Feld mit "ENTER" bestaetigen zu können*/
         searchFeld.addKeyListener(new KeyAdapter()
         {
             @Override
@@ -184,22 +174,19 @@ public class ClientGUI extends JFrame implements ActionListener
         });
     }
 
-
+    /**String an die TextArea anhaengen und an die letzte Stelle scrollen*/
     void append(String text)
     {
         clientTextArea.append(text);
         clientTextArea.setCaretPosition(clientTextArea.getText().length() - 1);
     }
 
-    /**
-     * Button gedrückt
-     */
+
+    /**Button gedrückt*/
     public void actionPerformed(ActionEvent ae)
     {
-        /**
-         * Die Quelle des Events finden,
-         * d.h. welcher Button wurden geklickt?
-         */
+        /** Die Quelle des Events finden,
+         * d.h. welcher Button wurden geklickt? */
         Object aeSource = ae.getSource();
 
         if (aeSource == startClientButton) {
@@ -233,8 +220,8 @@ public class ClientGUI extends JFrame implements ActionListener
     {
         int serverPort;
         String host = HOST_IP;
-        String osName;
-        try {
+        try
+        {
             serverPort = Integer.parseInt(portTextFeld.getText().trim());
         } catch (Exception er)
         {
@@ -267,10 +254,10 @@ public class ClientGUI extends JFrame implements ActionListener
     {
         try
         {
-            client.append(" Verwendetes OS: " + this.aktuellerVerwalter.getOSName() + "\n");
-            client.append(" Name des Hosts:  " + this.aktuellerVerwalter.getHostName() + "\n\n");
+            append(" Verwendetes OS: " + this.aktuellerVerwalter.getOSName() + "\n");
+            append(" Name des Hosts:  " + this.aktuellerVerwalter.getHostName() + "\n\n");
         } catch (Exception eOS) {
-            client.append("Fehler_OS-Info: " + eOS.getMessage() + "\n");
+            append("Fehler_OS-Info: " + eOS.getMessage() + "\n");
         }
     }
 
@@ -282,19 +269,13 @@ public class ClientGUI extends JFrame implements ActionListener
         /** Pruefe ob eine Datei markiert ist. */
         if (tree1.getSelectionPath() == null)
         {
-            JOptionPane.showMessageDialog(null, "Bitte Pfad/Datei waehlen!", "Create File", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Bitte Pfad/Datei waehlen!", "Create Directory", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         /**Markierte Datei/Order auswaehlen */
         TreePath aktuellerBaumPfad = tree1.getSelectionPath();
         String dirPfad = aktuellerBaumPfad.getLastPathComponent().toString();
-
-        if (tree1.getSelectionPath() == null)
-        {
-            JOptionPane.showMessageDialog(null, "Bitte Pfad/Datei waehlen!", "Create Directory", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
 
         JFrame eingabe = new JFrame();
         String pfad = JOptionPane.showInputDialog(eingabe, "Welcher Ordner soll erstellt werden?", "Create Directory", JOptionPane.PLAIN_MESSAGE);
@@ -304,13 +285,12 @@ public class ClientGUI extends JFrame implements ActionListener
             {
                 if( this.aktuellerVerwalter.createDir(dirPfad + "//" + pfad) )
                 {
-                    DefaultMutableTreeNode altLetzer = (DefaultMutableTreeNode) (aktuellerBaumPfad.getLastPathComponent());////////
-                    DefaultTreeModel model = (DefaultTreeModel) (tree1.getModel());///////////
-                    altLetzer.add(new DefaultMutableTreeNode(dirPfad + "\\" + pfad));////////////
-                    model.reload(altLetzer);///////
+                    DefaultMutableTreeNode altLetzer = (DefaultMutableTreeNode) (aktuellerBaumPfad.getLastPathComponent());
+                    DefaultTreeModel model = (DefaultTreeModel) (tree1.getModel());
+                    altLetzer.add(new DefaultMutableTreeNode(dirPfad + "\\" + pfad));
+                    model.reload(altLetzer);
 
                     JOptionPane.showMessageDialog(null, pfad + "   wurde erstellt!", "Create Directory", JOptionPane.INFORMATION_MESSAGE);
-                    //refreshBaum();
                     tree1.expandPath(aktuellerBaumPfad);
                 }
                 else
@@ -324,8 +304,7 @@ public class ClientGUI extends JFrame implements ActionListener
             }
             catch(Exception eDir)
             {
-                client.append("\nFehler beim erstellen des Ordners\n");
-                client.append("Fehler: " + eDir.getMessage()+"\n");
+                append("\nFehler beim erstellen des Ordners\n" + eDir.getMessage()+"\n");
             }
         }
     }
@@ -341,7 +320,6 @@ public class ClientGUI extends JFrame implements ActionListener
             JOptionPane.showMessageDialog(null, "Bitte Pfad/Datei waehlen!", "Create File", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
         /**Markierte Datei/Order auswaehlen */
         TreePath aktuellerBaumPfad = tree1.getSelectionPath();
         String filePfad = aktuellerBaumPfad.getLastPathComponent().toString();
@@ -355,22 +333,13 @@ public class ClientGUI extends JFrame implements ActionListener
             {
                 if( this.aktuellerVerwalter.createFile( filePfad + "//" + pfad ))
                 {
-
-                    DefaultMutableTreeNode altLetzer = (DefaultMutableTreeNode) (aktuellerBaumPfad.getLastPathComponent());////////
-                    DefaultTreeModel model = (DefaultTreeModel) (tree1.getModel());///////////
+                    DefaultMutableTreeNode altLetzer = (DefaultMutableTreeNode) (aktuellerBaumPfad.getLastPathComponent());
+                    DefaultTreeModel model = (DefaultTreeModel) (tree1.getModel());
                     Contact temp = new Contact(filePfad + "\\" + pfad);
-                    altLetzer.add(new DefaultMutableTreeNode(temp));////////////
-                    model.reload(altLetzer);///////
-
-                    //________________________________________
-
-                    //DefaultMutableTreeNode node;
-                    //node = (DefaultMutableTreeNode) (aktuellerBaumPfad.getLastPathComponent());
-                    //node.add(new DefaultMutableTreeNode(pfad));
-
+                    altLetzer.add(new DefaultMutableTreeNode(temp));
+                    model.reload(altLetzer);
 
                     JOptionPane.showMessageDialog(null, pfad + "   wurde erstellt!", "Create File", JOptionPane.INFORMATION_MESSAGE);
-                    //refreshBaum();
                     tree1.expandPath(aktuellerBaumPfad);
                 }
                 else
@@ -384,8 +353,7 @@ public class ClientGUI extends JFrame implements ActionListener
             }
             catch(Exception eFile)
             {
-                client.append("\nFehler beim erstellen der Datei\n");
-                client.append("Fehler: " + eFile.getMessage() + "\n");
+                append("\nFehler beim erstellen der Datei\n" + eFile.getMessage()+ "\n");
             }
         }
     }
@@ -529,10 +497,9 @@ public class ClientGUI extends JFrame implements ActionListener
         JFrame eingabe = new JFrame();
         String neuerNameEnde = JOptionPane.showInputDialog(eingabe, "Wie lautet die neue Bezeichnung?", "Rename", JOptionPane.PLAIN_MESSAGE);
 
-        String neuerName = neueNameBeginn.trim() + pfadTrenner + neuerNameEnde.trim();
-
         if(neuerNameEnde != null)
         {
+            String neuerName = neueNameBeginn.trim() + pfadTrenner + neuerNameEnde.trim();
             try
             {
                 if (this.aktuellerVerwalter.rename(alterName, neuerName))
@@ -550,8 +517,7 @@ public class ClientGUI extends JFrame implements ActionListener
                 model.reload(node);
             } catch (Exception eRename)
             {
-                client.append("\nFehler beim umbenennen des Ordners / der Datei \n");
-                client.append("Fehler_rename: " + eRename.getMessage() + "\n");
+                append("\nFehler beim umbenennen des Ordners / der Datei \n" + eRename.getMessage() + "\n");
             }
         }
     }
