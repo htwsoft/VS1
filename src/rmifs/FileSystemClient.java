@@ -1,116 +1,29 @@
-//package src.rmifs;
 package rmifs;
 
-import java.io.*;
-import java.util.*;
-import java.rmi.*;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.lang.*;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * @author mpalumbo, cpatzek, soezdemir
- * @version 1.03
+ * @version 1.04
  * @date indefinitely
  */
-//ToDo dringend aufräumen
 
 public class FileSystemClient
 {
-	private final static String SERVER_HOST_IP_1 = "192.168.0.11";
-	private final static String SERVER_HOST_IP_2 = "192.168.0.23";
-	private final static String SERVER_HOST_IP_3 = "192.168.0.24";
-	private final static String SERVER_HOST_FGVT = "172.19.1.209"; //localhost
-	private final static int SERVER_PORT = 4712; 	//ToDo variable Ports und IPs
-
+	public ArrayList<String> fileServerNames = new ArrayList<>();
+	public ArrayList<String> verwalterNames = new ArrayList<>();
+	private int aktuellerServer = 0;
 	private VerwalterInterface vserver;  //Attribute zum Zugriff auf Verwalter Server Funktionen
 	private String clientAddress = "not set!";
 	private String clientName = "not set!";
 	private String clientOS = "not set!";
+	private boolean initialBrowse = false;
 
-
-
-	private enum MENUE { CLOSE, LIST, BROWSE, SEARCH, CREATE_DIR, CREATE_FILE, DELETE, RENAME, OS_NAME, FALSE }
-
-
-	/**
-	* Hauptmethode der Demo
-	* startet eine Menue
-	* @param args übergeben Parameter erster Parameter ist der Port zum Server
-	*/	
-	public static void main(String args[]) 
-	{
-		//**** regelt RMI Kommunikation ***** muss anfang der main bleiben
-		System.setProperty("policy/java.security.policy", "policy/java.policy" );
-		//System.setProperty("java.rmi.server.hostname", SERVER_HOST_IP_3);//warum steht das hier????
-		FileSystemClient fsc = null;
-		//FileSystemClient fsclient = nsendew FileSystemClient(4712, "localhost");
-
-		int serverPort = 0;
-		int eingabe = -1;
-		MENUE menue_eingabe = MENUE.FALSE;
-		try 
-		{
-			serverPort = SERVER_PORT; //Integer.parseInt(args[0]);
-
-			//noetig für die Verbindung zum Verwalter (verwalterPort, vewalterIP)
-			fsc = new FileSystemClient(serverPort, SERVER_HOST_FGVT); //args[1]
-			NetworkController nc = new NetworkController(fsc);
-
-			System.out.println(nc);
-			System.out.println(fsc);
-
-			while(menue_eingabe != MENUE.CLOSE)
-			{
-				eingabe = fsc.zeigeMenue();
-				menue_eingabe = fsc.intToMenue(eingabe);
-				switch(menue_eingabe)
-				{
-					case CLOSE: System.out.println("Programm wurde beendet!"); break;
-					case LIST: fsc.list(); break;
-					case BROWSE: fsc.browse(); break;
-					case SEARCH: fsc.search(); break;
-					case CREATE_DIR: fsc.createDir(); break;
-					case CREATE_FILE: fsc.createFile(); break;
-					case DELETE: fsc.delete(); break;
-					case RENAME: fsc.rename(); break;
-					case OS_NAME: fsc.osname(); break;
-					default: System.out.println("Falsche Eingabe!"); break;
-				}
-			}	
-		} 
-		catch (IOException ioe)
-		{
-			ioe.printStackTrace();
-		}
-		catch (NotBoundException nbe)
-		{
-			nbe.printStackTrace();
-		}
-
-		System.exit(0);
-	} 
-	
-	public MENUE intToMenue(int eingabe)
-	{
-		MENUE menue_eingabe = MENUE.FALSE;
-		switch(eingabe)
-		{		
-			case 0: menue_eingabe = MENUE.CLOSE; break;
-			case 1: menue_eingabe = MENUE.LIST; break;
-			case 2: menue_eingabe = MENUE.BROWSE; break;
-			case 3: menue_eingabe = MENUE.SEARCH; break;
-			case 4: menue_eingabe = MENUE.CREATE_DIR; break;
-			case 5: menue_eingabe = MENUE.CREATE_FILE; break;
-			case 6: menue_eingabe = MENUE.DELETE; break;
-			case 7: menue_eingabe = MENUE.RENAME; break;
-			case 8: menue_eingabe = MENUE.OS_NAME; break;
-			default: menue_eingabe = MENUE.FALSE; break;
-		}
-		return menue_eingabe;
-	}
-	
 	/**
 	* Konstruktor 
 	* erzeugt eine FileSystem-Klasse
@@ -122,294 +35,186 @@ public class FileSystemClient
 		{
 			System.setSecurityManager(new SecurityManager());
 		}
-		Registry registry = LocateRegistry.getRegistry(host, portNr);
-		this.vserver = (VerwalterInterface) registry.lookup("VerwalterServer");
+		startNew(portNr, host);
 		//ToDo lookup für VerwalterServer & FileServer
 	}
-	
+
+	private void startNew(int portNr, String host)throws RemoteException, NotBoundException
+	{
+		Registry registry = LocateRegistry.getRegistry(host, portNr);
+		this.vserver = (VerwalterInterface) registry.lookup("VerwalterServer");
+	}
+
 	/**
-	* Führt die Browse-Methode der FileSystemServer-Klasse aus
+	* <br>Fuehrt die Browse-Methode der FileSystemServer-Klasse aus, bzw. initialBrowse</br>
 	*/
-	private void browse()
+	public String browseDirs(String pfad) throws RemoteException, NotBoundException
 	{
-		String pfad = "";
-		String erg = "";
-		String [] dirListe;
-		String [] fileListe;	
-		
-		Scanner eingabe = new Scanner(System.in);
-		System.out.print("Welcher Ordner soll untersucht werden?: ");
-		pfad = eingabe.nextLine();
-		try
-		{
-			erg = this.vserver.browseDirs(pfad);
-			dirListe = erg.split("[;]");		
-			
-			erg = this.vserver.browseFiles(pfad);
- 			fileListe = erg.split("[;]");
- 			
-			System.out.println("File-Liste");
-			System.out.println("---------------------------------------------------------------");
-			for(int i=0; i<fileListe.length; i++)
+			if (!initialBrowse)
 			{
-				System.out.println(fileListe[i]);
+				return this.vserver.browseDirs(pfad, aktuellerServer);
+			} else
+			{
+				return this.vserver.initialBrowseDirs(pfad);
 			}
-			System.out.println("");
-			System.out.println("Dir-Liste");
-			System.out.println("---------------------------------------------------------------");
-			for(int j=0; j<dirListe.length; j++)
-			{
-				System.out.println(dirListe[j]);
-			}			
-		}
-		catch(IOException e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
-	private void search()
-	{
-		String pfad = "";
-		String startDir = "";
-		String erg = "";
-		String [] fileListe;
-		Scanner eingabe = new Scanner(System.in);
-		System.out.print("Was soll gesucht werden?: ");
-		pfad = eingabe.nextLine();
-		System.out.print("Wo soll gesucht werden?: ");
-		startDir = eingabe.nextLine();
-		try
-		{
-			erg = this.vserver.search(pfad, startDir);
-			if(erg.contains("Nicht gefunden,"))
-			{
-				System.out.println(erg);
-			}
-			else
-			{
-				fileListe = erg.split("[;]");
-				System.out.println("Found-Files");
-				System.out.println("---------------------------------------------------------------");
-				for(int i=0; i<fileListe.length; i++)
-				{
-					System.out.println(fileListe[i]);
-				}
-			}
-		}
-		catch(IOException ioe)
-		{
-			ioe.printStackTrace();
-		}			
 	}
 
-	private void createDir()
+	public String browseFiles(String pfad) throws RemoteException, NotBoundException
 	{
-		String pfad = "";
-		Scanner eingabe = new Scanner(System.in);
-		System.out.print("Welcher Ordner soll erstellt werden?: ");
-		pfad = eingabe.nextLine();
-		try
+		if(!initialBrowse)
 		{
-			if( this.vserver.createDir(pfad) )
-			{
-				System.out.println("Ordner wurde erstellt!");	
-			}
-			else
-			{
-				System.out.println("Ordner konnte NICHT erstellt werden!");
-			}
+			return this.vserver.browseFiles(pfad, aktuellerServer);
 		}
-		catch(IOException ioe)
+		else
 		{
-			ioe.printStackTrace();
-		}			
+			return this.vserver.initialBrowseFiles(pfad);
+		}
 	}
-	
-	private void createFile()
-	{
-		String pfad = "";
-		Scanner eingabe = new Scanner(System.in);
-		System.out.print("Welche Datei soll erstellt werden?: ");
-		pfad = eingabe.nextLine();
-		try
-		{
-			if( this.vserver.createFile(pfad) )
-			{
-				System.out.println("Datei wurde erstellt!");	
-			}
-			else
-			{
-				System.out.println("Datei konnte NICHT erstellt werden!");
-			}
-		}
-		catch(IOException e)
-		{
-			System.out.println("Fehler: " + e.getMessage());	
-		}			
-	}
-	
-	private void delete()
-	{
-		String pfad = "";
-		Scanner eingabe = new Scanner(System.in);
-		System.out.print("Welcher Ordner soll gelöscht werden?: ");
-		pfad = eingabe.nextLine();
-		try
-		{
-			if( this.vserver.delete(pfad) )
-			{
-				System.out.println("Ordner oder Datei wurde geloescht!");
-			}
-			else
-			{
-				System.out.println("Ordner oder Datei konnte NICHT geloescht werden!");
-			}
-		}
-		catch(IOException e)
-		{
-			System.out.println("Fehler: " + e.getMessage());	
-		}	
-	}
-	
-	private void rename()
-	{
-		String oldName = "";
-		String newName = "";
-		Scanner eingabe = new Scanner(System.in);
-		System.out.print("Welcher Ordner soll umbenannt werden?: ");
-		oldName = eingabe.nextLine();
-		System.out.print("Welcher Zielname?: ");
-		newName = eingabe.nextLine();
-		try
-		{
-			if( this.vserver.rename(oldName, newName) )
-			{
-				System.out.println("Ordner oder Datei wurde umbenannt!");
-			}
-			else
-			{
-				System.out.println("Ordner oder Datei konnte NICHT umbenannt werden!");
-			}
-		}
-		catch(IOException e)
-		{
-			System.out.println("Fehler: " + e.getMessage());	
-		}	
-	}	
-	
-	private void osname()
-	{
-		try
-		{
-			System.out.println("|-------------------------------------------------");
-			System.out.println("| Verwendetes OS:  " + this.vserver.getOSName());
-			System.out.println("| Name des Hosts:  " + this.vserver.getHostName());//ToDo
-			System.out.println("| IP des Hosts	:  " + this.vserver.getHostAddress());//ToDo
-			System.out.println("|-------------------------------------------------");
 
-		}
-		catch(Exception e)
-		{
-			System.out.println("Fehler: " + e.getMessage());
-		}
-		
-	}	
-	
 	/**
-	* Funktion zeigt ein Auswahlmenue und liefert 
-	* die Auswahl des Benutzers zurück
-	*/
-	private int zeigeMenue ()
+	 * <br>fuehrt den ersten Browse durch, bei Start des Clients</br>
+	 * @throws RemoteException
+	 * @throws NotBoundException
+	 */
+	private void initialBrowse()throws RemoteException, NotBoundException
 	{
-		//Scanner liste eingabe des Benutzers ein
-		InputStreamReader isr = new InputStreamReader(System.in);
-		BufferedReader br = new BufferedReader(isr);
-		toString();
-		int eingabe = -1;
-		while(eingabe < 0 || eingabe > 8)
-		{
-			//Auswahlmenue zeigen bis eingabe richtig
-			try
-			{
-				//Terminal Ausgabe Menue
-				System.out.println("");
-				System.out.println("---------------------");
-				System.out.println("Menue:");
-				System.out.println("0: Beenden");
-				System.out.println("1: Server List");
-				System.out.println("2: Browse");
-				System.out.println("3: Search");
-				System.out.println("4: Create Dir");
-				System.out.println("5: Create File");
-				System.out.println("6: Delete");
-				System.out.println("7: Rename");
-				System.out.println("8: OS-Name");
-				System.out.println("---------------------");
-				System.out.print("Was moechten Sie tun?: ");
-				eingabe = Integer.parseInt(br.readLine());
-			}
-			catch(IOException ioe)
-			{
-				ioe.printStackTrace();
-			}
-		}
+		String erg = "";
+		String pfad = "";
+		String[] fileListe;
+		String[] dirListe;
 
+		erg = this.vserver.initialBrowseDirs(pfad);
+
+		dirListe = erg.split("[;]");
+
+		erg = this.vserver.initialBrowseFiles(pfad);
+
+		fileListe = erg.split("[;]");
+
+		System.out.println("File-Liste");
+		System.out.println("---------------------------------------------------------------");
+		for(int i=0; i<fileListe.length; i++)
+		{
+			System.out.println(fileListe[i]);
+		}
 		System.out.println("");
-
-		return eingabe;
-
+		System.out.println("Dir-Liste");
+		System.out.println("---------------------------------------------------------------");
+		for(int j=0; j<dirListe.length; j++)
+		{
+			System.out.println(dirListe[j]);
+		}
+		if(!erg.contains("Fehler"))
+			initialBrowse = true;
 	}
 
-	/**
-	 * Fragt die verfuegbaren VerwalterServer ab, also deren Name und IP
-     */
-	private void list()
+    public String search(String file, String startDir) throws RemoteException, NotBoundException
+    {
+		return this.vserver.search(file, startDir);
+	}
+
+	public boolean createDir(String dir) throws RemoteException, NotBoundException
 	{
-		String serverListe;
-		try
+		String erg = "";
+		erg = this.vserver.createDir(dir, aktuellerServer);
+		return erg.contains("true");
+	}
+	
+	public boolean createFile(String file) throws RemoteException, NotBoundException
+	{
+		String erg = "";
+		erg = this.vserver.createFile(file, aktuellerServer);
+		return erg.contains("true");
+	}
+	
+	public boolean delete(String file) throws RemoteException, NotBoundException
+	{
+		String erg = "";
+		erg = this.vserver.delete(file, aktuellerServer);
+		return erg.contains("true");
+	}
+	
+	public boolean rename(String oldName, String newName) throws RemoteException, NotBoundException
+	{
+		String erg = "";
+		erg = this.vserver.rename(oldName,newName, aktuellerServer);
+		return erg.contains("true");
+	}
+	
+	public String getOSName() throws RemoteException, NotBoundException
+	{
+		return this.vserver.getOSName(aktuellerServer);
+	}
+	public String getHostName() throws RemoteException, NotBoundException
+	{
+		return this.vserver.getHostName(aktuellerServer);
+	}
+
+	public String getHostAddress() throws RemoteException, NotBoundException
+	{
+		return this.vserver.getHostAddress(aktuellerServer);
+	}
+
+	public String[] getAllVerwalterNames() throws RemoteException, NotBoundException
+	{
+		String[] verwalterListe;
+		int i=0;
+		this.getServerNames();
+		verwalterListe = new String[verwalterNames.size()];
+		while(!verwalterNames.get(i).contains("default"))
 		{
-			serverListe = vserver.getServerList();
-			System.out.println(serverListe);
+			verwalterListe[i] = verwalterNames.get(i);
+			i++;
 		}
-		catch(Exception e)
-		{
-			System.out.println("Fehler: "+ e.getMessage());
-		}
+		return verwalterListe;
 	}
 
 
-
-	//ToDo --> noch in Bearbeitung durch soezdemir
 	/**
-	 * Folgende Methoden liefern den Namen, IP-Adresse
-	 * und den OS-Nammen eines Clients zurück
+	 * <br>Fragt die verfuegbaren VerwalterServer ab, also deren Name und IP</br>
+     */
+	public void list() throws RemoteException, NotBoundException
+	{
+		String serverListe = "";
+		serverListe = vserver.getServerList();
+		System.out.println(serverListe);
+	}
+
+	/**
+	 * <br>Folgende Methoden liefern den Namen, IP-Adresse
+	 * und den OS-Nammen eines Clients zurück</br>
 	 * @return Host Name, IP-Adresse und OS des Clients
 	 * @throws RemoteException
 	 * @author soezdemir
 	 */
-	public void setClientAddress(String clientAddress)throws RemoteException{
+	public void setClientAddress(String clientAddress) throws RemoteException, NotBoundException
+    {
 		this.clientAddress = clientAddress;
 		sendClientAddress(clientAddress);
 	}
 
-	public void sendClientAddress(String clientAddress) throws RemoteException {
-		vserver.sendClientAddress(clientAddress);
-		System.out.println("\n***** Client: -> IP: [" + clientAddress + "] *****\n");
+	public void sendClientAddress(String clientAddress) throws RemoteException, NotBoundException
+    {
+		String erg = "";
+		erg = vserver.sendClientAddress(clientAddress);
+		if(erg.contains(""))
+			System.out.println("\n***** Client: -> IP: [" + clientAddress + "] *****\n");
+		else
+			System.out.println(erg);
 	}
 
-
-	public String getClientAddress(){
+	public String getClientAddress()
+    {
 		return this.clientAddress;
-
 	}
 
-	public void setClientOS(String clientOS){this.clientOS = clientOS;
+	public void setClientOS(String clientOS)
+    {
+        this.clientOS = clientOS;
 	}
 
 	public String  getClientOS ()
 	{
-		//vserver.sendClientAddress(clientAddress);
 		return this.clientOS;
 	}
 
@@ -422,7 +227,62 @@ public class FileSystemClient
 
 	}
 
+	/**
+	 * <br> Verbindet den Client zum neuen Verwalter</br>
+	 * @param verwalter der ausgewaehlte Verwalter
+	 */
+	public boolean connectNewVerwalter(int verwalter) throws RemoteException, NotBoundException
+	{
+		FileServerListenElement tmp = new FileServerListenElement();
+		tmp = vserver.getVerwalter(verwalter);
+		startNew(tmp.getServerPort(), tmp.getServerIP());
+		return true;
+	}
 
-
+	/**
+	 * <br> Verbindet den Client zum neuen Verwalter</br>
+	 * @param verwalter der ausgewaehlte Verwalter
+	 */
+	public FileServerListenElement getNewVerwalter(int verwalter)throws RemoteException, NotBoundException
+	{
+		return vserver.getVerwalter(verwalter);
+	}
+	/**
+	 * <br>Bestimmt auf welchem Server ab jetzt gearbeitet werden soll</br>
+	 * @param server Server der ausgewaehlt wurde
+	 * @param laenge
+	 */
+	public void setServer(int server, int laenge)
+	{
+		if(server < laenge)
+		{
+			aktuellerServer = server;
+			System.out.println("Sie arbeiten nun auf: "+ fileServerNames.get(server));
+		}
+		else
+			System.out.println("\nVorgang abgebrochen!\n");
+		/*switch(server)
+		{
+			case 0: System.out.println("Vorgang abgebrochen");break;
+			case 1: aktuellerServer = fileServerNames[0];
+				System.out.println("Sie arbeiten nun auf: "+fileServerNames[0]);break;
+			case 2: aktuellerServer = fileServerNames[1];
+				System.out.println("Sie arbeiten nun auf: "+fileServerNames[1]);break;
+			case 3: aktuellerServer = fileServerNames[2];
+				System.out.println("Sie arbeiten nun auf: "+fileServerNames[2]);break;
+			default:
+				System.out.println("Fehlerhafte Eingabe!");
+		}*/
+	}
+	/**
+	 * <br>Fordert die Namen der FileServer und der Verwalter an und speichert sie in dem Attribut fileServerNames
+	 * bzw. in verwalterNames</br>
+	 */
+	public void getServerNames() throws RemoteException, NotBoundException
+	{
+		fileServerNames = vserver.getAllFileServerNames(0);
+		verwalterNames = vserver.getAllVerwalterNames(0);
+	}
 }
+
 

@@ -1,19 +1,13 @@
-//package src.rmifs;
+
 package rmifs;
 
-import java.io.*;
-import java.nio.*;
-import java.nio.file.*;
-import static java.nio.file.StandardCopyOption.*;
-import static java.nio.file.StandardWatchEventKinds.*;
-import java.util.*;
-import java.rmi.registry.Registry;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.server.*;
-import java.rmi.Remote;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.util.LinkedList;
+import java.util.List;
+
 
 /**
 * RMI-Server für ein FileSystem
@@ -27,69 +21,28 @@ import java.net.UnknownHostException;
 */
 public class FileSystemServer implements FSInterface
 {
-	private final static String SERVER_HOST_IP_1 = "192.168.0.11";
-	private final static String SERVER_HOST_IP_2 = "192.168.0.23";
-	private final static String SERVER_HOST_IP_3 = "192.168.0.24";
-	private final static String SERVER_HOST_FGVT = "172.19.1.209"; //localhost
 
 	private FileSystem fs = new FileSystem();
-
-	/**
-	 * Hauptmethode
-	 * Startet den FileSystem-Server
-	 * @param args Portnummer des FileSystemServers
-	 */
-	public static void main(String args[])
-	{
-		//**** regelt RMI Kommunikation ***** muss Anfang der main bleiben
-		System.setProperty("java.security.policy", "java.policy" );
-		System.setProperty("java.rmi.server.hostname", SERVER_HOST_FGVT);
-		try
-		{
-			if(args.length >= 1)
-			{
-				int serverPort = 0;
-				serverPort = Integer.parseInt(args[0]);
-				//Security Manager ermöglicht/regelt zugriff auf Klasse
-				if (System.getSecurityManager() == null)
-				{
-					System.setSecurityManager ( new SecurityManager() );
-				}
-				FileSystemServer fsServer = new FileSystemServer();
-				//Registry erstellen um Objekt ansprechen zu können
-				Registry registry =  LocateRegistry.createRegistry(serverPort);
-				//Stellt das Objekt dem System zur Verfügung
-				FSInterface stub = (FSInterface) UnicastRemoteObject.exportObject(fsServer, serverPort);
-
-				//Objekt an registry binden
-				registry.rebind("FileSystemServer", stub);
-				System.out.println("Server bound ...\nPort now open at " + serverPort);
-				System.out.print("\nServer Name: " + fsServer.getHostName()
-									+ "\nServer IP: " + fsServer.getHostAddress()
-									+ "\nServer runs on " + fsServer.getOSName());
-			}
-			else
-			{
-				System.out.println("Bitte Server-Port zum binden angeben!");
-			}
-		}
-		catch(Exception e)
-		{
-			System.out.println( "Fehler: " + e.toString() );
-		}
-	}
+	private String clientAddress;
+	//ToDo FileSystemListe für mehrere FileSystems
+	private List<FileSystem> fileSystems;
 
 	/**
 	* Funktion sucht alle Ordner eines angegebenen Directory
-	* @param dir Ordner der durchsucht werden soll 
+	* dir Ordner der durchsucht werden soll
 	* @return einen String mit allen gefunden Ordner durch ";" getrennt
 	*/
-	public FileSystemServer(){super();}
+	public FileSystemServer(){
+		super();
+		fileSystems = new LinkedList<FileSystem>();
+		fileSystems.add(fs);
+	}
+
 	public String browseDirs(String dir) throws RemoteException
 	{
 		Path [] dirListe = null;
 		String ergListe = "";
-		System.out.println("Funktion: browseDirs - Param: " + dir);
+		System.out.println(" --> Funktion: browseDirs\n --> Param: " + dir);
 		try
 		{
 			this.fs.browse(dir);
@@ -115,7 +68,7 @@ public class FileSystemServer implements FSInterface
 		catch(Exception e)
 		{
 			ergListe = "";
-			System.out.println("Funktion: " + e.toString());
+			System.out.println("ERROR: " + e.toString());
 		}
 		System.out.println("Return: \"" + ergListe + "\"");
 		return ergListe;
@@ -130,7 +83,7 @@ public class FileSystemServer implements FSInterface
 	{
 		Path [] fileListe = null;
 		String ergListe = "";
-		System.out.println("Funktion: browseFiles - Param: " + file);
+		System.out.println(" --> Funktion: browseFiles\n --> Param: " + file);
 		try
 		{
 			this.fs.browse(file);
@@ -156,7 +109,7 @@ public class FileSystemServer implements FSInterface
 		catch(Exception e)
 		{
 			ergListe = "";
-			System.out.println("Fehler: " + e.toString());
+			System.out.println("FAILURE: " + e.toString());
 		}
 		System.out.println("Return: \"" + ergListe + "\"");
 		return ergListe;
@@ -170,13 +123,13 @@ public class FileSystemServer implements FSInterface
 	*/
 	public String search(String file, String startDir) throws RemoteException
 	{
-		System.out.println("Funktion: search - Params: " + file + ", " + startDir);
-		
+		System.out.println(" --> Function: search - Params: " + file + ", " + startDir);
+
 		Path [] fileListe = null;
 		String ergListe = "";
 		try
-		{	
-			//search liefert true zurueck wenn mindestens eine Datei 
+		{
+			//search liefert true zurueck wenn mindestens eine Datei
 			//gefunden wurde
 			if( this.fs.search(file, startDir) )
 			{
@@ -199,28 +152,28 @@ public class FileSystemServer implements FSInterface
 		catch(Exception e)
 		{
 			ergListe = "";
-			System.out.println("Fehler: " + e.toString());
+			System.out.println("ALERT: " + e.toString());
 		}
 		System.out.println("Return: \"" + ergListe + "\"");
 		return ergListe;
 	}
-	
+
 	/**
-	* Funktion erstellt eine Datei
+	* <br> Funktion erstellt eine Datei </br>
 	* @param file Datei die erstellt werden soll
 	* @return True wenn die Datei erstellt wurde
 	*/	
 	public boolean createFile(String file) throws RemoteException
 	{
 		boolean fileCreated;
-		System.out.println("Funktion: createFile - Param: " + file);
+		System.out.println(" --> Function: createFile\n --> Param: " + file);
 		try
 		{
 			fileCreated = this.fs.create(file, "file");
 		}
 		catch(Exception e)
 		{
-			System.out.println("Fehler: " + e.toString());
+			System.out.println("ERROR: " + e.toString());
 			fileCreated = false;
 			
 		}
@@ -236,14 +189,14 @@ public class FileSystemServer implements FSInterface
 	public boolean createDir(String dir) throws RemoteException
 	{
 		boolean dirCreated;
-		System.out.println("Funktion: createDir - Param: " + dir);
+		System.out.println(" --> Function: createDir\n --> Param: " + dir);
 		try
 		{
 			dirCreated = this.fs.create(dir, "dir");
 		}
 		catch(Exception e)
 		{
-			System.out.println("Fehler: " + e.toString());
+			System.out.println("ERROR: " + e.toString());
 			dirCreated = false;
 			
 		}
@@ -259,14 +212,14 @@ public class FileSystemServer implements FSInterface
 	public boolean delete(String file) throws RemoteException
 	{
 		boolean fileDeleted;
-		System.out.println("Funktion: delete - Param: " + file);
+		System.out.println(" --> Function: delete\n --> Param: " + file);
 		try
 		{
 			fileDeleted = this.fs.delete(file);
 		}
 		catch(Exception e)
 		{
-			System.out.println("Fehler: " + e.toString());
+			System.out.println("ERROR: " + e.toString());
 			fileDeleted = false;	
 		}
 		System.out.println("Return: \"" + fileDeleted + "\"");
@@ -282,14 +235,14 @@ public class FileSystemServer implements FSInterface
 	public boolean rename(String oldName, String newName) throws RemoteException
 	{
 		boolean fileRenamed;
-		System.out.println("Funktion: rename - Params: " + oldName + ", " + newName);
+		System.out.println(" --> Function: rename\n --> Params: " + oldName + ", " + newName);
 		try
 		{
 			fileRenamed = this.fs.rename(oldName, newName);
 		}
 		catch(IOException e)
 		{
-			System.out.println("Fehler: " + e.toString());
+			System.out.println("FAILURE: " + e.toString());
 			fileRenamed = false;
 			
 		}
@@ -303,10 +256,11 @@ public class FileSystemServer implements FSInterface
 	*/		
 	public String getOSName()throws RemoteException
 	{
-		System.out.println("Funktion: getOSName");
+
 		String osName;
 		osName = fs.getOSName();
-		System.out.println("System runs on \"" + osName + "\"");
+		System.out.print("System runs on \"" + osName + "\"");
+		System.out.println("\t\t--> Function: getOSName");
 		return osName;
 	}
 
@@ -318,59 +272,48 @@ public class FileSystemServer implements FSInterface
      */
 	public String getHostName() throws RemoteException
 	{
-		System.out.println("Funktion: getHostName");
+
 		String hostName;
 		hostName = fs.getHostName();
-		System.out.println("Hostname is \"" + hostName + "\"");
+		System.out.print("Hostname is \"" + hostName + "\"");
+		System.out.println("\t\t--> Function: getHostName");
 		return hostName;
 	}
 	public String getHostAddress() throws RemoteException
 	{
-		System.out.println("Funktion: getHostAddress");
+
 		String hostAddress;
 		hostAddress = fs.getHostAddress();
-		System.out.println("Server IP is \"" + hostAddress + "\"");
+		System.out.print("Server IP is \"" + hostAddress + "\"");
+		System.out.println("\t--> Function: getHostAddress");
 		return hostAddress;
 	}
 
 	public void sendClientAddress(String clientAddress) throws RemoteException
 	{
+		this.clientAddress = clientAddress;
 		System.out.println("\n " + clientAddress + " is connected to Server " + getHostAddress());
+	}
+
+	public String getClientAddress() throws  RemoteException{
+		return this.clientAddress;
 	}
 
 	/**
 	* Funktion liefert die Dateien der letzten suche (browse)
 	* @return Dateien des Letzten Browse befehls
 	*/
-	public String getFileListe() throws RemoteException
-	{
-		System.out.println("Funktion: getFileListe");
-		Path [] fileListe = null;
-		String ergListe = "";
-		try
-		{
-			fileListe = this.fs.getFileListe();
-			for(int i=0; i<fileListe.length; i++)
-			{
-				ergListe = ergListe + fileListe[i] + ";";	
-			}
-		}
-		catch(Exception e)
-		{
-			ergListe = "";
-			System.out.println("Fehler: " + e.toString());
-		}
-		System.out.println("Return: \"" + ergListe + "\"");
-		return ergListe;
+	public Path [] getFileList() throws RemoteException {
+		return fs.getFileListe();
 	}
-	
+
 	/**
 	* Funktion liefert die Ordner der letzten suche (browse)
 	* @return Ordner des Letzten Browse befehls
 	*/	
 	public String getDirListe() throws RemoteException
 	{
-		System.out.println("Funktion: getDirListe");
+		System.out.println("\t--> Function: getDirListe");
 		Path [] dirListe = null;
 		String ergListe = "";
 		try
@@ -384,10 +327,10 @@ public class FileSystemServer implements FSInterface
 		catch(Exception e)
 		{
 			ergListe = "";
-			System.out.println("Fehler: " + e.toString());
+			System.out.println("ERROR: " + e.toString());
 		}
 		System.out.println("Return: \"" + ergListe + "\"");
 		return ergListe;	
 	}
-	
-}
+
+}//ENDE

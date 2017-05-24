@@ -1,79 +1,87 @@
-//package src.rmifs;
 package rmifs;
 
 /**
  * VerwalterServer ist gleichzeitig Client und Server.
  * Zwischenstelle zwischen Client und FileServer.
- * @author cpatzek & soezdemir
- * @version 1.03
+ * @author cpatzek, soezdemir
+ * @version 1.04
  * @date 2016-09-14
  */
-import java.lang.String;
+
 import java.io.IOException;
 import java.net.Socket;
-import java.rmi.RemoteException;
+import java.nio.file.Path;
 import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.RMIClientSocketFactory;
-import java.rmi.server.UnicastRemoteObject;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
-
-public class VerwalterServer implements VerwalterInterface, RMIClientSocketFactory {
-
-    private final static String SERVER_HOST_IP_1 = "192.168.0.11";
-    private final static String SERVER_HOST_IP_2 = "192.168.0.23";
-    private final static String SERVER_HOST_IP_3 = "192.168.0.24";
-    private final static String SERVER_HOST_FGVT = "172.19.1.209"; //localhost
-
-
+public class VerwalterServer implements VerwalterInterface, RMIClientSocketFactory
+{
+    private static final String FEHLER_VERBINDUNG_MESSAGE = "\nFehler!\n\tDie Verbindung zu einem der File-Server ist unterbrochen!\n" +
+            "Die angezeigten Informationen sind moeglicherweise lueckenhaft!\nBitte versuchen Sie es spaeter noch einmal!\n";
+    private static final String FEHLER_AKTUELLER_SERVER = "\nFehler!\n\tDie Verbindung zu dem Server auf dem Sie arbeiten wollen ist " +
+            "unterbrochen! Bitte versuchen Sie es spaeter noch einmal!\n";
+    private static final String FEHLER_ALLE_SERVER = "\nFehler! Alle File-Server sind aktuell nicht erreichbar!\n" +
+            "Versuchen Sie es spaeter erneut!\n";
+    private static final int ARRAY_GRENZE = 100;
+    private ArrayList<String> verwalterNames = new ArrayList<>();
+    private ArrayList<String> serverNames = new ArrayList<>();
+    private ArrayList<FileServerListenElement> fileServerListe = new ArrayList<>();
+    //private HashMap<Integer, String> fileServers;
     private FSInterface fsserver;
-    //public FileSystemClient client;//ToDo
-    private String clientAddress = "not set!";
+    private ArrayList<FileServerListenElement> verwalterListe= new ArrayList<>();
     private String clientIP = "*unknown*";
+    private String timeStamp = "not set yet"; //ToDo String server
+    private enum FUNKTIONALITAET{BROWSE_FILES, BROWSE_DIRS, SEARCH, CREATE_DIR, CREATE_FILE, DELETE,
+        RENAME, GET_OS_NAME, GET_HOST_NAME, GET_HOST_ADDRESS}
 
     /**
-     * enthaelt die Liste aller verfuegbaren(remote) VerwalterServer
-     * und indirekt deren verbundenen FileServer (Beispiel IP-Adressen)
-     */
-    private static final String VERWALTER_LISTE =   "Name: BspServer[1] IP: 192.168.0.11\n" +
-                                                    "Name: BspServer[2] IP: 192.168.0.23\n" +
-                                                    "Name: BspServer[3] IP: 192.168.0.24";
-    /**
-     * HOST entspricht der IP-Adresse des lokalen FileServers
-     */
-    private final static String HOST = SERVER_HOST_FGVT; //192.168.0.11 //192.168.0.23 //192.168.0.24
-
-    /**
-     * PORT_NR entspricht dem gebundenen Port des FileServers
-     */
-    private final static int PORT_NR = 4711;
-
-    /**
-     * Konstruktor, baut Verbindung zum lokalen FileServer auf
+     * Konstruktor, baut Verbindung zum lokalen(bzw. remote) FileServer auf
      * @throws RemoteException
      * @throws NotBoundException
      */
-    public VerwalterServer() throws RemoteException, NotBoundException
+    public VerwalterServer(int port, String ip) throws RemoteException, NotBoundException
     {
-        super();
-        if (System.getSecurityManager() == null)
+        System.setProperty("java.security.policy", "java.policy" );
+        fileServersInit(port, ip);
+        connectFileSystem();
+    }
+
+    /**
+     * Legt die Informationen der FileServer an, zu denen der Verwalter sich verbinden wird,
+     * um Anfragen zu bearbeiten
+     */
+    private void fileServersInit(int startPort, String startIp)
+    {
+        /*fileServers = new HashMap<>();
+        fileServers.put(6666, "192.168.0.26");
+        fileServers.put(8888, "192.168.0.26");
+        fileServers.put(startPort, startIp);
+        */
+        verwalterListe.add(new FileServerListenElement("RemoteVerwalter1", startIp, startPort));
+        verwalterListe.add(new FileServerListenElement("RemoteVerwalter2", "192.168.1.8", 1501));
+        fileServerListe.add(new FileServerListenElement(null, startIp, startPort-1));
+        //fileServerListe.add(new FileServerListenElement(null, "192.168.1.8", 1500));
+        //fileServerListe.add(new FileServerListenElement(null, "192.168.0.24", 8888));
+        for(int i = 0; i < ARRAY_GRENZE; i++)
         {
-            System.setSecurityManager(new SecurityManager());
+            serverNames.add("default"+i);
+            verwalterNames.add("default"+i);
         }
-        Registry registry = LocateRegistry.getRegistry(HOST, PORT_NR);
-        this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
 
     }
 
-
-
     /**
-     * Erstellt einen Socket für remote Verbindungen(Funktion des Interface RMIClientSocketFactory)
+     * Erstellt einen Socket fuer remote Verbindungen
+     * (Funktion des Interface RMIClientSocketFactory)
      * @param host Adresse des Clients
      * @param port Port der Verbindung
-     * @return Den Socket für den Client
+     * @return Socket fuer den Client
      * @throws IOException
      */
     public Socket createSocket(String host, int port) throws IOException
@@ -82,155 +90,369 @@ public class VerwalterServer implements VerwalterInterface, RMIClientSocketFacto
     }
 
     /**
-     *
+     * //ToDo Funktion soll die Anbindung zu anderen VerwalterServer liefern
      * @return Name und IP-Adressen aller VerwalterServer
      */
-    public String getServerList()
+    public String getServerList() throws RemoteException, NotBoundException
     {
-        System.out.println("request serverlist from " + clientIP);
-        return VERWALTER_LISTE;
-    }
-
-    public boolean rename(String oldName, String newName) throws RemoteException
-    {
-        System.out.println("request rename from " + clientIP);
-        return this.fsserver.rename(oldName, newName);
-    }
-
-    public String getOSName()throws RemoteException
-    {   System.out.println("request serverOSname from " + clientIP);
-       return this.fsserver.getOSName();
-    }
-
-    public String getHostName() throws RemoteException
-    {   System.out.println("request hostname from " + clientIP);
-        return this.fsserver.getHostName();
-    }
-
-    public String getHostAddress() throws RemoteException, NotBoundException
-    {   System.out.println("request hostaddress from " + clientIP);
-        return this.fsserver.getHostAddress();
-    }
-
-
-    /**
-     * holt sich die IPv4 Adresse des verbundenen Clients
-     */
-    public void sendClientAddress(String clientAddress) throws RemoteException
-    {
-        clientIP = clientAddress;
-        System.out.println("send clientaddress via rmi handshake [" + clientAddress + "]");
-        fsserver.sendClientAddress(clientAddress);
-
-    }
-
-    //ToDo
-    /**
-    public String setClientAddress() throws RemoteException
-    {
-        System.out.println("clientaddress");
-        return this.fsclient.getClientAddress();
-    }
-    //ToDo
-    public String setClientName() throws RemoteException
-    {
-        System.out.println("clientname");
-        return this.fsclient.getClientName();
-    }
-     */
-
-
-
-    public boolean delete(String file) throws RemoteException
-    {
-        System.out.println("request delete from " + clientIP);
-        return this.fsserver.delete(file);
-    }
-
-    public boolean createFile(String file) throws RemoteException
-    {
-        System.out.println("request createFile from " + clientIP);
-        return this.fsserver.createFile(file);
-    }
-
-    public boolean createDir(String dir) throws RemoteException
-    {
-        System.out.println("request createDir from " + clientIP);
-        return this.fsserver.createDir(dir);
+        log(" - Client [" + fsserver.getClientAddress() + "] request serverlist");
+        return "\n VERWALTER_LISTE kommt";
     }
 
     /**
-     * Prüft ob eine Datei gefunden wurde und macht entsprechende Rückgaben
+     * <br> Prueft ob eine Datei gefunden wurde und macht entsprechende Rueckgaben </br>
      * @param file Name der Datei
      * @param startDir Name des StartDirectories
      * @return Entweder die Angabe, dass keine Datei gefunden wurde, oder die Dateien die gefunden wurden
      *         und weitere Rueckgabe von Server Liste
      * @throws RemoteException
      */
-    public String search(String file, String startDir) throws RemoteException
+    public String search(String file, String startDir) throws RemoteException, NotBoundException
     {
-        System.out.println("request search from " + clientIP);
-        String erg = this.fsserver.search(file, startDir);
-        if(erg.equals(""))
+        log(" - Client [" + clientIP + "] request search");
+        String ergebnis = "";
+        return iterateFileSystems(FUNKTIONALITAET.SEARCH, file, startDir, 0, ergebnis);
+    }
+    public String initialBrowseDirs(String dir) throws RemoteException, NotBoundException
+    {
+        log(" - Client [" + clientIP + "] request initial browse");
+        String ergebnis = "";
+        return iterateFileSystems(FUNKTIONALITAET.BROWSE_DIRS, dir, null, 0, ergebnis);
+    }
+    public String initialBrowseFiles(String dir) throws RemoteException, NotBoundException
+    {
+        String ergebnis = "";
+        return iterateFileSystems(FUNKTIONALITAET.BROWSE_FILES, dir, null, 0, ergebnis);
+    }
+    public String browseFiles(String dir, int server) throws RemoteException, NotBoundException
+    {
+        return performOperation(FUNKTIONALITAET.BROWSE_FILES, dir, null);
+    }
+
+    public String browseDirs(String dir, int server) throws RemoteException, NotBoundException {
+        log(" - Client [" + clientIP + "] request browse");
+        if (!connectServer(server))
         {
-            return ("Nicht gefunden, pruefen Sie andere Server!" + getServerList());
+            return FEHLER_AKTUELLER_SERVER;
         }
-        else
-            return erg;
+        return performOperation(FUNKTIONALITAET.BROWSE_DIRS, dir, null);
     }
 
-    public String browseFiles(String dir) throws RemoteException
+    public String delete(String file, int server) throws RemoteException, NotBoundException
     {
-        System.out.println("request browse from " + clientIP);
-        return this.fsserver.browseFiles(dir);
+        log(" - Client [" + clientIP + "] request delete");
+        if (!connectServer(server))
+        {
+            return FEHLER_AKTUELLER_SERVER;
+        }
+        return performOperation(FUNKTIONALITAET.DELETE, null, file);
     }
 
-    public String browseDirs(String dir) throws RemoteException
+    public String createFile(String file, int server) throws RemoteException, NotBoundException
     {
-        System.out.println("request browseDir from " + clientIP);
-        return this.fsserver.browseDirs(dir);
+        log(" - Client [" + clientIP + "] request createFile");
+        connectServer(server);
+        return performOperation(FUNKTIONALITAET.CREATE_FILE, null, file);
+    }
+
+    public String createDir(String dir, int server) throws RemoteException, NotBoundException
+    {
+        log(" - Client [" + clientIP + "] request createDir");
+        if (!connectServer(server))
+        {
+            return FEHLER_AKTUELLER_SERVER;
+        }
+        return performOperation(FUNKTIONALITAET.CREATE_DIR, dir, null);
+    }
+
+    public String rename(String oldName, String newName, int server) throws RemoteException, NotBoundException
+    {
+        log(" - Client [" + clientIP + "] request rename");
+        if (!connectServer(server))
+        {
+            return FEHLER_AKTUELLER_SERVER;
+        }
+        return performOperation(FUNKTIONALITAET.RENAME, oldName, newName);
+    }
+
+    public String getOSName(int server) throws RemoteException, NotBoundException
+    {
+        log(" - Client [" + clientIP + "] request serverOSname");
+        if (!connectServer(server))
+        {
+            return FEHLER_AKTUELLER_SERVER;
+        }
+        return performOperation(FUNKTIONALITAET.GET_OS_NAME, null, null);
     }
 
     /**
-     * Legt Port für Verbindung fest und baut Verbindung zum FileServer auf(siehe Konstruktor)
-     * @param args IP und Port des VerwalterServers(Konstanten stattdessen verwenden?)
+     * <br>Fragt nach allen Namen der Verwalter, damit der Client diese identifizieren kann</br>
+     * @return
+     * @throws RemoteException
+     * @throws NotBoundException
+     * @param index
      */
-    public static void main(String args[])
+    public ArrayList<String> getAllVerwalterNames(int index) throws RemoteException, NotBoundException
     {
-        //**** regelt RMI Kommunikation ***** muss anfang der main bleiben
-        System.setProperty("java.security.policy", "java.policy" );
-
-        try
+        while(index < verwalterListe.size())
         {
-            VerwalterServer verwalterServer = new VerwalterServer();
-            if(args.length >= 1)
-            {
-                int serverPort = 0;//Clientaufruf mit 4711
-                serverPort = Integer.parseInt(args[0]);
-                //Noetig für RMI Client Anbindung zum VerwalterServer z.B. 192.168.0.101 Port 4711
-                System.setProperty("java.rmi.server.hostname", SERVER_HOST_FGVT); //192.168.0.24
-                //Stellt das Objekt dem System zur Verfügung
-                VerwalterInterface stub = (VerwalterInterface) UnicastRemoteObject.exportObject(verwalterServer, serverPort);
-                //Registry erstellen um Objekt ansprechen zu können
-                Registry registry =  LocateRegistry.createRegistry(serverPort); //ToDo lookup für VerwalterServer & FileServer
-                //Objekt an registry binden
-                registry.rebind("VerwalterServer", stub);
-                System.out.println("Server bound .....\tPort open at " + serverPort);
-            }
-            else
-            {
-                System.out.println("Bitte Server-Port zum binden angeben!");
-            }
+            verwalterNames.set(index, verwalterListe.get(index).getServerName());
+            index++;
         }
-        catch(IOException ioe)
-        {
-            ioe.printStackTrace();
-        }
-        catch (NotBoundException nbe)
-        {
-            nbe.printStackTrace();
-        }
-
+        return verwalterNames;
     }
 
+    /**
+     * <br> Uebergibt die Verbindungsinformation des angeforderten Verwalters
+     * @param verwalter angeforderter Verwalter
+     * @return alle Verbindungsinformationen des angeforderten Verwalters(IP,NAME,PORT)
+     * @throws RemoteException
+     * @throws NotBoundException
+     */
+    public FileServerListenElement getVerwalter(int verwalter) throws RemoteException, NotBoundException
+    {
+        System.out.println("Angeforderter Verwalter:\n IP: "+verwalterListe.get(verwalter).getServerIP()+
+                "\t Port: "+verwalterListe.get(verwalter).getServerPort());
+        return verwalterListe.get(verwalter);
+    }
+    /**
+     * <br>Fragt nach allen Namen der FileServer, damit der Client diese identifizieren kann</br>
+     * @return
+     * @throws RemoteException
+     * @throws NotBoundException
+     */
+    public ArrayList<String> getAllFileServerNames(int index) throws RemoteException, NotBoundException
+    {
+        if (System.getSecurityManager() == null)
+        {
+            System.setSecurityManager(new SecurityManager());
+        }
+        try
+        {
+            while (index < fileServerListe.size())
+            {
+                Registry registry = LocateRegistry.getRegistry(fileServerListe.get(index).getServerIP(),
+                        fileServerListe.get(index).getServerPort());
+                this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
+                serverNames.set(index, fsserver.getHostName()+"(online)");
+                index++;
+            }
+        }
+        catch(RemoteException rex)
+        {
+            serverNames.set(index, fileServerListe.get(index).getServerName()+"(offline)");
+            getAllFileServerNames(index+1);
+        }
+        catch(NotBoundException nex)
+        {
+            serverNames.set(index, fsserver.getHostName()+"(offline)");
+            getAllFileServerNames(index+1);
+        }
+        return serverNames;
+    }
+
+    public String getHostName(int server) throws RemoteException, NotBoundException
+    {
+        log(" - Client [" + clientIP + "] request hostname");
+        return performOperation(FUNKTIONALITAET.GET_HOST_NAME, null, null);
+    }
+
+    public String getHostAddress(int server) throws RemoteException, NotBoundException
+    {
+        log(" - Client [" + clientIP + "] request hostaddress");
+        return performOperation(FUNKTIONALITAET.GET_HOST_ADDRESS, null, null);
+    }
+
+    public String getClientAddress() throws RemoteException
+    {
+        return fsserver.getClientAddress();
+    }
+
+    /**
+     * holt sich die IPv4 Adresse des verbundenen Clients
+     * @throws RemoteException
+     */
+    public String sendClientAddress(String clientAddress) throws RemoteException, NotBoundException
+    {
+        clientIP = clientAddress;
+        log(" - Client [" + clientAddress + "] connected via RMI handshake");
+        try
+        {
+            fsserver.sendClientAddress(clientAddress);
+        }
+        catch(RemoteException rex)
+        {
+            return FEHLER_AKTUELLER_SERVER+rex.getMessage();
+        }
+        return "";
+    }
+
+
+    /** //ToDo timeStamp
+     * ermittelt Systemzeit des Servers
+     * @return timeStamp
+     */
+    private void setTime()
+    {
+        timeStamp = new SimpleDateFormat("yyyy-MM-dd / HH:mm:ss").format(new Date());
+    }
+    public String getTime()
+    {
+        return this.timeStamp;
+    }
+
+    public void log(String message)
+    {
+        setTime();
+        System.out.println(getTime() + message);
+    }
+
+    private void connectFileSystem()throws RemoteException, NotBoundException
+    {
+
+        ListIterator<FileServerListenElement> iterator = fileServerListe.listIterator();
+        if (System.getSecurityManager() == null)
+        {
+            System.setSecurityManager(new SecurityManager());
+        }
+        FileServerListenElement tmp = iterator.next();
+        Registry registry = LocateRegistry.getRegistry(tmp.getServerIP(), tmp.getServerPort());
+        this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
+    }
+
+    /**
+     * <br> Verbindet abwechselnd zu jedem FileServer und fordert die benoetigten Informationen an</br>
+     * @param n gibt an welche Funktion der FileServer aufgerufen wird
+     * @param dir Parameter fuer dirName/startDirName, abhaengig von n
+     * @param file Parameter fuer fileName, abhaengig von n
+     * @return gibt den Ergebnis String fuer den Methoden Aufruf n zurueck(alle Informationen aller Server sind hier enthalten!)
+     * @throws RemoteException
+     * @throws NotBoundException
+     */
+    private String iterateFileSystems(FUNKTIONALITAET n, String dir, String file, int index, String ergebnis)
+    {
+        String serverName;
+        if (System.getSecurityManager() == null)
+            System.setSecurityManager(new SecurityManager());
+        try
+        {
+            while (index < fileServerListe.size())
+            {
+
+                Registry registry = LocateRegistry.getRegistry(fileServerListe.get(index).getServerIP(),
+                        fileServerListe.get(index).getServerPort());
+                this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
+                switch (n)
+                {
+                    case BROWSE_FILES:
+                        ergebnis += "\n" + fileServerListe.get(index).getServerName() + ":\n" + fsserver.browseFiles(dir);
+                        break;
+                    case BROWSE_DIRS:
+                        serverName = fsserver.getHostName();
+                        fileServerListe.get(index).setServerName(serverName);
+                        ergebnis += "\n" + fileServerListe.get(index).getServerName() + ":\n" + fsserver.browseDirs(dir);
+                        break;
+                    case SEARCH:
+                        ergebnis += "\n" + fileServerListe.get(index).getServerName() + ":\n" + fsserver.search(dir, file);
+                        break;
+                }
+                index++;
+            }
+        }
+        catch(RemoteException rex)
+        {
+
+            ergebnis += "\n" + fileServerListe.get(index).getServerName()+": "+FEHLER_VERBINDUNG_MESSAGE;
+            iterateFileSystems(n, dir, file, index, ergebnis);
+        }
+        catch(NotBoundException nex)
+        {
+            ergebnis += "\n" + fileServerListe.get(index).getServerName()+": "+FEHLER_VERBINDUNG_MESSAGE;
+            iterateFileSystems(n, dir, file, index, ergebnis);
+        }
+        return ergebnis;
+    }
+
+    /**
+     * Verbindet den Verwalter zum geforderten FileServer, um anschließend dort eine Operation
+     * durchzufuehren
+     * @param server der Name des Servers auf dem die Operation durchgefuehrt werden soll
+     */
+    private boolean connectServer(int server)
+    {
+        System.out.println("connectServer(), Server: "+fileServerListe.get(server).getServerName());
+        if (System.getSecurityManager() == null)
+        {
+            System.setSecurityManager(new SecurityManager());
+        }
+        try
+        {
+            Registry registry = LocateRegistry.getRegistry(fileServerListe.get(server).getServerIP(),
+                    fileServerListe.get(server).getServerPort());
+            this.fsserver = (FSInterface) registry.lookup("FileSystemServer");
+        }
+        catch(RemoteException rex)
+        {
+            return false;
+        }
+        catch(NotBoundException nex)
+        {
+            return false;
+        }
+        return true;
+    }
+    /**
+     * Fuehrt die angegebene Operation auf dem derzeit verbundenen FileServer durch
+     * @param n gibt an welche Funktion der FileServer aufgerufen wird
+     * @param dir Parameter fuer dirName/startDirName/oldName, abhaengig von n
+     * @param file Parameter fuer fileName/newName, abhaengig von n
+     * @return gibt den Ergebnis String fuer den Methoden Aufruf n zurueck
+     */
+    private String performOperation(FUNKTIONALITAET n, String dir, String file)
+    {
+        String ergebnis = "";
+        try
+        {
+            switch (n)
+            {
+                case BROWSE_DIRS:
+                    ergebnis += "\n" + "\n" + fsserver.browseDirs(dir);
+                    break;
+                case BROWSE_FILES:
+                    ergebnis += "\n" + "\n" + fsserver.browseFiles(dir);
+                    break;
+                case CREATE_DIR:
+                    ergebnis += "\n" + ":\n" + fsserver.createDir(dir);
+                    break;
+                case CREATE_FILE:
+                    ergebnis += "\n" + ":\n" + fsserver.createFile(file);
+                    break;
+                case DELETE:
+                    ergebnis += "\n" + ":\n" + fsserver.delete(file);
+                    break;
+                case RENAME:
+                    ergebnis += "\n" + ":\n" + fsserver.rename(dir, file);
+                    break;
+                case GET_OS_NAME:
+                    ergebnis += "\n\t\t" + ": " + fsserver.getOSName() + " ";
+                    break;
+                case GET_HOST_ADDRESS:
+                    ergebnis += "\n\t\t" + ": " + fsserver.getHostAddress() + " ";
+                    break;
+                case GET_HOST_NAME:
+                    ergebnis += "\n\t\t" + ": " + fsserver.getHostName() + " ";
+                    break;
+            }
+        }
+        catch(RemoteException rex)
+        {
+            return ergebnis+FEHLER_AKTUELLER_SERVER+rex.getMessage();
+        }
+        return ergebnis;
+    }
+
+    public Path [] getFileList() throws RemoteException
+    {
+        return fsserver.getFileList();
+    }
 }

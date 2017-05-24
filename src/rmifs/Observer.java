@@ -1,11 +1,13 @@
 package rmifs;
 
 /**
-* Klasse zum ueberwachen eines Ordners auf Aenderungen
-* @author Marco Palumbo
-* @version 1.01
-* @date 2016-09-16
-*/
+ * Klasse zum ueberwachen eines Ordners auf Aenderungen
+ * >>> die Klasse sollte eigentlich WatchDog heissen,
+ * oder Deutscher Schäferhund ;-)
+ * @author Marco Palumbo
+ * @version 1.01
+ * @date 2016-09-16
+ */
 
 import java.lang.*;
 import java.io.*;
